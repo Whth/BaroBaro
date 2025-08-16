@@ -20,6 +20,8 @@
   border-top: 1px solid var(--color-border);
   padding: var(--spacing-s) var(--spacing-l);
   margin-top: auto;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .footer-content {

@@ -1,13 +1,13 @@
 <template>
   <div class="download-mod-tab">
-    <h2>Download Mods</h2>
+    <h2>Download Mods from Steam Workshop</h2>
     <div class="download-content">
       <div class="search-section">
         <div class="search-container">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search for mods..."
+            placeholder="Search for mods on Steam Workshop..."
             class="search-input"
           />
           <button class="search-button">🔍</button>
@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="mod-results">
-        <div v-if="loading" class="loading">Loading mods...</div>
+        <div v-if="loading" class="loading">Loading mods from Steam Workshop...</div>
         <div v-else-if="mods.length === 0" class="no-results">No mods found</div>
         <div v-else class="mod-grid">
           <div
@@ -51,7 +51,7 @@
                 :disabled="mod.downloading"
                 @click="downloadMod(mod.id)"
               >
-                {{ mod.downloading ? 'Downloading...' : 'Download' }}
+                {{ mod.downloading ? 'Downloading...' : 'Download from Steam' }}
               </button>
             </div>
           </div>
@@ -63,6 +63,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
+// This component is prepared for SteamCMD integration
+// It will connect to the existing SteamCMD Rust crate in the Tauri backend
 
 interface Mod {
   id: string
@@ -118,11 +121,12 @@ const downloadMod = (modId: string) => {
   const mod = mods.value.find(m => m.id === modId)
   if (mod) {
     mod.downloading = true
-    console.log(`Downloading mod: ${mod.name}`)
-    // Simulate download process
+    console.log(`Downloading mod from Steam Workshop: ${mod.name}`)
+    // In a real app, this would integrate with the SteamCMD Rust crate
+    // For now, we'll simulate the download process
     setTimeout(() => {
       mod.downloading = false
-      alert(`Downloaded ${mod.name} successfully!`)
+      alert(`Downloaded ${mod.name} from Steam Workshop successfully!\n\nThis would integrate with the SteamCMD Rust crate in a real implementation.`)
     }, 2000)
   }
 }

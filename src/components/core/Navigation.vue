@@ -47,6 +47,8 @@ const isActive = (path: string) => {
   border-right: 1px solid var(--color-border);
   padding: var(--spacing-m);
   height: calc(100vh - 120px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .nav-list {

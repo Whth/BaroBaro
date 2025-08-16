@@ -73,6 +73,65 @@
           Show tooltips
         </label>
       </div>
+      
+      <!-- Background Customization -->
+      <div class="form-section">
+        <h3>Background Customization</h3>
+        <div class="form-group">
+          <label for="background-image" class="form-label">Background Image</label>
+          <div class="file-upload">
+            <input
+              id="background-image"
+              type="file"
+              accept="image/*"
+              class="file-input"
+              @change="handleBackgroundImageUpload"
+            />
+            <button
+              v-if="backgroundSettings.backgroundImage"
+              class="clear-button"
+              @click="clearBackgroundImage"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="background-opacity" class="form-label">Background Opacity</label>
+          <input
+            id="background-opacity"
+            v-model.number="backgroundSettings.backgroundOpacity"
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            class="form-range"
+          />
+          <div class="range-labels">
+            <span>Transparent</span>
+            <span>{{ backgroundSettings.backgroundOpacity }}</span>
+            <span>Opaque</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="background-blur" class="form-label">Background Blur</label>
+          <input
+            id="background-blur"
+            v-model.number="backgroundSettings.backgroundBlur"
+            type="range"
+            min="0"
+            max="20"
+            step="1"
+            class="form-range"
+          />
+          <div class="range-labels">
+            <span>None</span>
+            <span>{{ backgroundSettings.backgroundBlur }}px</span>
+            <span>Blurry</span>
+          </div>
+        </div>
+      </div>
+      
       <div class="form-actions">
         <button class="save-button" @click="savePreferences">Save Preferences</button>
         <button class="reset-button" @click="resetPreferences">Reset to Defaults</button>
@@ -92,6 +151,12 @@ interface UIPreferences {
   showTooltips: boolean
 }
 
+interface BackgroundSettings {
+  backgroundImage: string
+  backgroundOpacity: number
+  backgroundBlur: number
+}
+
 const preferences = ref<UIPreferences>({
   accentColor: '#3B82F6',
   layoutDensity: 'normal',
@@ -100,10 +165,22 @@ const preferences = ref<UIPreferences>({
   showTooltips: true
 })
 
+const backgroundSettings = ref<BackgroundSettings>({
+  backgroundImage: '',
+  backgroundOpacity: 1,
+  backgroundBlur: 0
+})
+
 const savePreferences = () => {
   console.log('Saving UI preferences:', preferences.value)
-  // In a real app, this would save to the backend or local storage
-  alert('UI preferences saved successfully!')
+  console.log('Saving background settings:', backgroundSettings.value)
+  
+  // Save to localStorage
+  localStorage.setItem('uiPreferences', JSON.stringify(preferences.value))
+  localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings.value))
+  
+  // In a real app, this would also update the global state
+  alert('UI preferences and background settings saved successfully!')
 }
 
 const resetPreferences = () => {
@@ -115,11 +192,60 @@ const resetPreferences = () => {
       animationSpeed: 1,
       showTooltips: true
     }
+    
+    backgroundSettings.value = {
+      backgroundImage: '',
+      backgroundOpacity: 1,
+      backgroundBlur: 0
+    }
+    
     console.log('UI preferences reset to defaults')
   }
 }
 
+const handleBackgroundImageUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      backgroundSettings.value.backgroundImage = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+const clearBackgroundImage = () => {
+  backgroundSettings.value.backgroundImage = ''
+  // Clear the file input
+  const fileInput = document.getElementById('background-image') as HTMLInputElement
+  if (fileInput) {
+    fileInput.value = ''
+  }
+}
+
 onMounted(() => {
+  // Load preferences from localStorage
+  const savedPreferences = localStorage.getItem('uiPreferences')
+  if (savedPreferences) {
+    try {
+      preferences.value = JSON.parse(savedPreferences)
+    } catch (e) {
+      console.error('Failed to parse UI preferences', e)
+    }
+  }
+  
+  // Load background settings from localStorage
+  const savedBackgroundSettings = localStorage.getItem('backgroundSettings')
+  if (savedBackgroundSettings) {
+    try {
+      backgroundSettings.value = JSON.parse(savedBackgroundSettings)
+    } catch (e) {
+      console.error('Failed to parse background settings', e)
+    }
+  }
+  
   console.log('UI preferences mounted')
 })
 </script>
@@ -236,5 +362,35 @@ onMounted(() => {
 .reset-button {
   background-color: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+.form-section {
+  padding: var(--spacing-m) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.form-section h3 {
+  margin: 0 0 var(--spacing-m) 0;
+  color: var(--color-text-primary);
+}
+
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+}
+
+.file-input {
+  flex: 1;
+}
+
+.clear-button {
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-soft);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-body-small);
 }
 </style>

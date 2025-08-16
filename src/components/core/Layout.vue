@@ -1,13 +1,13 @@
 <template>
   <div class="layout">
-    <Header />
+    <Header class="acrylic" />
     <div class="layout-content">
-      <Navigation />
+      <Navigation class="acrylic" />
       <main class="main-content">
         <slot />
       </main>
     </div>
-    <Footer />
+    <Footer class="acrylic" />
   </div>
 </template>
 

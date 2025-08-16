@@ -4,6 +4,7 @@
       <h1 class="app-title">Game Mod Manager</h1>
       <div class="header-actions">
         <ProfileSwitcher />
+        <ThemeSwitcher />
         <button class="notification-button" @click="showNotifications">
           <span class="notification-icon">🔔</span>
           <span v-if="unreadNotifications > 0" class="notification-badge">
@@ -12,11 +13,12 @@
         </button>
       </div>
     </div>
-  </header>
+16 |   </header>
 </template>
 
 <script setup lang="ts">
 import ProfileSwitcher from '@/components/profile-management/ProfileSwitcher.vue'
+import ThemeSwitcher from '@/components/core/ThemeSwitcher.vue'
 import { ref } from 'vue'
 
 const unreadNotifications = ref(3)
@@ -34,6 +36,8 @@ const showNotifications = () => {
   padding: var(--spacing-s);
   box-shadow: var(--shadow-level-1);
   z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .header-content {

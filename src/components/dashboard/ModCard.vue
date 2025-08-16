@@ -1,7 +1,25 @@
 <template>
-  <div class="mod-card" :class="{ 'mod-card-disabled': !mod.enabled }">
+  <div
+    class="mod-card"
+    :class="{
+      'mod-card-disabled': !mod.enabled,
+      'drag-over': isDragOver
+    }"
+    :draggable="draggable"
+    @dragstart="$emit('dragstart', $event)"
+    @dragover="$emit('dragover', $event)"
+    @dragenter="$emit('dragenter')"
+    @dragleave="$emit('dragleave')"
+    @drop="$emit('drop', $event)"
+    @dragend="$emit('dragend')"
+  >
     <div class="mod-card-header">
-      <h3 class="mod-name">{{ mod.name }}</h3>
+      <div class="mod-header-content">
+        <div class="mod-priority-indicator">
+          <span class="priority-number">{{ index + 1 }}</span>
+        </div>
+        <h3 class="mod-name">{{ mod.name }}</h3>
+      </div>
       <div class="mod-actions">
         <button
           class="toggle-button"
@@ -48,11 +66,20 @@ interface Mod {
 
 const props = defineProps<{
   mod: Mod
+  index: number
+  draggable?: boolean
+  isDragOver?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'toggleMod', id: string): void
   (e: 'selectMod', id: string): void
+  (e: 'dragstart', event: DragEvent): void
+  (e: 'dragover', event: DragEvent): void
+  (e: 'dragenter'): void
+  (e: 'dragleave'): void
+  (e: 'drop', event: DragEvent): void
+  (e: 'dragend'): void
 }>()
 
 const toggleMod = () => {
@@ -71,6 +98,8 @@ const selectMod = () => {
   padding: var(--spacing-m);
   background-color: var(--color-surface);
   transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .mod-card:hover {
@@ -82,11 +111,35 @@ const selectMod = () => {
   opacity: 0.7;
 }
 
+.drag-over {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
 .mod-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-s);
+}
+
+.mod-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.mod-priority-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
 }
 
 .mod-name {
