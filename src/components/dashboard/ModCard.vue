@@ -1,0 +1,175 @@
+<template>
+  <div class="mod-card" :class="{ 'mod-card-disabled': !mod.enabled }">
+    <div class="mod-card-header">
+      <h3 class="mod-name">{{ mod.name }}</h3>
+      <div class="mod-actions">
+        <button
+          class="toggle-button"
+          :class="{ 'toggle-enabled': mod.enabled }"
+          @click="toggleMod"
+        >
+          {{ mod.enabled ? 'Enabled' : 'Disabled' }}
+        </button>
+      </div>
+    </div>
+    <div class="mod-card-content">
+      <p class="mod-version">Version: {{ mod.version }}</p>
+      <p class="mod-author">by {{ mod.author }}</p>
+      <p class="mod-description">{{ mod.description }}</p>
+    </div>
+    <div class="mod-card-footer">
+      <span class="mod-source" :class="`source-${mod.source}`">
+        {{ mod.source === 'local' ? 'Local' : 'Remote' }}
+      </span>
+      <button class="details-button" @click="selectMod">
+        View Details
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue'
+
+interface Mod {
+  id: string
+  name: string
+  version: string
+  author: string
+  description: string
+  enabled: boolean
+  installedAt: Date
+  updatedAt: Date
+  dependencies: string[]
+  conflicts: string[]
+  filePath: string
+  source: 'local' | 'remote'
+}
+
+const props = defineProps<{
+  mod: Mod
+}>()
+
+const emit = defineEmits<{
+  (e: 'toggleMod', id: string): void
+  (e: 'selectMod', id: string): void
+}>()
+
+const toggleMod = () => {
+  emit('toggleMod', props.mod.id)
+}
+
+const selectMod = () => {
+  emit('selectMod', props.mod.id)
+}
+</script>
+
+<style scoped>
+.mod-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-rounded);
+  padding: var(--spacing-m);
+  background-color: var(--color-surface);
+  transition: all 0.2s ease;
+}
+
+.mod-card:hover {
+  box-shadow: var(--shadow-level-2);
+  border-color: var(--color-primary-light);
+}
+
+.mod-card-disabled {
+  opacity: 0.7;
+}
+
+.mod-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-s);
+}
+
+.mod-name {
+  margin: 0;
+  font-size: var(--font-size-heading-3);
+  color: var(--color-text-primary);
+}
+
+.mod-actions {
+  display: flex;
+  gap: var(--spacing-s);
+}
+
+.toggle-button {
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-soft);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-medium);
+}
+
+.toggle-enabled {
+  background-color: var(--color-success);
+  color: white;
+  border-color: var(--color-success);
+}
+
+.mod-card-content {
+  margin-bottom: var(--spacing-m);
+}
+
+.mod-version {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.mod-author {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-m) 0;
+  font-style: italic;
+}
+
+.mod-description {
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.mod-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mod-source {
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--border-radius-soft);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+}
+
+.source-local {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.source-remote {
+  background-color: var(--color-info);
+  color: white;
+}
+
+.details-button {
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-soft);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-body-small);
+}
+</style>
