@@ -24,3 +24,9 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 steamcmd-rs = { path = "./crates/steamcmd-rs" }
 constants = { path = "./crates/constants" }
+mod_analyzer = { path = "./crates/mod_analyzer" }
+
+[workspace]
+members = [
+  "crates/*",
+]

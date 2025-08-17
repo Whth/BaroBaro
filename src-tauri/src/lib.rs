@@ -1,7 +1,6 @@
-
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
-async fn greet(name: &str) -> Result<String,()> {
+async fn greet(name: &str) -> Result<String, ()> {
     Ok(format!("Hello, {}! You've been greeted from Rust!", name))
 }
 
