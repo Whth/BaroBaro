@@ -21,6 +21,13 @@ impl BarotraumaHome {
         }
     }
 
+
+    pub fn set_home_dir(&mut self, home_dir: PathBuf) {
+        self.home_dir = home_dir.clone();
+        self.mod_dir = home_dir.join(Self::MOD_DIR);
+        self.mod_list_dir = home_dir.join(Self::MOD_LIST_DIR);
+    }
+
     pub fn mod_dir(&self) -> &PathBuf {
         &self.mod_dir
     }

@@ -13,6 +13,10 @@ impl SteamCMD {
     pub fn new(home_dir: PathBuf) -> SteamCMD {
         SteamCMD { home_dir }
     }
+
+    pub fn set_steamcmd_path(&mut self, path: PathBuf) {
+        self.home_dir = path;
+    }
     fn steamcmd_full_path(&self) -> PathBuf {
         self.home_dir.join(STEAMCMD_NAME)
     }
