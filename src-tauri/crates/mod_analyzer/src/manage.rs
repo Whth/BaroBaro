@@ -22,7 +22,10 @@ impl BarotraumaModManager {
 
     pub fn from_game_dir(game_dir: PathBuf) -> BarotraumaModManager {
         let mods = BarotraumaModManager::discover_mods(&game_dir);
-        BarotraumaModManager { game_home: BarotraumaHome::new(game_dir), mods }
+        BarotraumaModManager {
+            game_home: BarotraumaHome::new(game_dir),
+            mods,
+        }
     }
     pub fn get_mods(&self) -> &Vec<BarotraumaMod> {
         &self.mods
@@ -31,5 +34,3 @@ impl BarotraumaModManager {
         self.mods = BarotraumaModManager::discover_mods(&self.game_home.mod_dir());
     }
 }
-
-

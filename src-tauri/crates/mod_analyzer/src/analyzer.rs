@@ -1,6 +1,6 @@
 use constants::MOD_FILELIST_FILE;
 use quick_xml::de::from_str;
-use serde::{de::MapAccess, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, de::MapAccess};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -313,9 +313,9 @@ mod tests {
             "Other",
             "Sounds",
         ]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
 
         assert_eq!(tags, expected_tags);
     }
