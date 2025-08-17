@@ -5,14 +5,15 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-// 通用文件元素
+/// A generic file element that represents a file entry in the mod's content package.
 #[derive(Debug, Clone, Deserialize)]
 pub struct FileElement {
+    /// The file path as specified in the XML attribute.
     #[serde(rename = "@file")]
     pub file: String,
 }
 
-// 自定义反序列化布尔值（支持 "True"/"False"）
+/// Custom deserializer for boolean values that supports "True"/"False" and "1"/"0" strings.
 fn deserialize_bool_from_string<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
@@ -28,32 +29,40 @@ where
     }
 }
 
-// 我们不再定义固定字段的 ContentPackage
-// 而是直接反序列化为动态结构
+/// Represents a Barotrauma mod parsed from its content package XML file.
+///
+/// This structure holds all metadata about the mod as well as all file entries grouped by their XML tags.
 #[derive(Debug)]
 pub struct BarotraumaMod {
+    /// The name of the mod.
     pub name: String,
+    /// The version of the mod.
     pub mod_version: String,
+    /// Whether this is a core package.
     pub core_package: bool,
+    /// The Steam Workshop ID of the mod.
     pub steam_workshop_id: String,
+    /// The game version this mod is compatible with.
     pub game_version: String,
+    /// The expected hash of the mod.
     pub expected_hash: String,
-    // 所有标签名 -> 文件列表
+    /// All file entries grouped by their tag names.
     pub file_groups: HashMap<String, Vec<FileElement>>,
 }
 
-// 自定义反序列化器：处理任意子节点
+/// Custom deserializer implementation for BarotraumaMod to handle dynamic XML tags.
 impl<'de> Deserialize<'de> for BarotraumaMod {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        // 使用 `serde-xml-rs` 风格的 MapAccess 遍历所有字段
+        // Use a visitor to deserialize the XML structure
         let map = deserializer.deserialize_map(BarotraumaModVisitor)?;
         Ok(map)
     }
 }
 
+/// Visitor struct for deserializing BarotraumaMod.
 struct BarotraumaModVisitor;
 
 impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
@@ -67,7 +76,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
     where
         A: MapAccess<'de>,
     {
-        // 先提取属性
+        // Extract attributes first
         let mut name = None;
         let mut mod_version = None;
         let mut core_package = None;
@@ -75,7 +84,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
         let mut game_version = None;
         let mut expected_hash = None;
 
-        // 用于收集所有标签
+        // Collect all file entries grouped by their tag names
         let mut file_groups: HashMap<String, Vec<FileElement>> = HashMap::new();
 
         while let Some(key) = map.next_key::<String>()? {
@@ -92,7 +101,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
                 "@gameversion" => game_version = Some(map.next_value()?),
                 "@expectedhash" => expected_hash = Some(map.next_value()?),
                 _ => {
-                    // 所有其他字段都当作标签处理
+                    // All other fields are treated as tags
                     let values: Vec<FileElement> = map.next_value()?;
                     file_groups.entry(key).or_default().extend(values)
                 }
@@ -117,30 +126,68 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
 }
 
 impl BarotraumaMod {
+    /// Creates a BarotraumaMod from an XML string.
+    ///
+    /// # Arguments
+    /// * [s](file://L:\rust_proj\BaroBaro\src-tauri\crates\mod_analyzer\src\analyzer.rs) - The XML string to parse.
+    ///
+    /// # Returns
+    /// A Result containing the parsed BarotraumaMod or an error.
     pub fn from_str(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let mod_obj: BarotraumaMod = from_str(s)?;
         Ok(mod_obj)
     }
 
+    /// Creates a BarotraumaMod from a file path.
+    ///
+    /// # Arguments
+    /// * `path` - The path to the XML file.
+    ///
+    /// # Returns
+    /// A Result containing the parsed BarotraumaMod or an error.
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
         let xml_content = fs::read_to_string(path)?;
         Self::from_str(&xml_content)
     }
 
+    /// Creates a BarotraumaMod from a mod directory.
+    ///
+    /// # Arguments
+    /// * `mod_dir` - The path to the mod directory.
+    ///
+    /// # Returns
+    /// A Result containing the parsed BarotraumaMod or an error.
     pub fn from_mod_dir<P: AsRef<Path>>(mod_dir: P) -> Result<Self, Box<dyn std::error::Error>> {
         let content_package_path = mod_dir.as_ref().join(MOD_FILELIST_FILE);
         Self::from_path(content_package_path)
     }
 
-    // 便捷方法：获取某类文件
+    /// Gets files associated with a specific tag.
+    ///
+    /// # Arguments
+    /// * `tag` - The tag name to look up.
+    ///
+    /// # Returns
+    /// An Option containing a reference to the vector of FileElements or None if the tag doesn't exist.
     pub fn get_files(&self, tag: &str) -> Option<&Vec<FileElement>> {
         self.file_groups.get(tag)
     }
 
+    /// Checks if a specific tag exists in the mod.
+    ///
+    /// # Arguments
+    /// * `tag` - The tag name to check.
+    ///
+    /// # Returns
+    /// True if the tag exists, false otherwise.
     pub fn has_tag(&self, tag: &str) -> bool {
         self.file_groups.contains_key(tag)
     }
 
+    /// Gets all tag names in the mod.
+    ///
+    /// # Returns
+    /// A vector of all tag names.
     pub fn tag_names(&self) -> Vec<String> {
         self.file_groups.keys().cloned().collect()
     }
@@ -192,7 +239,7 @@ mod tests {
         let xml = get_test_xml();
         let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
 
-        // 基本元数据
+        // Basic metadata
         assert_eq!(mod_obj.name, "BaroTraumatic");
         assert_eq!(mod_obj.mod_version, "1.2.81");
         assert_eq!(mod_obj.core_package, false);
@@ -200,7 +247,7 @@ mod tests {
         assert_eq!(mod_obj.game_version, "1.9.8.0");
         assert_eq!(mod_obj.expected_hash, "9A54ACF2E7EBC95726A72AE966EF5F8D");
 
-        // 文件组长度
+        // File group lengths
         assert_eq!(mod_obj.get_files("Item").unwrap().len(), 2);
         assert_eq!(mod_obj.get_files("Text").unwrap().len(), 4);
         assert_eq!(mod_obj.get_files("RandomEvents").unwrap().len(), 2);
