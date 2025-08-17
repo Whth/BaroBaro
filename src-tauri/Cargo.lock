@@ -2109,8 +2109,10 @@ name = "mod_analyzer"
 version = "0.1.0"
 dependencies = [
  "blake3",
+ "constants",
  "quick-xml",
  "rayon",
+ "serde",
  "tempfile",
  "walkdir",
 ]
@@ -2858,6 +2860,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9845d9dccf565065824e69f9f235fafba1587031eda353c1f1561cd6a6be78f4"
 dependencies = [
  "memchr",
+ "serde",
  "tokio",
 ]
 

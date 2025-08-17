@@ -5,9 +5,12 @@ edition = "2024"
 
 [dependencies]
 blake3 = { version = "1.8.2", features = ["rayon"] }
-quick-xml = { version = "0.38.1", features = ["async-tokio"] }
+quick-xml = { version = "0.38.1", features = ["async-tokio", "serde", "serialize"] }
 rayon = "1.11.0"
 walkdir = "2.5.0"
+serde = { version = "1.0.219", features = ["derive"] }
+constants = { path = "../constants" }
+
 
 [dev-dependencies]
 tempfile = "3.20.0"

@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 
-pub const BAROTRAUMA_GAME_ID:usize=602960;
+pub const MOD_FILELIST_FILE: &str = "filelist.xml";
+
+pub const BAROTRAUMA_GAME_ID: usize = 602960;
 pub struct BarotraumaHome {
     home_dir: PathBuf,
     mod_dir: PathBuf,
@@ -8,8 +10,7 @@ pub struct BarotraumaHome {
 }
 
 impl BarotraumaHome {
-
-    pub const  MOD_DIR: &'static str = "LocalMods";
+    pub const MOD_DIR: &'static str = "LocalMods";
 
     pub const MOD_LIST_DIR: &'static str = "ModLists";
 
@@ -20,7 +21,6 @@ impl BarotraumaHome {
             mod_list_dir: home_dir.join(Self::MOD_LIST_DIR),
         }
     }
-
 
     pub fn set_home_dir(&mut self, home_dir: PathBuf) {
         self.home_dir = home_dir.clone();
@@ -36,14 +36,7 @@ impl BarotraumaHome {
         &self.mod_list_dir
     }
 
-    pub fn home_dir(&self)-> &PathBuf {
+    pub fn home_dir(&self) -> &PathBuf {
         &self.home_dir
     }
-
 }
-
-
-
-
-
-

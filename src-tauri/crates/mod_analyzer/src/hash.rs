@@ -5,7 +5,6 @@ use std::path::Path;
 use blake3::Hasher;
 use walkdir::WalkDir;
 
-
 /// Computes a BLAKE3 hash of a directory.
 /// Hash is based on:
 /// - Relative file paths (UTF-8 only)
@@ -15,9 +14,7 @@ pub fn hash_directory<P: AsRef<Path>>(path: P) -> Result<String> {
     let mut hasher = Hasher::new();
     let base_path = path.as_ref();
 
-    let walker = WalkDir::new(base_path)
-        .sort_by_file_name()
-        .into_iter();
+    let walker = WalkDir::new(base_path).sort_by_file_name().into_iter();
 
     for entry_result in walker {
         let entry = entry_result?; // walkdir::Error → io::Error
@@ -27,11 +24,13 @@ pub fn hash_directory<P: AsRef<Path>>(path: P) -> Result<String> {
         }
 
         // Get relative path
-        let rel_path = entry.path().strip_prefix(base_path)
-            .map_err(|_| std::io::Error::new(std::io::ErrorKind::InvalidData, "failed to strip prefix"))?;
+        let rel_path = entry.path().strip_prefix(base_path).map_err(|_| {
+            std::io::Error::new(std::io::ErrorKind::InvalidData, "failed to strip prefix")
+        })?;
 
-        let rel_path_str = rel_path.to_str()
-            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidData, "path is not valid UTF-8"))?;
+        let rel_path_str = rel_path.to_str().ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::InvalidData, "path is not valid UTF-8")
+        })?;
 
         // Include relative path in hash
         hasher.update(rel_path_str.as_bytes());
@@ -107,7 +106,10 @@ mod tests {
         let hash1 = hash_directory(dir1.path())?;
         let hash2 = hash_directory(dir2.path())?;
 
-        assert_ne!(hash1, hash2, "Different content should yield different hash");
+        assert_ne!(
+            hash1, hash2,
+            "Different content should yield different hash"
+        );
         Ok(())
     }
 
@@ -122,7 +124,10 @@ mod tests {
         let hash1 = hash_directory(dir1.path())?;
         let hash2 = hash_directory(dir2.path())?;
 
-        assert_ne!(hash1, hash2, "Different structure should yield different hash");
+        assert_ne!(
+            hash1, hash2,
+            "Different structure should yield different hash"
+        );
         Ok(())
     }
 
@@ -134,7 +139,10 @@ mod tests {
         let hash1 = hash_directory(dir1.path())?;
         let hash2 = hash_directory(dir2.path())?;
 
-        assert_eq!(hash1, hash2, "Two empty dirs should have same hash (empty hash)");
+        assert_eq!(
+            hash1, hash2,
+            "Two empty dirs should have same hash (empty hash)"
+        );
         Ok(())
     }
 
