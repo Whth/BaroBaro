@@ -1,6 +1,6 @@
 use constants::MOD_FILELIST_FILE;
 use quick_xml::de::from_str;
-use serde::{Deserialize, Deserializer, de::MapAccess};
+use serde::{de::MapAccess, Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -129,7 +129,7 @@ impl BarotraumaMod {
     /// Creates a BarotraumaMod from an XML string.
     ///
     /// # Arguments
-    /// * [s](file://L:\rust_proj\BaroBaro\src-tauri\crates\mod_analyzer\src\analyzer.rs) - The XML string to parse.
+    /// * `s` - The XML string.
     ///
     /// # Returns
     /// A Result containing the parsed BarotraumaMod or an error.
@@ -313,9 +313,9 @@ mod tests {
             "Other",
             "Sounds",
         ]
-        .iter()
-        .map(|s| s.to_string())
-        .collect();
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
 
         assert_eq!(tags, expected_tags);
     }
