@@ -5,20 +5,23 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
+    "gen": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.CMD --ts_proto_out=src proto/transmission.proto",
+    "dev": "pnpm gen && vite ",
+    "build": "pnpm gen && vue-tsc --noEmit && vite build",
+    "preview": "pnpm gen && vite preview",
+    "tauri": "pnpm gen && tauri"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
+    "bufbuild": "^0.2.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@vitejs/plugin-vue": "^5.2.1",
+    "ts-proto": "^2.7.7",
     "typescript": "~5.6.2",
     "vite": "^6.0.3",
     "vue-tsc": "^2.1.10"
