@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package transmission;
+
+message ModList {
+  string name = 1;
+  string description = 2;
+  uint64 mod_id = 3;
+  repeated uint64 dependencies = 4;
+  bool active = 5;
+}
+
+
+
