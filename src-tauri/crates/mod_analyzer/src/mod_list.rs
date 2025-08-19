@@ -1,3 +1,4 @@
+use quick_xml::events::attributes::Attributes;
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::{Reader, Writer};
 use std::io::{BufRead, Write};
@@ -83,33 +84,21 @@ impl ModList {
                 Event::Start(ref e) | Event::Empty(ref e) => {
                     let tag_name = e.name().0;
 
-                    // 获取根节点的 name 属性
+                    // Get the name attribute of the root node
                     if tag_name == b"mods" && profile_name.is_none() {
-                        for attr in e.attributes() {
-                            let attr = attr?;
-                            if attr.key.as_ref() == b"name" {
-                                profile_name = Some(
-                                    attr.decode_and_unescape_value(reader.decoder())?
-                                        .into_owned(),
-                                );
-                                break;
-                            }
-                        }
+                        profile_name = ModList::filter_name(e.attributes(), &reader);
                     }
-                    // 第一个非-Local 标签即为 base_package
+                    // The first non-Local tag is the base_package
                     else if tag_name != b"Local" && base_package.is_none() {
                         base_package = Some(String::from_utf8_lossy(tag_name).to_string());
                     }
-                    // Local 标签则解析 name 属性
+                    // For Local tags, parse the name attribute
                     else if tag_name == b"Local" {
-                        for attr in e.attributes() {
-                            let attr = attr?;
-                            if attr.key.as_ref() == b"name" {
-                                let name = attr.decode_and_unescape_value(reader.decoder())?;
-                                mods.push(name.into_owned());
-                                break;
-                            }
-                        }
+                        ModList::filter_name(e.attributes(), &reader)
+                            .into_iter().for_each(
+                            |name|
+                                mods.push(name)
+                        );
                     }
                 }
                 Event::Eof => break,
@@ -123,6 +112,19 @@ impl ModList {
             base_package: base_package.ok_or_else(|| "missing base package (e.g. <Vanilla />)")?,
             mods,
         })
+    }
+
+    fn filter_name<R: BufRead>(attrs: Attributes, reader: &Reader<R>) -> Option<String>
+    {
+        attrs
+            .filter_map(|a| a.ok())
+            .filter(|a| a.key.as_ref() == b"name")
+            .filter_map(
+                |a|
+                    a.decode_and_unescape_value(reader.decoder()).ok()
+            )
+            .last()
+            .map(|s| s.to_string())
     }
 
     /// Serializes the ModList to XML format and writes it to a writer.
