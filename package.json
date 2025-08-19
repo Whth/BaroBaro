@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "gen": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.CMD --ts_proto_out=src proto/transmission.proto",
+    "gen:win": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.CMD --ts_proto_out=src proto/transmission.proto",
+    "gen:unix": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=src proto/transmission.proto",
     "dev": "pnpm gen && vite ",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",

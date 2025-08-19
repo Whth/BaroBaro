@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package transmission;
 
-message ModList {
+message Mod {
   string name = 1;
   string description = 2;
   uint64 mod_id = 3;
@@ -11,4 +11,10 @@ message ModList {
 }
 
 
+
+message ModList {
+  string name = 1;
+  string core_package = 2;
+  repeated uint64 mods = 3;
+}
 
