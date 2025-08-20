@@ -55,6 +55,7 @@
 import { ref, onMounted } from 'vue'
 import { useModManager } from '../../composables/useModManager'
 import { Config } from '../../proto/config'
+import { open } from '@tauri-apps/plugin-dialog'
 
 const { config, updateGameHome, updateSteamCmdHome } = useModManager()
 
@@ -63,44 +64,67 @@ const settings = ref({
   downloadPath: '',
   backupPath: ''
 })
-
 const browseGamePath = async () => {
   console.log('Browsing for game path')
-  // In a real app, this would open a file dialog using Tauri
-  // For now, we'll just use a mock path
-  const mockPath = 'C:\\Program Files\\Barotrauma\\'
-  settings.value.gamePath = mockPath
-  
-  // Update the game home in the config
   try {
-    await updateGameHome(mockPath)
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: 'Select Barotrauma Game Installation Path'
+    })
+    
+    if (selected) {
+      settings.value.gamePath = selected as string
+      
+      // Update the game home in the config
+      await updateGameHome(selected as string)
+      console.log('Game path updated successfully!')
+    }
   } catch (error) {
-    console.error('Failed to update game path:', error)
+    console.error('Failed to select game path:', error)
     // TODO: Show error message to user
   }
 }
 
 const browseDownloadPath = async () => {
   console.log('Browsing for download path')
-  // In a real app, this would open a file dialog using Tauri
-  // For now, we'll just use a mock path
-  const mockPath = 'C:\\Users\\User\\Downloads\\BarotraumaMods\\'
-  settings.value.downloadPath = mockPath
-  
-  // Update the SteamCMD home in the config
   try {
-    await updateSteamCmdHome(mockPath)
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: 'Select Mod Download Path'
+    })
+    
+    if (selected) {
+      settings.value.downloadPath = selected as string
+      
+      // Update the SteamCMD home in the config
+      await updateSteamCmdHome(selected as string)
+      console.log('Download path updated successfully!')
+    }
   } catch (error) {
-    console.error('Failed to update download path:', error)
+    console.error('Failed to select download path:', error)
     // TODO: Show error message to user
   }
 }
 
-const browseBackupPath = () => {
+const browseBackupPath = async () => {
   console.log('Browsing for backup path')
-  // In a real app, this would open a file dialog using Tauri
-  // For now, we'll just use a mock path
-  settings.value.backupPath = 'C:\\Users\\User\\Documents\\BarotraumaBackups\\'
+  try {
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: 'Select Backup Path'
+    })
+    
+    if (selected) {
+      settings.value.backupPath = selected as string
+      console.log('Backup path selected successfully!')
+    }
+  } catch (error) {
+    console.error('Failed to select backup path:', error)
+    // TODO: Show error message to user
+  }
 }
 
 const saveSettings = async () => {
