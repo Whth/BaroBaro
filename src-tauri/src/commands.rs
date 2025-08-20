@@ -12,10 +12,10 @@ use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use constants::{GLOBAL_CONFIG_FILE, ROAMING};
+use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::BarotraumaMod;
 
-use crate::once::BARO_MANAGER;
+use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
 use toml::{from_str, to_string_pretty};
 
 /// Writes the given configuration to disk in TOML format.
@@ -36,13 +36,6 @@ use toml::{from_str, to_string_pretty};
 /// - Inability to create the configuration directory (`ROAMING`).
 /// - Serialization failure when converting the config to TOML.
 /// - File I/O errors during writing.
-///
-/// # Example
-/// ```no_run
-/// let config = Config::default_settings();
-/// let result = write_config(config);
-/// assert!(result.is_ok());
-/// ```
 #[tauri::command]
 pub fn write_config(config: Config) -> Result<(), String> {
     fs::create_dir_all(ROAMING.clone())
@@ -51,7 +44,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-        .map_err(|e| format!("{}, failed to write config file.", e))
+    .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -69,15 +62,6 @@ pub fn write_config(config: Config) -> Result<(), String> {
 /// - File not being readable (permissions, I/O errors).
 /// - Invalid TOML syntax in the config file.
 /// - Missing or malformed fields that don't match the `Config` structure.
-///
-/// # Example
-/// ```no_run
-/// let config = read_config();
-/// match config {
-///     Ok(c) => println!("Game home: {}", c.game_home),
-///     Err(e) => eprintln!("Failed to load config: {}", e),
-/// }
-/// ```
 #[tauri::command]
 pub fn read_config() -> Result<Config, String> {
     if GLOBAL_CONFIG_FILE.exists() {
@@ -113,19 +97,6 @@ pub fn read_config() -> Result<Config, String> {
 /// # Note
 /// The result is a clone of each mod's data. This is intentional to transfer ownership
 /// across the FFI boundary safely (e.g., to JavaScript via Tauri).
-///
-/// # Example
-/// ```no_run
-/// let mods = list_installed_mods();
-/// match mods {
-///     Ok(mod_list) => {
-///         for m in mod_list {
-///             println!("Mod: {} ({})", m.name, m.identifier);
-///         }
-///     }
-///     Err(e) => eprintln!("Failed to list mods: {}", e),
-/// }
-/// ```
 #[tauri::command]
 pub fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
     let conf: Config = read_config()?;
@@ -139,4 +110,16 @@ pub fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         .iter()
         .map(|baro_mod| baro_mod.clone())
         .collect::<Vec<_>>())
+}
+
+#[tauri::command]
+pub async fn download_mods(mods: Vec<usize>) -> Result<(), String> {
+    let conf: Config = read_config()?;
+    STEAMCMD_MANAGER
+        .download_mod_par(
+            BAROTRAUMA_GAME_ID,
+            mods,
+            conf.steamcmd_config.unwrap().parallel as usize,
+        )
+        .await
 }

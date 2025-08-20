@@ -19,3 +19,7 @@ export async function save_config() {
 export async function list_installed_mods() {
     installed_mod.value = await invoke("list_installed_mods");
 }
+
+export async function download_mod(mods: number[]) {
+    await invoke("download_mod", {mods: mods});
+}

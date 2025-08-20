@@ -13,7 +13,11 @@ pub fn run() -> Result<(), String> {
     logger::init_logger(level.as_str_name())?;
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![read_config, write_config,list_installed_mods])
+        .invoke_handler(tauri::generate_handler![
+            read_config,
+            write_config,
+            list_installed_mods
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     Ok(())
