@@ -6,12 +6,10 @@ pub const MOD_FILELIST_FILE: &str = "filelist.xml";
 
 pub const LOG_DIR_NAME: &str = "log";
 
-
 pub const BAROTRAUMA_GAME_ID: usize = 602960;
 
 /// The application name used across the project.
 pub const APP_NAME: &str = "BaroBaro";
-
 
 /// The default configuration file name used by the application.
 pub const CONFIG_FILE: &str = "BaroBaro.toml";
@@ -40,10 +38,8 @@ pub static ROAMING: Lazy<PathBuf> =
 /// A global static instance of the user's global configuration file path for the application.
 pub static GLOBAL_CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(CONFIG_FILE));
 
-
 /// A global static instance of the user's global log directory for the application.
 pub static GLOBAL_LOG_DIR: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(LOG_DIR_NAME));
-
 
 pub struct BarotraumaHome {
     home_dir: PathBuf,

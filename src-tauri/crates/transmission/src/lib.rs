@@ -2,7 +2,6 @@ mod transmission;
 
 pub use transmission::*;
 
-
 impl Config {
     pub fn default_settings() -> Self {
         Self {

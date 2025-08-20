@@ -95,10 +95,8 @@ impl ModList {
                     // For Local tags, parse the name attribute
                     else if tag_name == b"Local" {
                         ModList::filter_name(e.attributes(), &reader)
-                            .into_iter().for_each(
-                            |name|
-                                mods.push(name)
-                        );
+                            .into_iter()
+                            .for_each(|name| mods.push(name));
                     }
                 }
                 Event::Eof => break,
@@ -114,15 +112,11 @@ impl ModList {
         })
     }
 
-    fn filter_name<R: BufRead>(attrs: Attributes, reader: &Reader<R>) -> Option<String>
-    {
+    fn filter_name<R: BufRead>(attrs: Attributes, reader: &Reader<R>) -> Option<String> {
         attrs
             .filter_map(|a| a.ok())
             .filter(|a| a.key.as_ref() == b"name")
-            .filter_map(
-                |a|
-                    a.decode_and_unescape_value(reader.decoder()).ok()
-            )
+            .filter_map(|a| a.decode_and_unescape_value(reader.decoder()).ok())
             .last()
             .map(|s| s.to_string())
     }
