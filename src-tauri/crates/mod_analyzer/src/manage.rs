@@ -39,9 +39,10 @@ impl BarotraumaModManager {
     pub fn get_mods(&self) -> &Vec<BarotraumaMod> {
         &self.mods
     }
-    pub fn refresh_mods(&mut self) -> Result<(), String> {
+    pub fn refresh_mods(&mut self) -> Result<&mut Self, String> {
         if let Some(ref game_home) = self.game_home {
-            Ok(self.mods = BarotraumaModManager::discover_mods(&game_home.mod_dir()))
+            self.mods = BarotraumaModManager::discover_mods(&game_home.mod_dir());
+            Ok(self)
         } else {
             Err("Game home not set".to_string())
         }
