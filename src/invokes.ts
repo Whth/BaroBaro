@@ -1,14 +1,14 @@
 import {invoke} from "@tauri-apps/api/core";
-import {Config} from "../proto/config";
+import {Config} from "./proto/config";
 import {Ref, ref} from "vue";
-import {BarotraumaMod, ModList} from "../proto/mods";
+import {BarotraumaMod, ModList} from "./proto/mods";
 
 
-const config = ref(Config.create())
+export const config = ref(Config.create())
 
-const installed_mod: Ref<BarotraumaMod[]> = ref([])
+export const installed_mod: Ref<BarotraumaMod[]> = ref([])
 
-const mod_lists: Ref<ModList[]> = ref([])
+export const mod_lists: Ref<ModList[]> = ref([])
 
 
 export async function refresh_config() {

@@ -8,10 +8,10 @@
     </div>
     <div class="profile-cards">
       <ProfileCard
-        v-for="profile in profiles"
-        :key="profile.id"
+        v-for="profile in mod_lists"
+        :key="profile.profileName"
         :profile="profile"
-        :is-active="profile.id === activeProfileId"
+        :is-active="profile.profileName === activeProfileName"
         @edit="editProfile"
         @delete="deleteProfile"
         @activate="activateProfile"
@@ -24,82 +24,63 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import ProfileCard from './ProfileCard.vue'
+import { useModManager } from '../../composables/useModManager'
+import { ModList } from '../../proto/mods'
 
-interface Profile {
-  id: string
-  name: string
-  gameId: string
-  modCount: number
-  createdAt: Date
-}
+const { mod_lists, refreshModLists, deleteModList } = useModManager()
 
-const profiles = ref<Profile[]>([
-  {
-    id: '1',
-    name: 'Survival Profile',
-    gameId: 'minecraft',
-    modCount: 12,
-    createdAt: new Date('2025-01-15')
-  },
-  {
-    id: '2',
-    name: 'Creative Profile',
-    gameId: 'minecraft',
-    modCount: 8,
-    createdAt: new Date('2025-02-20')
-  },
-  {
-    id: '3',
-    name: 'Adventure Profile',
-    gameId: 'minecraft',
-    modCount: 15,
-    createdAt: new Date('2025-03-10')
-  }
-])
+const activeProfileName = ref('')
 
-const activeProfileId = ref('1')
+const emit = defineEmits<{
+  (e: 'create'): void
+  (e: 'edit', profileName: string): void
+}>()
 
 const createNewProfile = () => {
-  console.log('Create new profile')
-  // In a real app, this would emit an event to open the profile editor
+  emit('create')
 }
 
-const editProfile = (profileId: string) => {
-  console.log('Edit profile:', profileId)
-  // In a real app, this would emit an event to open the profile editor with the profile data
+const editProfile = (profileName: string) => {
+  emit('edit', profileName)
 }
 
-const deleteProfile = (profileId: string) => {
-  const profile = profiles.value.find(p => p.id === profileId)
+const deleteProfile = async (profileName: string) => {
+  const profile = mod_lists.value.find(p => p.profileName === profileName)
   if (profile) {
-    if (confirm(`Are you sure you want to delete "${profile.name}"?`)) {
-      profiles.value = profiles.value.filter(p => p.id !== profileId)
-      console.log('Deleted profile:', profileId)
+    if (confirm(`Are you sure you want to delete "${profile.profileName}"?`)) {
+      try {
+        await deleteModList(profileName)
+        console.log('Deleted profile:', profileName)
+      } catch (error) {
+        console.error('Failed to delete profile:', error)
+        // TODO: Show error message to user
+      }
     }
   }
 }
 
-const activateProfile = (profileId: string) => {
-  activeProfileId.value = profileId
-  console.log('Activated profile:', profileId)
+const activateProfile = (profileName: string) => {
+  activeProfileName.value = profileName
+  console.log('Activated profile:', profileName)
 }
 
-const duplicateProfile = (profileId: string) => {
-  const profile = profiles.value.find(p => p.id === profileId)
+const duplicateProfile = (profileName: string) => {
+  const profile = mod_lists.value.find(p => p.profileName === profileName)
   if (profile) {
-    const newProfile = {
-      ...profile,
-      id: `${profile.id}-copy`,
-      name: `${profile.name} (Copy)`,
-      createdAt: new Date()
-    }
-    profiles.value.push(newProfile)
-    console.log('Duplicated profile:', profileId)
+    // In a real implementation, this would call a Tauri command to duplicate the profile
+    console.log('Duplicated profile:', profileName)
   }
 }
 
-onMounted(() => {
-  console.log('Profile list mounted')
+onMounted(async () => {
+  // Refresh mod lists when component mounts
+  await refreshModLists()
+  
+  // Set the first mod list as the default active profile
+  if (mod_lists.value.length > 0) {
+    activeProfileName.value = mod_lists.value[0].profileName
+  }
+  console.log('Profile list mounted with', mod_lists.value.length, 'profiles')
 })
 </script>
 

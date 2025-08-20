@@ -2,7 +2,17 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import "./assets/styles.css";
+import { initializeApp } from "./composables/useModManager";
 
-const app = createApp(App);
-app.use(router);
-app.mount("#app");
+// Initialize the app with backend data
+initializeApp().then(() => {
+  const app = createApp(App);
+  app.use(router);
+  app.mount("#app");
+}).catch((error) => {
+  console.error("Failed to initialize app:", error);
+  // Still mount the app even if initialization fails
+  const app = createApp(App);
+  app.use(router);
+  app.mount("#app");
+});

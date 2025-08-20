@@ -2,8 +2,8 @@
   <div class="profile-selector">
     <label for="profile-select" class="profile-label">Active Profile:</label>
     <select id="profile-select" v-model="selectedProfile" class="profile-select">
-      <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
-        {{ profile.name }}
+      <option v-for="profile in mod_lists" :key="profile.profileName" :value="profile.profileName">
+        {{ profile.profileName }}
       </option>
     </select>
   </div>
@@ -11,23 +11,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { mod_lists } from '../../composables/useModManager'
+import { ModList } from '../../proto/mods'
 
-interface Profile {
-  id: string
-  name: string
-}
-
-const profiles = ref<Profile[]>([
-  { id: '1', name: 'Survival Profile' },
-  { id: '2', name: 'Creative Profile' },
-  { id: '3', name: 'Adventure Profile' }
-])
-
-const selectedProfile = ref('1')
+const selectedProfile = ref('')
 
 onMounted(() => {
-  // In a real app, this would be loaded from the store or backend
-  console.log('Profile selector mounted')
+  // Set the first mod list as the default selected profile
+  if (mod_lists.value.length > 0) {
+    selectedProfile.value = mod_lists.value[0].profileName
+  }
+  console.log('Profile selector mounted with', mod_lists.value.length, 'profiles')
 })
 </script>
 

@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { refreshInstalledMods } from '../../composables/useModManager'
 
 interface ModUpdate {
   id: string
@@ -78,33 +79,49 @@ const modsToUpdate = ref<ModUpdate[]>([
   }
 ])
 
-const updateMod = (modId: string) => {
+const updateMod = async (modId: string) => {
   const mod = modsToUpdate.value.find(m => m.id === modId)
   if (mod) {
     mod.updating = true
     console.log(`Updating mod: ${mod.name}`)
-    // Simulate update process
-    setTimeout(() => {
+    try {
+      // In a real app, this would call the Tauri backend to update the mod
+      // For now, we'll simulate the update and refresh the installed mods list
+      await new Promise(resolve => setTimeout(resolve, 2000))
       mod.updating = false
       // Remove from list after update
       modsToUpdate.value = modsToUpdate.value.filter(m => m.id !== modId)
       alert(`Updated ${mod.name} successfully!`)
-    }, 2000)
+      // Refresh the installed mods list after update
+      await refreshInstalledMods()
+    } catch (error) {
+      mod.updating = false
+      console.error('Failed to update mod:', error)
+      alert(`Failed to update ${mod.name}.`)
+    }
   }
 }
 
-const updateAllMods = () => {
-  modsToUpdate.value.forEach(mod => {
+const updateAllMods = async () => {
+  for (const mod of modsToUpdate.value) {
     mod.updating = true
     console.log(`Updating mod: ${mod.name}`)
-    // Simulate update process
-    setTimeout(() => {
+    try {
+      // In a real app, this would call the Tauri backend to update the mod
+      // For now, we'll simulate the update and refresh the installed mods list
+      await new Promise(resolve => setTimeout(resolve, 2000))
       mod.updating = false
-      // Remove from list after update
-      modsToUpdate.value = modsToUpdate.value.filter(m => m.id !== mod.id)
-      alert(`Updated all mods successfully!`)
-    }, 2000)
-  })
+      // Refresh the installed mods list after each update
+      await refreshInstalledMods()
+    } catch (error) {
+      mod.updating = false
+      console.error('Failed to update mod:', error)
+      alert(`Failed to update ${mod.name}.`)
+    }
+  }
+  // Remove all updated mods from the list
+  modsToUpdate.value = modsToUpdate.value.filter(m => !m.updating)
+  alert(`Updated all mods successfully!`)
 }
 
 const viewChangelog = (modId: string) => {

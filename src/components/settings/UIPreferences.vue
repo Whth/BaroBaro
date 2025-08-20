@@ -179,8 +179,15 @@ const savePreferences = () => {
   localStorage.setItem('uiPreferences', JSON.stringify(preferences.value))
   localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings.value))
   
-  // In a real app, this would also update the global state
-  alert('UI preferences and background settings saved successfully!')
+  // Emit an event to notify other components of the changes
+  window.dispatchEvent(new CustomEvent('ui-preferences-updated', {
+    detail: {
+      preferences: preferences.value,
+      backgroundSettings: backgroundSettings.value
+    }
+  }))
+  
+  console.log('UI preferences and background settings saved successfully!')
 }
 
 const resetPreferences = () => {
@@ -198,6 +205,9 @@ const resetPreferences = () => {
       backgroundOpacity: 1,
       backgroundBlur: 0
     }
+    
+    // Save the reset preferences
+    savePreferences()
     
     console.log('UI preferences reset to defaults')
   }

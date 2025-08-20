@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { downloadMods } from '../../composables/useModManager'
 
 // This component is prepared for SteamCMD integration
 // It will connect to the existing SteamCMD Rust crate in the Tauri backend
@@ -117,17 +118,22 @@ const mods = ref<Mod[]>([
   }
 ])
 
-const downloadMod = (modId: string) => {
+const downloadMod = async (modId: string) => {
   const mod = mods.value.find(m => m.id === modId)
   if (mod) {
     mod.downloading = true
     console.log(`Downloading mod from Steam Workshop: ${mod.name}`)
-    // In a real app, this would integrate with the SteamCMD Rust crate
-    // For now, we'll simulate the download process
-    setTimeout(() => {
+    try {
+      // In a real app, this would integrate with the SteamCMD Rust crate
+      // For now, we'll call the downloadMods function from the composable
+      await downloadMods([parseInt(modId)])
       mod.downloading = false
-      alert(`Downloaded ${mod.name} from Steam Workshop successfully!\n\nThis would integrate with the SteamCMD Rust crate in a real implementation.`)
-    }, 2000)
+      alert(`Downloaded ${mod.name} from Steam Workshop successfully!`)
+    } catch (error) {
+      mod.downloading = false
+      console.error('Failed to download mod:', error)
+      alert(`Failed to download ${mod.name} from Steam Workshop.`)
+    }
   }
 }
 

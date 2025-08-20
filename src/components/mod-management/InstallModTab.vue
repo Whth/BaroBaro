@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { refreshInstalledMods } from '../../composables/useModManager'
 
 const selectedFiles = ref<File[]>([])
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -68,10 +69,18 @@ const clearSelection = () => {
   }
 }
 
-const installMods = () => {
+const installMods = async () => {
   console.log('Installing mods:', selectedFiles.value)
   // In a real app, this would call the Tauri backend to install the mods
-  alert(`Installing ${selectedFiles.value.length} mod(s)`)
+  try {
+    // For now, we'll just simulate the installation and refresh the installed mods list
+    alert(`Installing ${selectedFiles.value.length} mod(s)`)
+    // Refresh the installed mods list after installation
+    await refreshInstalledMods()
+  } catch (error) {
+    console.error('Failed to install mods:', error)
+    alert('Failed to install mods.')
+  }
 }
 
 const formatFileSize = (bytes: number) => {

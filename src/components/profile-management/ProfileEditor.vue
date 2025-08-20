@@ -1,7 +1,7 @@
 <template>
   <div class="profile-editor">
     <h2>{{ isEditing ? 'Edit Profile' : 'Create New Profile' }}</h2>
-    <form @submit.prevent="saveProfile" class="profile-form">
+    <form @submit.prevent="handleSaveProfile" class="profile-form">
       <div class="form-group">
         <label for="profile-name" class="form-label">Profile Name</label>
         <input
@@ -14,29 +14,26 @@
         />
       </div>
       <div class="form-group">
-        <label for="game-id" class="form-label">Game</label>
-        <select id="game-id" v-model="profileData.gameId" class="form-select" required>
-          <option value="" disabled>Select a game</option>
-          <option value="minecraft">Minecraft</option>
-          <option value="terraria">Terraria</option>
-          <option value="factorio">Factorio</option>
-          <option value="stellaris">Stellaris</option>
+        <label for="base-package" class="form-label">Base Package</label>
+        <select id="base-package" v-model="profileData.basePackage" class="form-select" required>
+          <option value="Vanilla">Vanilla</option>
+          <option value="Experimental">Experimental</option>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">Mod Configuration</label>
         <div class="mod-config">
-          <div v-for="mod in availableMods" :key="mod.id" class="mod-config-item">
+          <div v-for="mod in installed_mod" :key="mod.steamWorkshopId" class="mod-config-item">
             <input
-              :id="`mod-${mod.id}`"
+              :id="`mod-${mod.steamWorkshopId}`"
               type="checkbox"
-              :value="mod.id"
+              :value="mod.steamWorkshopId"
               v-model="profileData.enabledMods"
               class="mod-checkbox"
             />
-            <label :for="`mod-${mod.id}`" class="mod-label">
+            <label :for="`mod-${mod.steamWorkshopId}`" class="mod-label">
               <span class="mod-name">{{ mod.name }}</span>
-              <span class="mod-version">{{ mod.version }}</span>
+              <span class="mod-version">{{ mod.modVersion }}</span>
             </label>
           </div>
         </div>
@@ -54,60 +51,61 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-interface Mod {
-  id: string
-  name: string
-  version: string
-}
+import { ref, computed, onMounted } from 'vue'
+import type { Profile } from '../../types'
+import { useModManager } from '../../composables/useModManager'
 
 interface ProfileData {
-  id?: string
   name: string
-  gameId: string
+  basePackage: string
   enabledMods: string[]
 }
 
-const isEditing = ref(false)
+const props = defineProps<{
+  profile?: Profile
+}>()
+
+const emit = defineEmits<{
+  (e: 'save', profile: Profile): void
+  (e: 'cancel'): void
+}>()
+
+const { installed_mod, refreshInstalledMods, saveProfile: saveProfileToBackend } = useModManager()
+
+const isEditing = computed(() => !!props.profile)
 
 const profileData = ref<ProfileData>({
-  name: '',
-  gameId: '',
-  enabledMods: []
+  name: props.profile?.name || '',
+  basePackage: props.profile?.basePackage || 'Vanilla',
+  enabledMods: props.profile?.enabledMods || []
 })
 
-const availableMods = ref<Mod[]>([
-  { id: '1', name: 'Better Graphics', version: '1.3.0' },
-  { id: '2', name: 'New Weapons Pack', version: '2.1.0' },
-  { id: '3', name: 'Improved AI', version: '1.5.0' },
-  { id: '4', name: 'Custom Maps', version: '1.0.2' },
-  { id: '5', name: 'Enhanced Sound', version: '2.0.1' }
-])
-
-const saveProfile = () => {
-  console.log('Saving profile:', profileData.value)
-  // In a real app, this would call the backend to save the profile
-  alert(isEditing.value ? 'Profile updated successfully!' : 'Profile created successfully!')
-  resetForm()
+const handleSaveProfile = async () => {
+  if (!profileData.value.name.trim()) return
+  
+  const profile: Profile = {
+    id: props.profile?.id || Date.now().toString(),
+    name: profileData.value.name,
+    basePackage: profileData.value.basePackage,
+    enabledMods: profileData.value.enabledMods
+  }
+  
+  try {
+    await saveProfileToBackend(profile)
+    emit('save', profile)
+  } catch (error) {
+    console.error('Failed to save profile:', error)
+    // TODO: Show error message to user
+  }
 }
 
 const cancel = () => {
-  resetForm()
-  console.log('Cancelled profile editing')
+  emit('cancel')
 }
 
-const resetForm = () => {
-  profileData.value = {
-    name: '',
-    gameId: '',
-    enabledMods: []
-  }
-  isEditing.value = false
-}
-
+// Load installed mods when component mounts
 onMounted(() => {
-  console.log('Profile editor mounted')
+  refreshInstalledMods()
 })
 </script>
 

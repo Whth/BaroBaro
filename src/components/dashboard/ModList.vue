@@ -3,10 +3,11 @@
     <h2>Installed Mods</h2>
     <div class="mod-list-container" @dragover="handleDragOver">
       <ModCard
-        v-for="(mod, index) in mods"
-        :key="mod.id"
+        v-for="(mod, index) in installed_mod"
+        :key="mod.steamWorkshopId"
         :mod="mod"
         :index="index"
+        :is-enabled="isModEnabled(mod.steamWorkshopId, currentModList)"
         :draggable="true"
         :is-drag-over="dragOverIndex === index"
         @toggle-mod="toggleMod"
@@ -27,79 +28,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import ModCard from './ModCard.vue'
-
-interface Mod {
-  id: string
-  name: string
-  version: string
-  author: string
-  description: string
-  enabled: boolean
-  installedAt: Date
-  updatedAt: Date
-  dependencies: string[]
-  conflicts: string[]
-  filePath: string
-  source: 'local' | 'remote'
-}
-
-const mods = ref<Mod[]>([
-  {
-    id: '1',
-    name: 'Better Graphics',
-    version: '1.2.3',
-    author: 'GraphicsMaster',
-    description: 'Enhances the game graphics with better textures and lighting',
-    enabled: true,
-    installedAt: new Date('2025-01-15'),
-    updatedAt: new Date('2025-01-15'),
-    dependencies: [],
-    conflicts: [],
-    filePath: '/mods/better-graphics',
-    source: 'local'
-  },
-  {
-    id: '2',
-    name: 'New Weapons Pack',
-    version: '2.0.1',
-    author: 'WeaponSmith',
-    description: 'Adds 50+ new weapons to the game',
-    enabled: false,
-    installedAt: new Date('2025-02-20'),
-    updatedAt: new Date('2025-02-20'),
-    dependencies: [],
-    conflicts: [],
-    filePath: '/mods/new-weapons',
-    source: 'remote'
-  },
-  {
-    id: '3',
-    name: 'Improved AI',
-    version: '1.5.0',
-    author: 'AIExpert',
-    description: 'Makes NPCs more intelligent and responsive',
-    enabled: true,
-    installedAt: new Date('2025-03-10'),
-    updatedAt: new Date('2025-03-10'),
-    dependencies: [],
-    conflicts: ['2'],
-    filePath: '/mods/improved-ai',
-    source: 'remote'
-  }
-])
+import { installed_mod, mod_lists, isModEnabled } from '../../composables/useModManager'
 
 // Drag and drop state
 const draggedItemIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
 
+// For now, we'll use the first mod list as the current one
+// In a real implementation, this would be managed by a global state or prop
+const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null
+
 const toggleMod = (modId: string) => {
-  const mod = mods.value.find(m => m.id === modId)
-  if (mod) {
-    mod.enabled = !mod.enabled
-    console.log(`Mod ${mod.name} toggled to ${mod.enabled ? 'enabled' : 'disabled'}`)
-  }
+  // In a real implementation, this would call a Tauri command to toggle the mod
+  console.log(`Toggle mod ${modId}`)
 }
 
 const selectMod = (modId: string) => {
@@ -138,10 +81,8 @@ const handleDrop = (index: number, event: DragEvent) => {
   
   if (draggedItemIndex.value === null) return
   
-  // Reorder the mods array
-  const draggedItem = mods.value[draggedItemIndex.value]
-  mods.value.splice(draggedItemIndex.value, 1)
-  mods.value.splice(index, 0, draggedItem)
+  // In a real implementation, this would reorder the mods in the current profile
+  console.log(`Dropped mod at index ${index}`)
   
   // Reset drag state
   draggedItemIndex.value = null
@@ -155,32 +96,16 @@ const handleDragEnd = () => {
 
 // Save and load mod order as XML
 const saveModOrder = () => {
-  // Create XML structure
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-  xml += '<modOrder>\n'
-  
-  mods.value.forEach((mod, index) => {
-    xml += `  <mod priority="${index}" id="${mod.id}" name="${mod.name}" />\n`
-  })
-  
-  xml += '</modOrder>'
-  
-  // In a real app, this would be sent to the backend
-  console.log('Saving mod order as XML:', xml)
-  
-  // For demo purposes, we'll just show an alert
-  alert('Mod order saved as XML!\n\n' + xml)
+  // In a real implementation, this would save the current mod order to a profile
+  console.log('Saving mod order')
+  alert('Saving mod order - this would connect to the Rust backend in a real implementation')
 }
 
 const loadModOrder = () => {
-  // In a real app, this would load from the backend
-  console.log('Loading mod order from XML')
-  alert('Loading mod order from XML - this would connect to the Rust backend in a real implementation')
+  // In a real app, this would load mod order from a profile
+  console.log('Loading mod order')
+  alert('Loading mod order - this would connect to the Rust backend in a real implementation')
 }
-
-onMounted(() => {
-  console.log('Mod list mounted with', mods.value.length, 'mods')
-})
 </script>
 
 <style scoped>

@@ -1,22 +1,22 @@
 <template>
   <div class="profile-card" :class="{ 'active': isActive }">
     <div class="profile-card-header">
-      <h3 class="profile-name">{{ profile.name }}</h3>
+      <h3 class="profile-name">{{ profile.profileName }}</h3>
       <div v-if="isActive" class="active-indicator">Active</div>
     </div>
     <div class="profile-card-content">
       <div class="profile-info">
         <div class="info-item">
-          <span class="info-label">Game:</span>
-          <span class="info-value">{{ profile.gameId }}</span>
+          <span class="info-label">Base Package:</span>
+          <span class="info-value">{{ profile.basePackage }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">Mods:</span>
-          <span class="info-value">{{ profile.modCount }}</span>
+          <span class="info-value">{{ profile.mods.length }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">Created:</span>
-          <span class="info-value">{{ formatDate(profile.createdAt) }}</span>
+          <span class="info-value">N/A</span>
         </div>
       </div>
     </div>
@@ -41,43 +41,37 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-
-interface Profile {
-  id: string
-  name: string
-  gameId: string
-  modCount: number
-  createdAt: Date
-}
+import { ModList } from '../../proto/mods'
 
 const props = defineProps<{
-  profile: Profile
+  profile: ModList
   isActive: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'edit', id: string): void
-  (e: 'delete', id: string): void
-  (e: 'activate', id: string): void
-  (e: 'duplicate', id: string): void
+  (e: 'edit', name: string): void
+  (e: 'delete', name: string): void
+  (e: 'activate', name: string): void
+  (e: 'duplicate', name: string): void
 }>()
 
 const editProfile = () => {
-  emit('edit', props.profile.id)
+  emit('edit', props.profile.profileName)
 }
 
 const deleteProfile = () => {
-  emit('delete', props.profile.id)
+  emit('delete', props.profile.profileName)
 }
 
 const activateProfile = () => {
-  emit('activate', props.profile.id)
+  emit('activate', props.profile.profileName)
 }
 
 const duplicateProfile = () => {
-  emit('duplicate', props.profile.id)
+  emit('duplicate', props.profile.profileName)
 }
 
+// Since ModList doesn't have a createdAt field, we'll return a placeholder
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',

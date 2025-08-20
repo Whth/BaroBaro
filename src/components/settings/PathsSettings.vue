@@ -53,44 +53,84 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useModManager } from '../../composables/useModManager'
+import { Config } from '../../proto/config'
 
-interface PathsSettings {
-  gamePath: string
-  downloadPath: string
-  backupPath: string
-}
+const { config, updateGameHome, updateSteamCmdHome } = useModManager()
 
-const settings = ref<PathsSettings>({
+const settings = ref({
   gamePath: '',
   downloadPath: '',
   backupPath: ''
 })
 
-const browseGamePath = () => {
+const browseGamePath = async () => {
   console.log('Browsing for game path')
   // In a real app, this would open a file dialog using Tauri
-  settings.value.gamePath = 'C:\\Program Files\\Game\\'
+  // For now, we'll just use a mock path
+  const mockPath = 'C:\\Program Files\\Barotrauma\\'
+  settings.value.gamePath = mockPath
+  
+  // Update the game home in the config
+  try {
+    await updateGameHome(mockPath)
+  } catch (error) {
+    console.error('Failed to update game path:', error)
+    // TODO: Show error message to user
+  }
 }
 
-const browseDownloadPath = () => {
+const browseDownloadPath = async () => {
   console.log('Browsing for download path')
   // In a real app, this would open a file dialog using Tauri
-  settings.value.downloadPath = 'C:\\Users\\User\\Downloads\\Mods\\'
+  // For now, we'll just use a mock path
+  const mockPath = 'C:\\Users\\User\\Downloads\\BarotraumaMods\\'
+  settings.value.downloadPath = mockPath
+  
+  // Update the SteamCMD home in the config
+  try {
+    await updateSteamCmdHome(mockPath)
+  } catch (error) {
+    console.error('Failed to update download path:', error)
+    // TODO: Show error message to user
+  }
 }
 
 const browseBackupPath = () => {
   console.log('Browsing for backup path')
   // In a real app, this would open a file dialog using Tauri
-  settings.value.backupPath = 'C:\\Users\\User\\Documents\\ModBackups\\'
+  // For now, we'll just use a mock path
+  settings.value.backupPath = 'C:\\Users\\User\\Documents\\BarotraumaBackups\\'
 }
 
-const saveSettings = () => {
-  console.log('Saving paths settings:', settings.value)
-  // In a real app, this would save to the backend or local storage
-  alert('Paths settings saved successfully!')
+const saveSettings = async () => {
+  try {
+    console.log('Saving paths settings:', settings.value)
+    
+    // Update game home
+    if (settings.value.gamePath) {
+      await updateGameHome(settings.value.gamePath)
+    }
+    
+    // Update SteamCMD home (download path)
+    if (settings.value.downloadPath) {
+      await updateSteamCmdHome(settings.value.downloadPath)
+    }
+    
+    console.log('Paths settings saved successfully!')
+  } catch (error) {
+    console.error('Failed to save paths settings:', error)
+    // TODO: Show error message to user
+  }
 }
 
 onMounted(() => {
+  // Initialize settings with values from config
+  if (config.value) {
+    settings.value.gamePath = config.value.gameHome
+    settings.value.downloadPath = config.value.steamcmdHome
+    // Backup path is not in the config, so we'll leave it as empty for now
+  }
   console.log('Paths settings mounted')
 })
 </script>

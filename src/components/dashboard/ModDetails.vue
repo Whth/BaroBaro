@@ -6,35 +6,34 @@
         <h3>{{ selectedMod.name }}</h3>
         <button
           class="toggle-button"
-          :class="{ 'toggle-enabled': selectedMod.enabled }"
           @click="toggleMod"
         >
-          {{ selectedMod.enabled ? 'Enabled' : 'Disabled' }}
+          Toggle
         </button>
       </div>
       <div class="mod-info-grid">
         <div class="mod-info-item">
           <span class="info-label">Version:</span>
-          <span class="info-value">{{ selectedMod.version }}</span>
+          <span class="info-value">{{ selectedMod.modVersion }}</span>
         </div>
         <div class="mod-info-item">
-          <span class="info-label">Author:</span>
-          <span class="info-value">{{ selectedMod.author }}</span>
+          <span class="info-label">Steam ID:</span>
+          <span class="info-value">{{ selectedMod.steamWorkshopId }}</span>
         </div>
         <div class="mod-info-item">
-          <span class="info-label">Source:</span>
-          <span class="info-value" :class="`source-${selectedMod.source}`">
-            {{ selectedMod.source === 'local' ? 'Local' : 'Remote' }}
+          <span class="info-label">Type:</span>
+          <span class="info-value" :class="`source-${selectedMod.corePackage ? 'core' : 'mod'}`">
+            {{ selectedMod.corePackage ? 'Core Package' : 'Mod' }}
           </span>
         </div>
         <div class="mod-info-item">
-          <span class="info-label">Installed:</span>
-          <span class="info-value">{{ formatDate(selectedMod.installedAt) }}</span>
+          <span class="info-label">Game Version:</span>
+          <span class="info-value">{{ selectedMod.gameVersion }}</span>
         </div>
       </div>
       <div class="mod-description">
-        <h4>Description</h4>
-        <p>{{ selectedMod.description }}</p>
+        <h4>File Groups</h4>
+        <p>{{ Object.keys(selectedMod.fileGroups).length }} file groups</p>
       </div>
       <div class="mod-actions">
         <button class="action-button update-button">Update</button>
@@ -46,52 +45,27 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { BarotraumaMod } from '../../proto/mods'
 
-interface Mod {
-  id: string
-  name: string
-  version: string
-  author: string
-  description: string
-  enabled: boolean
-  installedAt: Date
-  updatedAt: Date
-  dependencies: string[]
-  conflicts: string[]
-  filePath: string
-  source: 'local' | 'remote'
-}
+const selectedMod = ref<BarotraumaMod | null>(null)
 
-const selectedMod = ref<Mod | null>(null)
-
-// For demo purposes, we'll set a default selected mod
+// In a real implementation, this would be set by the parent component or a global state
+// For now, we'll set it to the first installed mod if available
 onMounted(() => {
-  selectedMod.value = {
-    id: '1',
-    name: 'Better Graphics',
-    version: '1.2.3',
-    author: 'GraphicsMaster',
-    description: 'Enhances the game graphics with better textures and lighting. This mod replaces all textures in the game with high-resolution versions and adds dynamic lighting effects that make the game world look more realistic. It also includes improved particle effects for weather and environmental elements.',
-    enabled: true,
-    installedAt: new Date('2025-01-15'),
-    updatedAt: new Date('2025-01-15'),
-    dependencies: [],
-    conflicts: [],
-    filePath: '/mods/better-graphics',
-    source: 'local'
-  }
+  // This would be set by the parent component in a real implementation
+  console.log('ModDetails mounted')
 })
 
 const toggleMod = () => {
   if (selectedMod.value) {
-    selectedMod.value.enabled = !selectedMod.value.enabled
-    console.log(`Mod ${selectedMod.value.name} toggled to ${selectedMod.value.enabled ? 'enabled' : 'disabled'}`)
+    // In a real implementation, this would call a Tauri command to toggle the mod
+    console.log(`Toggle mod ${selectedMod.value.name}`)
   }
 }
 
+// Since BarotraumaMod doesn't have date fields, we'll return a placeholder
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',

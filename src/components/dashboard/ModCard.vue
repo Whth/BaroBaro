@@ -2,7 +2,7 @@
   <div
     class="mod-card"
     :class="{
-      'mod-card-disabled': !mod.enabled,
+      'mod-card-disabled': !isEnabled,
       'drag-over': isDragOver
     }"
     :draggable="draggable"
@@ -23,21 +23,21 @@
       <div class="mod-actions">
         <button
           class="toggle-button"
-          :class="{ 'toggle-enabled': mod.enabled }"
+          :class="{ 'toggle-enabled': isEnabled }"
           @click="toggleMod"
         >
-          {{ mod.enabled ? 'Enabled' : 'Disabled' }}
+          {{ isEnabled ? 'Enabled' : 'Disabled' }}
         </button>
       </div>
     </div>
     <div class="mod-card-content">
-      <p class="mod-version">Version: {{ mod.version }}</p>
-      <p class="mod-author">by {{ mod.author }}</p>
-      <p class="mod-description">{{ mod.description }}</p>
+      <p class="mod-version">Version: {{ mod.modVersion }}</p>
+      <p class="mod-author">Steam ID: {{ mod.steamWorkshopId }}</p>
+      <p class="mod-description">Game Version: {{ mod.gameVersion }}</p>
     </div>
     <div class="mod-card-footer">
-      <span class="mod-source" :class="`source-${mod.source}`">
-        {{ mod.source === 'local' ? 'Local' : 'Remote' }}
+      <span class="mod-source" :class="`source-${mod.corePackage ? 'core' : 'mod'}`">
+        {{ mod.corePackage ? 'Core Package' : 'Mod' }}
       </span>
       <button class="details-button" @click="selectMod">
         View Details
@@ -48,27 +48,14 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-
-interface Mod {
-  id: string
-  name: string
-  version: string
-  author: string
-  description: string
-  enabled: boolean
-  installedAt: Date
-  updatedAt: Date
-  dependencies: string[]
-  conflicts: string[]
-  filePath: string
-  source: 'local' | 'remote'
-}
+import { BarotraumaMod } from '../../proto/mods'
 
 const props = defineProps<{
-  mod: Mod
+  mod: BarotraumaMod
   index: number
   draggable?: boolean
   isDragOver?: boolean
+  isEnabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -83,11 +70,11 @@ const emit = defineEmits<{
 }>()
 
 const toggleMod = () => {
-  emit('toggleMod', props.mod.id)
+  emit('toggleMod', props.mod.steamWorkshopId)
 }
 
 const selectMod = () => {
-  emit('selectMod', props.mod.id)
+  emit('selectMod', props.mod.steamWorkshopId)
 }
 </script>
 
