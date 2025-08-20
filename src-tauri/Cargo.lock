@@ -268,10 +268,11 @@ dependencies = [
 name = "barobaro"
 version = "0.1.0"
 dependencies = [
+ "configuration",
  "constants",
- "log",
  "logger",
  "mod_analyzer",
+ "once_cell",
  "serde",
  "serde_json",
  "steamcmd-rs",
@@ -556,6 +557,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ca0197aee26d1ae37445ee532fefce43251d24cc7c166799f4d46817f1d3973"
 dependencies = [
  "crossbeam-utils",
+]
+
+[[package]]
+name = "configuration"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "serde",
+ "transmission",
 ]
 
 [[package]]
@@ -2195,10 +2205,12 @@ version = "0.1.0"
 dependencies = [
  "blake3",
  "constants",
+ "prost",
  "quick-xml",
  "rayon",
  "serde",
  "tempfile",
+ "transmission",
  "walkdir",
 ]
 
@@ -4502,9 +4514,7 @@ dependencies = [
 name = "transmission"
 version = "0.1.0"
 dependencies = [
- "prost",
  "prost-build",
- "serde",
 ]
 
 [[package]]

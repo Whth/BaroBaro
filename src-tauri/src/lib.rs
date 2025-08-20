@@ -1,6 +1,7 @@
 mod commands;
+mod once;
 
-use transmission::Config;
+use configuration::{Config, Level};
 
 use commands::*;
 
@@ -8,7 +9,8 @@ use commands::*;
 pub fn run() -> Result<(), String> {
     let conf: Config = read_config()?;
 
-    logger::init_logger(conf.loglevel.as_str())?;
+    let level = Level::try_from(conf.loglevel).map_err(|e| format!("{}, invalid loglevel.", e))?;
+    logger::init_logger(level.as_str_name())?;
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![read_config, write_config])

@@ -8,7 +8,7 @@ const pluginPath = isWindows
     ? './node_modules/.bin/protoc-gen-ts_proto.CMD'
     : './node_modules/.bin/protoc-gen-ts_proto';
 
-const command = `protoc --plugin=${pluginPath} --ts_proto_out=src proto/transmission.proto`;
+const command = `protoc --plugin=${pluginPath} --ts_proto_out=src proto/*`;
 
 console.log(`🎯 Platform: ${platform()}`);
 console.log(`🚀 Command: ${command}`);

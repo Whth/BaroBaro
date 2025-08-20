@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package config;
+
+// Level represents the logging levels supported by the application.
+enum Level {
+  TRACE = 0;
+  DEBUG = 1;
+  INFO = 2;
+  WARN = 3;
+  ERROR = 4;
+}
+
+// SteamCmdConfig holds configuration settings for SteamCMD.
+message SteamCmdConfig {
+  // The username used to log into SteamCMD.
+  string username = 1;
+  // The password used to log into SteamCMD.
+  string password = 2;
+  // The number of parallel downloads allowed.
+  uint64 parallel = 5;
+}
+
+// Config contains general configuration settings for the application.
+message Config {
+  // The logging level for the application (e.g., debug, info, warn, error).
+  Level loglevel = 1;
+  // The home directory for the game files.
+  string game_home = 2;
+  // The home directory for SteamCMD files.
+  string steamcmd_home = 3;
+  // Configuration settings specific to SteamCMD.
+  SteamCmdConfig steamcmd_config = 4;
+}

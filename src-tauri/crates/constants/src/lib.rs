@@ -41,6 +41,8 @@ pub static GLOBAL_CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(CONFIG_
 /// A global static instance of the user's global log directory for the application.
 pub static GLOBAL_LOG_DIR: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(LOG_DIR_NAME));
 
+/// Represents the Barotrauma game home directory.
+#[derive(Debug)]
 pub struct BarotraumaHome {
     home_dir: PathBuf,
     mod_dir: PathBuf,
@@ -60,7 +62,7 @@ impl BarotraumaHome {
         }
     }
 
-    pub fn set_home_dir(&mut self, home_dir: PathBuf) {
+    pub fn set_home_dir(&mut self, home_dir: &PathBuf) {
         self.home_dir = home_dir.clone();
         self.mod_dir = home_dir.join(Self::MOD_DIR);
         self.mod_list_dir = home_dir.join(Self::MOD_LIST_DIR);

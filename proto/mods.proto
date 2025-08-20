@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package mods;
+
+
+// Represents a single file entry in the mod, with a file path.
+message FileElement {
+  // The file path as specified in the XML attribute.
+  string file = 1;
+}
+
+// A group of files under a specific tag (e.g., "Content", "Sounds", etc.)
+message FileGroup {
+  repeated FileElement files = 1;
+}
+
+// Represents a Barotrauma mod parsed from its content package XML file.
+message BarotraumaMod {
+  // The name of the mod.
+  string name = 1;
+
+  // The version of the mod.
+  string mod_version = 2;
+
+  // Whether this is a core package.
+  bool core_package = 3;
+
+  // The Steam Workshop ID of the mod.
+  string steam_workshop_id = 4;
+
+  // The game version this mod is compatible with.
+  string game_version = 5;
+
+  // The expected hash of the mod.
+  string expected_hash = 6;
+
+  // All file entries grouped by their tag names (e.g., "Entity", "Sound", etc.)
+  map<string, FileGroup> file_groups = 7;
+}
+

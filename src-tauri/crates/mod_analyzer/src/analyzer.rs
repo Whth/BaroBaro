@@ -1,17 +1,10 @@
+use crate::mods::{BarotraumaMod, FileElement, FileGroup};
 use constants::MOD_FILELIST_FILE;
 use quick_xml::de::from_str;
 use serde::{Deserialize, Deserializer, de::MapAccess};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-
-/// A generic file element that represents a file entry in the mod's content package.
-#[derive(Debug, Clone, Deserialize)]
-pub struct FileElement {
-    /// The file path as specified in the XML attribute.
-    #[serde(rename = "@file")]
-    pub file: String,
-}
 
 /// Custom deserializer for boolean values that supports "True"/"False" and "1"/"0" strings.
 fn deserialize_bool_from_string<'de, D>(deserializer: D) -> Result<bool, D::Error>
@@ -29,27 +22,6 @@ where
     }
 }
 
-/// Represents a Barotrauma mod parsed from its content package XML file.
-///
-/// This structure holds all metadata about the mod as well as all file entries grouped by their XML tags.
-#[derive(Debug)]
-pub struct BarotraumaMod {
-    /// The name of the mod.
-    pub name: String,
-    /// The version of the mod.
-    pub mod_version: String,
-    /// Whether this is a core package.
-    pub core_package: bool,
-    /// The Steam Workshop ID of the mod.
-    pub steam_workshop_id: String,
-    /// The game version this mod is compatible with.
-    pub game_version: String,
-    /// The expected hash of the mod.
-    pub expected_hash: String,
-    /// All file entries grouped by their tag names.
-    pub file_groups: HashMap<String, Vec<FileElement>>,
-}
-
 /// Custom deserializer implementation for BarotraumaMod to handle dynamic XML tags.
 impl<'de> Deserialize<'de> for BarotraumaMod {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -61,7 +33,6 @@ impl<'de> Deserialize<'de> for BarotraumaMod {
         Ok(map)
     }
 }
-
 /// Visitor struct for deserializing BarotraumaMod.
 struct BarotraumaModVisitor;
 
@@ -85,7 +56,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
         let mut expected_hash = None;
 
         // Collect all file entries grouped by their tag names
-        let mut file_groups: HashMap<String, Vec<FileElement>> = HashMap::new();
+        let mut file_groups: HashMap<String, FileGroup> = HashMap::new();
 
         while let Some(key) = map.next_key::<String>()? {
             match key.as_str() {
@@ -103,7 +74,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
                 _ => {
                     // All other fields are treated as tags
                     let values: Vec<FileElement> = map.next_value()?;
-                    file_groups.entry(key).or_default().extend(values)
+                    file_groups.entry(key).or_default().files.extend(values)
                 }
             }
         }
@@ -169,7 +140,7 @@ impl BarotraumaMod {
     ///
     /// # Returns
     /// An Option containing a reference to the vector of FileElements or None if the tag doesn't exist.
-    pub fn get_files(&self, tag: &str) -> Option<&Vec<FileElement>> {
+    pub fn get_files(&self, tag: &str) -> Option<&FileGroup> {
         self.file_groups.get(tag)
     }
 
@@ -248,11 +219,11 @@ mod tests {
         assert_eq!(mod_obj.expected_hash, "9A54ACF2E7EBC95726A72AE966EF5F8D");
 
         // File group lengths
-        assert_eq!(mod_obj.get_files("Item").unwrap().len(), 2);
-        assert_eq!(mod_obj.get_files("Text").unwrap().len(), 4);
-        assert_eq!(mod_obj.get_files("RandomEvents").unwrap().len(), 2);
-        assert_eq!(mod_obj.get_files("Sounds").unwrap().len(), 1);
-        assert_eq!(mod_obj.get_files("Other").unwrap().len(), 1);
+        assert_eq!(mod_obj.get_files("Item").unwrap().files.len(), 2);
+        assert_eq!(mod_obj.get_files("Text").unwrap().files.len(), 4);
+        assert_eq!(mod_obj.get_files("RandomEvents").unwrap().files.len(), 2);
+        assert_eq!(mod_obj.get_files("Sounds").unwrap().files.len(), 1);
+        assert_eq!(mod_obj.get_files("Other").unwrap().files.len(), 1);
     }
 
     #[test]
@@ -261,8 +232,8 @@ mod tests {
         let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
         let items = mod_obj.get_files("Item").expect("No Item tag found");
 
-        assert_eq!(items[0].file, "%ModDir%/Items/misc.xml");
-        assert_eq!(items[1].file, "%ModDir%/Items/disposable_battery.xml");
+        assert_eq!(items.files[0].file, "%ModDir%/Items/misc.xml");
+        assert_eq!(items.files[1].file, "%ModDir%/Items/disposable_battery.xml");
     }
 
     #[test]
@@ -278,7 +249,7 @@ mod tests {
             "%ModDir%/Text/SimplifiedChinese.xml",
         ];
 
-        for (i, text) in texts.iter().enumerate() {
+        for (i, text) in texts.files.iter().enumerate() {
             assert_eq!(text.file, expected[i]);
         }
     }
@@ -291,8 +262,14 @@ mod tests {
             .get_files("RandomEvents")
             .expect("No RandomEvents tag found");
 
-        assert_eq!(events[0].file, "%ModDir%/Events/randomcampaignevents.xml");
-        assert_eq!(events[1].file, "%ModDir%/Events/randommissionevents.xml");
+        assert_eq!(
+            events.files[0].file,
+            "%ModDir%/Events/randomcampaignevents.xml"
+        );
+        assert_eq!(
+            events.files[1].file,
+            "%ModDir%/Events/randommissionevents.xml"
+        );
     }
 
     #[test]
