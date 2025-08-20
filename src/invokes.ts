@@ -28,5 +28,5 @@ export async function download_mod(mods: number[]) {
 }
 
 export async function list_mod_lists() {
-
+    mod_lists.value = await invoke("list_mod_lists");
 }
