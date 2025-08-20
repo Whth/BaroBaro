@@ -122,7 +122,7 @@ impl BarotraumaMod {
     /// # Returns
     /// A Result containing the parsed BarotraumaMod or an error.
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
-        let xml_content = fs::read_to_string(path.as_ref().clone())?;
+        let xml_content = fs::read_to_string(path.as_ref())?;
 
         let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
         Self::from_str(&xml_content).map(|mut mod_obj| {

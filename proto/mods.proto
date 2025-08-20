@@ -41,3 +41,14 @@ message BarotraumaMod {
   optional string home_dir = 8;
 }
 
+// ModList represents a saved mod profile with ordered local mods.
+message ModList {
+  // The name of the mod profile.
+  string profile_name = 1;
+
+  // The first non-Local tag name, such as "Vanilla"
+  string base_package = 2;
+
+  // All Local mod names in order of appearance
+  repeated string mods = 3;
+}

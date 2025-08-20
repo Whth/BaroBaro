@@ -10,5 +10,3 @@ pub use hash::hash_directory;
 pub use mods::*;
 
 pub use manage::BarotraumaModManager;
-
-pub use mod_list::ModList;

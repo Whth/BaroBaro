@@ -17,8 +17,9 @@ impl SteamCMD {
         }
     }
 
-    pub fn set_steamcmd_home(&mut self, path: PathBuf) {
+    pub fn set_steamcmd_home(&mut self, path: PathBuf) -> &mut Self {
         self.home_dir = Some(path);
+        self
     }
     fn steamcmd_full_path(&self) -> Result<PathBuf, String> {
         if let Some(home_dir) = &self.home_dir {

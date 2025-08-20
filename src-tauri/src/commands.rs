@@ -13,7 +13,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
-use mod_analyzer::BarotraumaMod;
+use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
 use toml::{from_str, to_string_pretty};
@@ -98,9 +98,11 @@ pub fn read_config() -> Result<Config, String> {
 /// The result is a clone of each mod's data. This is intentional to transfer ownership
 /// across the FFI boundary safely (e.g., to JavaScript via Tauri).
 #[tauri::command]
-pub fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
+pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
     let conf: Config = read_config()?;
     Ok(BARO_MANAGER
+        .write()
+        .await
         .set_game_dir(
             &PathBuf::from_str(conf.game_home.as_str())
                 .map_err(|e| format!("{}, failed to set game directory.", e))?,
@@ -115,11 +117,31 @@ pub fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
 #[tauri::command]
 pub async fn download_mods(mods: Vec<usize>) -> Result<(), String> {
     let conf: Config = read_config()?;
+
     STEAMCMD_MANAGER
+        .write()
+        .await
+        .set_steamcmd_home(
+            PathBuf::from_str(conf.steamcmd_home.as_str())
+                .map_err(|e| format!("{}, failed to set steamcmd home.", e))?,
+        )
         .download_mod_par(
             BAROTRAUMA_GAME_ID,
             mods,
             conf.steamcmd_config.unwrap().parallel as usize,
         )
         .await
+}
+#[tauri::command]
+pub async fn list_mod_lists() -> Result<Vec<ModList>, String> {
+    let conf: Config = read_config()?;
+
+    BARO_MANAGER
+        .write()
+        .await
+        .set_game_dir(
+            &PathBuf::from_str(conf.game_home.as_str())
+                .map_err(|e| format!("{}, failed to set game directory.", e))?,
+        )?
+        .discover_mod_lists()
 }

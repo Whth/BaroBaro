@@ -1,8 +1,10 @@
+use crate::mods::ModList;
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::{Reader, Writer};
-use std::io::{BufRead, Write};
-
+use std::fs::File;
+use std::io::{BufRead, BufReader, Write};
+use std::path::Path;
 /// Represents a list of mods with their load order and configuration.
 ///
 /// This struct holds information about a mod profile, including its name,
@@ -28,17 +30,6 @@ use std::io::{BufRead, Write};
 ///     ],
 /// };
 /// ```
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ModList {
-    /// The name of the mod profile.
-    pub profile_name: String,
-
-    /// The first non-Local tag name, such as "Vanilla"
-    pub base_package: String,
-
-    /// All Local mod names in order of appearance
-    pub mods: Vec<String>,
-}
 
 impl ModList {
     /// Parses a ModList from an XML reader.
@@ -110,6 +101,12 @@ impl ModList {
             base_package: base_package.ok_or_else(|| "missing base package (e.g. <Vanilla />)")?,
             mods,
         })
+    }
+
+    pub fn from_xml_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+        ModList::from_xml(reader)
     }
 
     fn filter_name<R: BufRead>(attrs: Attributes, reader: &Reader<R>) -> Option<String> {

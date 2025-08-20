@@ -10,6 +10,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "mods.FileGroup",
                 "#[derive(serde::Serialize, serde::Deserialize)]",
             ),
+            (
+                "mods.ModList",
+                "#[derive(serde::Serialize, serde::Deserialize)]",
+            ),
             ("mods.BarotraumaMod", "#[derive(serde::Serialize)]"),
         ],
         &vec![("mods.FileElement.file", "#[serde(rename = \"@file\")]")],

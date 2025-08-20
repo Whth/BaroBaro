@@ -16,7 +16,9 @@ pub fn run() -> Result<(), String> {
         .invoke_handler(tauri::generate_handler![
             read_config,
             write_config,
-            list_installed_mods
+            list_installed_mods,
+            download_mods,
+            list_mod_lists
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
