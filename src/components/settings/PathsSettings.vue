@@ -55,7 +55,7 @@
 import { ref, onMounted } from 'vue'
 import { useModManager } from '../../composables/useModManager'
 import { Config } from '../../proto/config'
-import { open } from '@tauri-apps/plugin-dialog'
+import { open, message } from '@tauri-apps/plugin-dialog'
 
 const { config, updateGameHome, updateSteamCmdHome } = useModManager()
 
@@ -64,6 +64,12 @@ const settings = ref({
   downloadPath: '',
   backupPath: ''
 })
+
+const showError = async (title: string, error: any) => {
+  console.error(title, error)
+  await message(`Error: ${error.message || error}`, { title, kind: 'error' })
+}
+
 const browseGamePath = async () => {
   console.log('Browsing for game path')
   try {
@@ -81,8 +87,7 @@ const browseGamePath = async () => {
       console.log('Game path updated successfully!')
     }
   } catch (error) {
-    console.error('Failed to select game path:', error)
-    // TODO: Show error message to user
+    await showError('Failed to select game path', error)
   }
 }
 
@@ -103,8 +108,7 @@ const browseDownloadPath = async () => {
       console.log('Download path updated successfully!')
     }
   } catch (error) {
-    console.error('Failed to select download path:', error)
-    // TODO: Show error message to user
+    await showError('Failed to select download path', error)
   }
 }
 
@@ -119,11 +123,12 @@ const browseBackupPath = async () => {
     
     if (selected) {
       settings.value.backupPath = selected as string
+      // Save backup path to localStorage immediately when selected
+      localStorage.setItem('backupPath', selected as string)
       console.log('Backup path selected successfully!')
     }
   } catch (error) {
-    console.error('Failed to select backup path:', error)
-    // TODO: Show error message to user
+    await showError('Failed to select backup path', error)
   }
 }
 
@@ -141,10 +146,16 @@ const saveSettings = async () => {
       await updateSteamCmdHome(settings.value.downloadPath)
     }
     
+    // Save backup path to config (if we add this field to the config in the future)
+    // For now, we'll just save it in localStorage
+    if (settings.value.backupPath) {
+      localStorage.setItem('backupPath', settings.value.backupPath)
+    }
+    
     console.log('Paths settings saved successfully!')
+    await message('Paths settings saved successfully!', { title: 'Success', kind: 'info' })
   } catch (error) {
-    console.error('Failed to save paths settings:', error)
-    // TODO: Show error message to user
+    await showError('Failed to save paths settings', error)
   }
 }
 
@@ -153,7 +164,8 @@ onMounted(() => {
   if (config.value) {
     settings.value.gamePath = config.value.gameHome
     settings.value.downloadPath = config.value.steamcmdHome
-    // Backup path is not in the config, so we'll leave it as empty for now
+    // Backup path is not in the config, so we'll load it from localStorage
+    settings.value.backupPath = localStorage.getItem('backupPath') || ''
   }
   console.log('Paths settings mounted')
 })
