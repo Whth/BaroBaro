@@ -92,11 +92,16 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
             expected_hash: expected_hash
                 .ok_or_else(|| serde::de::Error::missing_field("expectedhash"))?,
             file_groups,
+            home_dir: None,
         })
     }
 }
 
 impl BarotraumaMod {
+    pub fn set_home_dir(&mut self, home_dir: String) -> &mut Self {
+        self.home_dir = Some(home_dir);
+        self
+    }
     /// Creates a BarotraumaMod from an XML string.
     ///
     /// # Arguments
@@ -117,8 +122,13 @@ impl BarotraumaMod {
     /// # Returns
     /// A Result containing the parsed BarotraumaMod or an error.
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
-        let xml_content = fs::read_to_string(path)?;
-        Self::from_str(&xml_content)
+        let xml_content = fs::read_to_string(path.as_ref().clone())?;
+
+        let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
+        Self::from_str(&xml_content).map(|mut mod_obj| {
+            mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
+            mod_obj
+        })
     }
 
     /// Creates a BarotraumaMod from a mod directory.

@@ -36,5 +36,8 @@ message BarotraumaMod {
 
   // All file entries grouped by their tag names (e.g., "Entity", "Sound", etc.)
   map<string, FileGroup> file_groups = 7;
+
+  // The home directory of the mod.
+  optional string home_dir = 8;
 }
 

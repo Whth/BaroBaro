@@ -1,7 +1,7 @@
 import {invoke} from "@tauri-apps/api/core";
-import {Config} from "./proto/config.ts";
+import {Config} from "../proto/config";
 import {Ref, ref} from "vue";
-import {BarotraumaMod} from "./proto/mods.ts";
+import {BarotraumaMod} from "../proto/mods";
 
 const config = ref(Config.create())
 
@@ -13,7 +13,7 @@ export async function refresh_config() {
 }
 
 export async function save_config() {
-    await invoke("save_config", {config: Config.toJSON(config.value)});
+    await invoke("write_config", {config: Config.toJSON(config.value)});
 }
 
 export async function list_installed_mods() {
@@ -21,5 +21,5 @@ export async function list_installed_mods() {
 }
 
 export async function download_mod(mods: number[]) {
-    await invoke("download_mod", {mods: mods});
+    await invoke("download_mod", {mods});
 }

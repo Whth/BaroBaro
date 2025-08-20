@@ -1,4 +1,4 @@
-use crate::BarotraumaMod;
+use crate::{BarotraumaMod, hash_directory};
 use constants::BarotraumaHome;
 use std::path::PathBuf;
 use walkdir::WalkDir;
@@ -34,6 +34,14 @@ impl BarotraumaModManager {
         BarotraumaModManager {
             game_home: Some(BarotraumaHome::new(game_dir)),
             mods,
+        }
+    }
+
+    pub fn calc_mod_hash(&self, barotrauma_mod: BarotraumaMod) -> Result<String, String> {
+        if let Some(ref game_home) = barotrauma_mod.home_dir {
+            hash_directory(game_home).map_err(|e| format!("{e}, failed to hash directory."))
+        } else {
+            Err("Game home not set".to_string())
         }
     }
     pub fn get_mods(&self) -> &Vec<BarotraumaMod> {
