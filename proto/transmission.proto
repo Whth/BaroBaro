@@ -2,19 +2,49 @@ syntax = "proto3";
 
 package transmission;
 
+// Mod represents a single mod with its metadata and dependencies.
 message Mod {
+  // The name of the mod.
   string name = 1;
+  // A brief description of what the mod does.
   string description = 2;
+  // Unique identifier for the mod.
   uint64 mod_id = 3;
+  // List of mod IDs that this mod depends on.
   repeated uint64 dependencies = 4;
+  // Indicates whether the mod is active or not.
   bool active = 5;
 }
 
-
-
+// ModList represents a collection of mods grouped under a common name.
 message ModList {
+  // The name of the mod list.
   string name = 1;
+  // The core package associated with this mod list.
   string core_package = 2;
+  // List of mod IDs included in this mod list.
   repeated uint64 mods = 3;
+}
+
+// SteamCmdConfig holds configuration settings for SteamCMD.
+message SteamCmdConfig {
+  // The username used to log into SteamCMD.
+  string username = 1;
+  // The password used to log into SteamCMD.
+  string password = 2;
+  // The number of parallel downloads allowed.
+  uint64 parallel = 5;
+}
+
+// Config contains general configuration settings for the application.
+message Config {
+  // The logging level for the application (e.g., debug, info, warn, error).
+  string loglevel = 1;
+  // The home directory for the game files.
+  string game_home = 2;
+  // The home directory for SteamCMD files.
+  string steamcmd_home = 3;
+  // Configuration settings specific to SteamCMD.
+  SteamCmdConfig steamcmd_config = 4;
 }
 

@@ -9,7 +9,7 @@
     "dev": "pnpm gen && vite ",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",
-    "tauri": "pnpm gen && tauri"
+    "tauri": "tauri"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.7.0",

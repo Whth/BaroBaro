@@ -26,6 +26,9 @@ steamcmd-rs = { path = "./crates/steamcmd-rs" }
 constants = { path = "./crates/constants" }
 mod_analyzer = { path = "./crates/mod_analyzer" }
 transmission = { path = "./crates/transmission" }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-appender = "0.2.3"
+tracing-log = "0.2.0"
 
 [workspace]
 members = [

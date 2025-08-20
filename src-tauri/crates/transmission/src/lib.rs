@@ -1,5 +1,4 @@
 mod transmission;
 
 
-pub use transmission::ModList;
-
+pub use transmission::*;
