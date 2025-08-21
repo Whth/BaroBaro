@@ -10,7 +10,7 @@
 import { ref, computed, onMounted } from "vue";
 import Layout from "./components/core/Layout.vue";
 import { initializeApplication, getStoredLanguage } from "./composables/useAppInit";
-import { config } from "./invokes";
+import { config, refresh_config } from "./invokes";
 import i18n from "./i18n";
 
 // Background customization state
@@ -56,11 +56,24 @@ const applyTheme = (theme: string) => {
 	}, 300);
 };
 
+// Set default theme immediately to prevent UI glitches
+const setDefaultTheme = () => {
+  const root = document.documentElement;
+  root.setAttribute("data-theme", "light");
+  localStorage.setItem('language', 'en');
+};
+
 // Load all preferences from backend config
 onMounted(async () => {
 	try {
+		// Set default theme immediately
+		setDefaultTheme();
+
 		// Initialize the application (loads config and sets up everything)
 		await initializeApplication();
+
+		// Load fresh config to get latest values
+		await refresh_config();
 
 		if (config.value.uiConfig) {
 			const uiConfig = config.value.uiConfig;
@@ -78,6 +91,12 @@ onMounted(async () => {
 				uiConfig.backgroundOpacity || 1;
 			backgroundSettings.value.backgroundBlur =
 				Number(uiConfig.backgroundBlur) || 0;
+
+			console.log("Configuration loaded successfully:", {
+				theme: currentTheme.value,
+				language: currentLanguage.value,
+				accentColor: uiConfig.accentColor
+			});
 		}
 
 		// Get stored language from the initialization
@@ -86,7 +105,8 @@ onMounted(async () => {
 		// Set i18n locale
 		i18n.global.locale = currentLanguage.value as "en" | "zh";
 	} catch (e) {
-		console.error("Failed to initialize app", e);
+		console.error("Failed to initialize app, using defaults:", e);
+		// Continue with defaults
 	}
 
 	// Apply theme immediately on app load

@@ -19,6 +19,14 @@ export async function initializeApplication(): Promise<void> {
 			const languageMap: { [key: number]: string } = { 0: "en", 1: "zh" };
 			const savedLanguage = languageMap[config.value.uiConfig.language] || "en";
 			localStorage.setItem('language', savedLanguage);
+
+			console.log("Config loaded successfully:", {
+				theme: config.value.uiConfig.theme,
+				language: savedLanguage,
+				accentColor: config.value.uiConfig.accentColor
+			});
+		} else {
+			console.warn("No UI config found, using defaults");
 		}
 
 		// Initialize the app with backend data
@@ -27,8 +35,13 @@ export async function initializeApplication(): Promise<void> {
 		isInitialized.value = true;
 		initializationError.value = null;
 	} catch (error) {
-		console.error("Failed to initialize app:", error);
+		console.error("Failed to initialize app with backend data:", error);
 		initializationError.value = error instanceof Error ? error.message : 'Unknown initialization error';
+
+		// Set fallback defaults
+		localStorage.setItem('language', 'en');
+		console.log("Using fallback defaults due to initialization error");
+
 		// Don't rethrow - allow the app to continue even if initialization fails
 	}
 }

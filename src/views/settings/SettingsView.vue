@@ -19,7 +19,6 @@
         <GeneralSettings v-if="activeSection === 'general'" />
         <PathsSettings v-else-if="activeSection === 'paths'" />
         <UIPreferences v-else-if="activeSection === 'ui'" />
-        <VersionInfo v-else-if="activeSection === 'version'" />
       </div>
     </div>
   </div>
@@ -30,7 +29,6 @@ import { ref } from "vue";
 import GeneralSettings from "../../components/settings/GeneralSettings.vue";
 import PathsSettings from "../../components/settings/PathsSettings.vue";
 import UIPreferences from "../../components/settings/UIPreferences.vue";
-import VersionInfo from "../../components/settings/VersionInfo.vue";
 
 interface SettingsSection {
 	id: string;
@@ -41,7 +39,6 @@ const settingsSections: SettingsSection[] = [
 	{ id: "general", name: "General" },
 	{ id: "paths", name: "Paths" },
 	{ id: "ui", name: "UI Preferences" },
-	{ id: "version", name: "Version Info" },
 ];
 
 // Note: These will be internationalized later when we add i18n to this component
@@ -70,7 +67,8 @@ const setActiveSection = (sectionId: string) => {
   box-shadow: var(--shadow-level-1);
   overflow: hidden;
   height: calc(100vh - 200px);
-  min-height: 400px;
+  min-height: 600px;
+  max-height: calc(100vh - 150px);
 }
 
 .settings-sidebar {
@@ -130,6 +128,9 @@ const setActiveSection = (sectionId: string) => {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-main::-webkit-scrollbar {

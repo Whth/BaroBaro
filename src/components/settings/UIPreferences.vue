@@ -41,13 +41,12 @@
             >{{ t('settings.backgroundImage') }}</label
           >
           <div class="file-upload">
-            <input
-              id="background-image"
-              type="file"
-              accept="image/*"
-              class="file-input"
-              @change="handleBackgroundImageUpload"
-            />
+            <button
+              class="browse-button"
+              @click="selectBackgroundImage"
+            >
+              Browse for Image
+            </button>
             <button
               v-if="backgroundSettings.backgroundImage"
               class="clear-button"
@@ -55,6 +54,9 @@
             >
               {{ t('settings.clear') }}
             </button>
+            <div v-if="backgroundSettings.backgroundImage" class="file-info">
+              Selected: {{ backgroundSettings.backgroundImage }}
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -114,6 +116,7 @@ import { ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import i18n from "../../i18n";
 import { config, refresh_config, save_config } from "../../invokes";
+import { open } from "@tauri-apps/plugin-dialog";
 
 const { t } = useI18n();
 
@@ -271,17 +274,38 @@ const resetPreferences = async () => {
 	}
 };
 
-const handleBackgroundImageUpload = (event: Event) => {
-	const target = event.target as HTMLInputElement;
-	const file = target.files?.[0];
+const selectBackgroundImage = async () => {
+  try {
+    // Use Tauri's open dialog to get the actual file path
+    const selectedPath = await open({
+      multiple: false,
+      title: "Select Background Image",
+      filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] }]
+    });
 
-	if (file) {
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			backgroundSettings.value.backgroundImage = e.target?.result as string;
-		};
-		reader.readAsDataURL(file);
-	}
+    if (selectedPath) {
+      // Save the full file path instead of just the name
+      backgroundSettings.value.backgroundImage = selectedPath;
+      console.log("Background image path selected:", selectedPath);
+    }
+  } catch (error) {
+    console.error("Failed to select background image:", error);
+  }
+};
+
+const handleBackgroundImageUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (file) {
+    try {
+      // Fallback: save the file name if dialog approach fails
+      backgroundSettings.value.backgroundImage = file.name;
+      console.log("Background image file selected (fallback):", file.name);
+    } catch (error) {
+      console.error("Failed to handle background image upload:", error);
+    }
+  }
 };
 
 const clearBackgroundImage = () => {
@@ -295,14 +319,20 @@ const clearBackgroundImage = () => {
 	}
 };
 
-onMounted(async () => {
-	// Load config from backend
+
+// Watch for theme changes - only apply when saved
+// Removed immediate application to only apply on save
+
+// Watch for language changes - only apply when saved
+// Removed immediate application to only apply on save
+
+// Method to refresh preferences from config
+const refreshPreferences = async () => {
 	try {
 		await refresh_config();
 
 		if (config.value.uiConfig) {
 			const uiConfig = config.value.uiConfig;
-			// Map backend theme enum to frontend string
 			const themeMap: { [key: number]: string } = { 0: "DARK", 1: "LIGHT" };
 			const languageMap: { [key: number]: string } = { 0: "en", 1: "zh" };
 
@@ -310,42 +340,50 @@ onMounted(async () => {
 			preferences.value.language = languageMap[uiConfig.language] || "en";
 			preferences.value.accentColor = uiConfig.accentColor || "#0969da";
 
-			// Update background settings
 			backgroundSettings.value.backgroundImage = uiConfig.backgroundImage || "";
-			backgroundSettings.value.backgroundOpacity =
-				uiConfig.backgroundOpacity || 0.2;
-			backgroundSettings.value.backgroundBlur =
-				Number(uiConfig.backgroundBlur) || 5;
+			backgroundSettings.value.backgroundOpacity = uiConfig.backgroundOpacity || 0.2;
+			backgroundSettings.value.backgroundBlur = Number(uiConfig.backgroundBlur) || 5;
+
+			console.log("Preferences refreshed from config");
 		}
 	} catch (e) {
-		console.error("Failed to load config from backend", e);
+		console.error("Failed to refresh preferences:", e);
+	}
+};
+
+// Refresh preferences when component becomes visible (e.g., when navigating back to settings)
+onMounted(async () => {
+	// Load config from backend
+	try {
+		await refresh_config();
+
+		if (config.value.uiConfig) {
+			const uiConfig = config.value.uiConfig;
+			const themeMap: { [key: number]: string } = { 0: "DARK", 1: "LIGHT" };
+			const languageMap: { [key: number]: string } = { 0: "en", 1: "zh" };
+
+			preferences.value.theme = themeMap[uiConfig.theme] || "LIGHT";
+			preferences.value.language = languageMap[uiConfig.language] || "en";
+			preferences.value.accentColor = uiConfig.accentColor || "#0969da";
+
+			backgroundSettings.value.backgroundImage = uiConfig.backgroundImage || "";
+			backgroundSettings.value.backgroundOpacity = uiConfig.backgroundOpacity || 0.2;
+			backgroundSettings.value.backgroundBlur = Number(uiConfig.backgroundBlur) || 5;
+
+			console.log("UI preferences loaded from config:", {
+				theme: preferences.value.theme,
+				language: preferences.value.language,
+				accentColor: preferences.value.accentColor
+			});
+		} else {
+			console.warn("No UI config found, using default values");
+		}
+	} catch (e) {
+		console.error("Failed to load config from backend, using defaults:", e);
 	}
 
-	// Note: Theme and language are now applied globally in App.vue
-	// We just need to load the preferences for the UI display
-
-	console.log("UI preferences mounted");
+	console.log("UI preferences component mounted");
 });
-
-// Watch for theme changes and apply them immediately
-watch(
-	() => preferences.value.theme,
-	(newTheme) => {
-		if (newTheme) {
-			applyTheme(newTheme);
-		}
-	},
-);
-
-// Watch for language changes and apply them immediately
-watch(
-	() => preferences.value.language,
-	(newLanguage) => {
-		if (newLanguage) {
-			applyLanguage(newLanguage);
-		}
-	},
-);
 </script>
 
 <style scoped>
@@ -555,22 +593,55 @@ watch(
 }
 
 .file-upload {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-m);
+   display: flex;
+   align-items: center;
+   gap: var(--spacing-m);
+   flex-wrap: wrap;
 }
 
 .file-input {
-  flex: 1;
+   flex: 1;
+}
+
+.browse-button {
+   padding: var(--spacing-s) var(--spacing-m);
+   background-color: var(--color-primary);
+   color: white;
+   border: none;
+   border-radius: var(--border-radius-soft);
+   cursor: pointer;
+   font-weight: var(--font-weight-medium);
+   font-size: var(--font-size-body-regular);
+}
+
+.browse-button:hover {
+   background-color: var(--color-primary-dark);
 }
 
 .clear-button {
-  padding: var(--spacing-xs) var(--spacing-s);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-body-small);
+   padding: var(--spacing-xs) var(--spacing-s);
+   border: 1px solid var(--color-border);
+   border-radius: var(--border-radius-soft);
+   background-color: var(--color-surface);
+   color: var(--color-text-primary);
+   cursor: pointer;
+   font-size: var(--font-size-body-small);
+}
+
+.clear-button:hover {
+   background-color: var(--color-background);
+   border-color: var(--color-text-secondary);
+}
+
+.file-info {
+   font-size: var(--font-size-body-small);
+   color: var(--color-text-secondary);
+   font-family: var(--font-family-monospace);
+   padding: var(--spacing-xs) var(--spacing-s);
+   background-color: var(--color-surface);
+   border-radius: var(--border-radius-soft);
+   border: 1px solid var(--color-border);
+   max-width: 300px;
+   word-break: break-all;
 }
 </style>
