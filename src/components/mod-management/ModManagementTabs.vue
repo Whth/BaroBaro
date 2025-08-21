@@ -58,6 +58,7 @@ const setActiveTab = (tabId: string) => {
   display: flex;
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-background);
+  border-radius: var(--border-radius-rounded) var(--border-radius-rounded) 0 0;
 }
 
 .tab-button {
@@ -69,17 +70,40 @@ const setActiveTab = (tabId: string) => {
   font-size: var(--font-size-body-regular);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background-color: var(--color-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
 }
 
 .tab-button:hover {
   background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
+}
+
+.tab-button:hover::before {
+  width: 80%;
 }
 
 .tab-button.active {
   color: var(--color-primary);
-  border-bottom: 2px solid var(--color-primary);
   background-color: var(--color-surface);
+}
+
+.tab-button.active::before {
+  width: 100%;
 }
 
 .tabs-content {

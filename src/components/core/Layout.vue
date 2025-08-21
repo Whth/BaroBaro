@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="layout animate-fade-in">
     <div class="layout-wrapper" :class="{ 'sidebar-collapsed': sidebarState.isCollapsed.value }">
       <Navigation />
       <main class="main-content">

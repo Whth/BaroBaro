@@ -1,13 +1,23 @@
 <template>
-  <div class="dashboard-view">
+  <div class="dashboard-view staggered-animation">
     <div class="dashboard-header">
-      <h1>{{ t('navigation.dashboard') }}</h1>
+      <Title type="page">{{ t('navigation.dashboard') }}</Title>
     </div>
     <SearchAndFilter />
     <ModList />
     <ModDetails />
   </div>
 </template>
+
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
+import ModList from "../../components/dashboard/ModList.vue";
+import ModDetails from "../../components/dashboard/ModDetails.vue";
+import Title from "../../components/core/Title.vue";
+
+const { t } = useI18n();
+</script>
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";

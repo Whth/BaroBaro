@@ -1,10 +1,10 @@
 <template>
   <div class="ui-preferences">
-    <h2>{{ t('settings.uiPreferences') }}</h2>
+    <Title type="page">{{ t('settings.uiPreferences') }}</Title>
     <div class="settings-form">
       <!-- Language and Theme Settings -->
-      <div class="form-section">
-        <h3>{{ t('settings.appearanceLanguage') }}</h3>
+      <div class="form-section animate-fade-in-up">
+        <Title type="section">{{ t('settings.appearanceLanguage') }}</Title>
         <div class="form-group">
           <label class="form-label" for="language">{{ t('settings.languageLabel') }}</label>
           <select id="language" v-model="preferences.language" class="form-select">
@@ -34,8 +34,8 @@
       </div>
 
       <!-- Background Customization -->
-      <div class="form-section">
-        <h3>{{ t('settings.backgroundCustomization') }}</h3>
+      <div class="form-section animate-fade-in-up">
+        <Title type="section">{{ t('settings.backgroundCustomization') }}</Title>
         <div class="form-group">
           <label class="form-label" for="background-image"
           >{{ t('settings.backgroundImage') }}</label
@@ -100,7 +100,7 @@
       </div>
 
       <div class="form-actions">
-        <button class="save-button" @click="savePreferences">
+        <button class="save-button animate-pulse" @click="savePreferences">
           {{ t('settings.savePreferences') }}
         </button>
         <button class="reset-button" @click="resetPreferences">
@@ -117,6 +117,7 @@ import {useI18n} from "vue-i18n";
 import i18n from "../../i18n";
 import {config, refresh_config, save_config} from "../../invokes";
 import {open} from "@tauri-apps/plugin-dialog";
+import Title from "../../components/core/Title.vue";
 
 const {t} = useI18n();
 
@@ -570,6 +571,11 @@ onMounted(async () => {
   border-radius: var(--border-radius-rounded);
   padding: var(--spacing-xl);
   transition: all 0.2s ease;
+  animation-delay: 0.2s;
+}
+
+.form-section:nth-child(2) {
+  animation-delay: 0.4s;
 }
 
 .form-section:hover {

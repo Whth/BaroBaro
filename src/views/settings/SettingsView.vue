@@ -1,12 +1,12 @@
 <template>
-  <div class="settings-view">
+  <div class="settings-view staggered-animation">
     <div class="settings-content">
       <div class="settings-sidebar">
         <ul class="settings-menu">
           <li
             v-for="section in settingsSections"
             :key="section.id"
-            class="menu-item"
+            class="menu-item animate-slide-in-left"
             :class="{ active: activeSection === section.id }"
             @click="setActiveSection(section.id)"
           >

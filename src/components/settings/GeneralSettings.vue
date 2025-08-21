@@ -107,6 +107,8 @@ onMounted(() => {
   margin: 0 0 var(--spacing-l) 0;
   color: var(--color-text-primary);
   font-size: var(--font-size-heading-2);
+  animation: fadeInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+  opacity: 0;
 }
 
 .settings-form {
@@ -120,6 +122,29 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  padding: var(--spacing-m);
+  border-radius: var(--border-radius-soft);
+  background-color: var(--color-background);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.form-group:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.form-group:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.form-group:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-level-1);
 }
 
 .form-label {

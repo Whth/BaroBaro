@@ -94,18 +94,18 @@ provide('sidebarState', {
 .nav-item {
 	margin-bottom: var(--spacing-m);
 	opacity: 0;
-	transform: translateX(-20px);
-	animation: slideInLeft 0.6s ease-out forwards;
+	transform: translateX(-30px);
+	animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .app-navigation.collapsed .nav-item {
 	margin-bottom: var(--spacing-s);
 }
 
-.nav-item:nth-child(1) { animation-delay: 0s; }
-.nav-item:nth-child(2) { animation-delay: 0.1s; }
-.nav-item:nth-child(3) { animation-delay: 0.2s; }
-.nav-item:nth-child(4) { animation-delay: 0.3s; }
+.nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-item:nth-child(4) { animation-delay: 0.4s; }
 
 @keyframes slideInLeft {
 	from {

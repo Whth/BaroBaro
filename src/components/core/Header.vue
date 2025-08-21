@@ -1,12 +1,12 @@
 <template>
-  <header class="app-header">
+  <header class="app-header animate-slide-in-down">
     <div class="header-content">
-      <h1 class="app-title">{{ t('app.title') }}</h1>
+      <h1 class="app-title page-title">{{ t('app.title') }}</h1>
       <div class="header-actions">
         <ThemeSwitcher />
         <button class="notification-button" @click="showNotifications">
           <span class="notification-icon">🔔</span>
-          <span v-if="unreadNotifications > 0" class="notification-badge">
+          <span v-if="unreadNotifications > 0" class="notification-badge animate-pulse">
             {{ unreadNotifications }}
           </span>
         </button>

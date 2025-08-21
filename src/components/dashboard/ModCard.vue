@@ -85,24 +85,41 @@ const selectMod = () => {
   border-radius: var(--border-radius-rounded);
   padding: var(--spacing-m);
   background-color: var(--color-surface);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
 }
 
-.mod-card {
-	transform: translateY(0);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.mod-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.mod-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.mod-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.mod-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.mod-card:nth-child(5) {
+  animation-delay: 0.5s;
 }
 
 .mod-card:hover {
-	transform: translateY(-8px) scale(1.02);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	transform: translateY(-10px) scale(1.03);
+	box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 	border-color: var(--color-primary-light);
 }
 
 .mod-card:active {
-	transform: translateY(-4px) scale(1.01);
+	transform: translateY(-5px) scale(1.01);
 }
 
 .mod-card-disabled {

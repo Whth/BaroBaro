@@ -1,9 +1,14 @@
 <template>
-  <div class="mods-view">
-    <h1>Mod Management</h1>
+  <div class="mods-view staggered-animation">
+    <Title type="page">Mod Management</Title>
     <ModManagementTabs />
   </div>
 </template>
+
+<script setup lang="ts">
+import ModManagementTabs from "../../components/mod-management/ModManagementTabs.vue";
+import Title from "../../components/core/Title.vue";
+</script>
 
 <script setup lang="ts">
 import ModManagementTabs from "../../components/mod-management/ModManagementTabs.vue";

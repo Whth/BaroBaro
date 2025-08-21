@@ -1,5 +1,5 @@
 <template>
-  <footer class="app-footer">
+  <footer class="app-footer animate-fade-in-up">
     <div class="footer-content">
       <p class="copyright">© 2025 {{ t('app.title') }}. All rights reserved.</p>
       <div class="footer-links">
