@@ -32,7 +32,7 @@ interface Theme {
 	value: string;
 }
 
-const _themes: Theme[] = [
+const themes: Theme[] = [
 	{ name: "Light", value: "light" },
 	{ name: "Dark", value: "dark" },
 	{ name: "Barotrauma", value: "barotrauma" },
@@ -42,11 +42,11 @@ const currentTheme = ref("light");
 const showThemeMenu = ref(false);
 const themeMenu = ref<HTMLElement | null>(null);
 
-const _toggleThemeMenu = () => {
+const toggleThemeMenu = () => {
 	showThemeMenu.value = !showThemeMenu.value;
 };
 
-const _selectTheme = (theme: string) => {
+const selectTheme = (theme: string) => {
 	currentTheme.value = theme;
 	document.documentElement.setAttribute("data-theme", theme);
 	localStorage.setItem("theme", theme);

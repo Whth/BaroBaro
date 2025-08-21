@@ -70,11 +70,11 @@ const emit = defineEmits<{
 	(e: "dragend"): void;
 }>();
 
-const _toggleMod = () => {
+const toggleMod = () => {
 	emit("toggleMod", props.mod.steamWorkshopId);
 };
 
-const _selectMod = () => {
+const selectMod = () => {
 	emit("selectMod", props.mod.steamWorkshopId);
 };
 </script>

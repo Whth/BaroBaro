@@ -22,13 +22,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import InstallModTab from "./InstallModTab.vue";
+import DownloadModTab from "./DownloadModTab.vue";
+import UpdateModTab from "./UpdateModTab.vue";
+import RemoveModTab from "./RemoveModTab.vue";
 
 interface Tab {
 	id: string;
 	name: string;
 }
 
-const _tabs: Tab[] = [
+const tabs: Tab[] = [
 	{ id: "install", name: "Install Mod" },
 	{ id: "download", name: "Download Mod" },
 	{ id: "update", name: "Update Mod" },
@@ -37,7 +41,7 @@ const _tabs: Tab[] = [
 
 const activeTab = ref("install");
 
-const _setActiveTab = (tabId: string) => {
+const setActiveTab = (tabId: string) => {
 	activeTab.value = tabId;
 };
 </script>

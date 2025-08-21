@@ -8,7 +8,7 @@
     "gen": "node scripts/gen_proto.cjs",
     "dev": "pnpm gen && vite ",
     "fmt": "biome format src --write",
-    "lint": "biome lint src --write --unsafe --max-diagnostics 1000",
+    "lint": "biome lint src --write --max-diagnostics 1000",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",
     "tauri": "tauri"

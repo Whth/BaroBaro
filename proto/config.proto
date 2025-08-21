@@ -63,5 +63,5 @@ message UIConfig {
   string accentColor = 6;
   string backgroundImage = 3;
   float backgroundOpacity = 4;
-  float backgroundBlur = 5;
+  uint64 backgroundBlur = 5;
 }

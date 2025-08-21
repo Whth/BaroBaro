@@ -35,7 +35,10 @@
 import { ref } from "vue";
 import {
 	mod_lists,
+	installed_mod,
+	isModEnabled,
 } from "../../composables/useModManager";
+import ModCard from "./ModCard.vue";
 
 // Drag and drop state
 const draggedItemIndex = ref<number | null>(null);
@@ -43,20 +46,20 @@ const dragOverIndex = ref<number | null>(null);
 
 // For now, we'll use the first mod list as the current one
 // In a real implementation, this would be managed by a global state or prop
-const _currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
+const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
 
-const _toggleMod = (modId: string) => {
+const toggleMod = (modId: string) => {
 	// In a real implementation, this would call a Tauri command to toggle the mod
 	console.log(`Toggle mod ${modId}`);
 };
 
-const _selectMod = (modId: string) => {
+const selectMod = (modId: string) => {
 	console.log(`Mod ${modId} selected`);
 	// In a real app, this would emit an event to show mod details
 };
 
 // Drag and drop methods
-const _handleDragStart = (index: number, event: DragEvent) => {
+const handleDragStart = (index: number, event: DragEvent) => {
 	draggedItemIndex.value = index;
 	// Add visual feedback
 	if (event.dataTransfer) {
@@ -65,7 +68,7 @@ const _handleDragStart = (index: number, event: DragEvent) => {
 	}
 };
 
-const _handleDragOver = (event: DragEvent) => {
+const handleDragOver = (event: DragEvent) => {
 	event.preventDefault();
 	if (event.dataTransfer) {
 		event.dataTransfer.dropEffect = "move";
@@ -73,15 +76,15 @@ const _handleDragOver = (event: DragEvent) => {
 	return false;
 };
 
-const _handleDragEnter = (index: number) => {
+const handleDragEnter = (index: number) => {
 	dragOverIndex.value = index;
 };
 
-const _handleDragLeave = () => {
+const handleDragLeave = () => {
 	dragOverIndex.value = null;
 };
 
-const _handleDrop = (index: number, event: DragEvent) => {
+const handleDrop = (index: number, event: DragEvent) => {
 	event.preventDefault();
 
 	if (draggedItemIndex.value === null) return;
@@ -94,13 +97,13 @@ const _handleDrop = (index: number, event: DragEvent) => {
 	dragOverIndex.value = null;
 };
 
-const _handleDragEnd = () => {
+const handleDragEnd = () => {
 	draggedItemIndex.value = null;
 	dragOverIndex.value = null;
 };
 
 // Save and load mod order as XML
-const _saveModOrder = () => {
+const saveModOrder = () => {
 	// In a real implementation, this would save the current mod order to a profile
 	console.log("Saving mod order");
 	alert(
@@ -108,7 +111,7 @@ const _saveModOrder = () => {
 	);
 };
 
-const _loadModOrder = () => {
+const loadModOrder = () => {
 	// In a real app, this would load mod order from a profile
 	console.log("Loading mod order");
 	alert(

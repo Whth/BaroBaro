@@ -17,18 +17,20 @@
 import { ref } from "vue";
 import type { Profile } from "../../types";
 import { useModManager } from "../../composables/useModManager";
+import ProfileList from "../../components/profile-management/ProfileList.vue";
+import ProfileEditor from "../../components/profile-management/ProfileEditor.vue";
 
 const { getModListByName } = useModManager();
 
 const showEditor = ref(false);
-const editingProfile = ref<Profile | null>(null);
+const editingProfile = ref<Profile | undefined>(undefined);
 
-const _handleCreateProfile = () => {
-	editingProfile.value = null;
+const handleCreateProfile = () => {
+	editingProfile.value = undefined;
 	showEditor.value = true;
 };
 
-const _handleEditProfile = (profileName: string) => {
+const handleEditProfile = (profileName: string) => {
 	const modList = getModListByName(profileName);
 	if (modList) {
 		editingProfile.value = {
@@ -41,15 +43,15 @@ const _handleEditProfile = (profileName: string) => {
 	}
 };
 
-const _handleSaveProfile = (_profile: Profile) => {
+const handleSaveProfile = (_profile: Profile) => {
 	// Profile is saved through the composable, so we just need to hide the editor
 	showEditor.value = false;
-	editingProfile.value = null;
+	editingProfile.value = undefined;
 };
 
-const _handleCancelEdit = () => {
+const handleCancelEdit = () => {
 	showEditor.value = false;
-	editingProfile.value = null;
+	editingProfile.value = undefined;
 };
 </script>
 

@@ -11,7 +11,10 @@
 </template>
 
 <script setup lang="ts">
-
+import ProfileSelector from "../../components/dashboard/ProfileSelector.vue";
+import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
+import ModList from "../../components/dashboard/ModList.vue";
+import ModDetails from "../../components/dashboard/ModDetails.vue";
 </script>
 
 <style scoped>

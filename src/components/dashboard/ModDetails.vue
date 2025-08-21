@@ -56,7 +56,7 @@ onMounted(() => {
 	console.log("ModDetails mounted");
 });
 
-const _toggleMod = () => {
+const toggleMod = () => {
 	if (selectedMod.value) {
 		// In a real implementation, this would call a Tauri command to toggle the mod
 		console.log(`Toggle mod ${selectedMod.value.name}`);

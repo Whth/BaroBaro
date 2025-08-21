@@ -21,13 +21,13 @@ interface Profile {
 	name: string;
 }
 
-const _profiles = ref<Profile[]>([
+const profiles = ref<Profile[]>([
 	{ id: "1", name: "Survival Profile" },
 	{ id: "2", name: "Creative Profile" },
 	{ id: "3", name: "Adventure Profile" },
 ]);
 
-const _selectedProfile = ref("1");
+const selectedProfile = ref("1");
 
 onMounted(() => {
 	console.log("Profile switcher mounted");

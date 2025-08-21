@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-
 import { ref, computed, onMounted } from "vue";
+import Layout from "./components/core/Layout.vue";
 
 // Background customization state
 const backgroundSettings = ref({
@@ -18,7 +18,7 @@ const backgroundSettings = ref({
 });
 
 // Computed background style
-const _backgroundStyle = computed(() => {
+const backgroundStyle = computed(() => {
 	return {
 		backgroundImage: backgroundSettings.value.backgroundImage
 			? `url(${backgroundSettings.value.backgroundImage})`
