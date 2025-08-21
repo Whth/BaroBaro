@@ -4,38 +4,38 @@
       <li class="nav-item">
         <router-link to="/" class="nav-link" :class="{ active: isActive('/') }">
           <span class="nav-icon">📊</span>
-          <span class="nav-text">Dashboard</span>
+          <span class="nav-text">{{ t('navigation.dashboard') }}</span>
         </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link
-          to="/mods"
-          class="nav-link"
-          :class="{ active: isActive('/mods') }"
-        >
-          <span class="nav-icon">🧩</span>
-          <span class="nav-text">Mods</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link
-          to="/profiles"
-          class="nav-link"
-          :class="{ active: isActive('/profiles') }"
-        >
-          <span class="nav-icon">👤</span>
-          <span class="nav-text">Profiles</span>
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link
-          to="/settings"
-          class="nav-link"
-          :class="{ active: isActive('/settings') }"
-        >
-          <span class="nav-icon">⚙️</span>
-          <span class="nav-text">Settings</span>
-        </router-link>
+     </li>
+     <li class="nav-item">
+       <router-link
+         to="/mods"
+         class="nav-link"
+         :class="{ active: isActive('/mods') }"
+       >
+         <span class="nav-icon">🧩</span>
+         <span class="nav-text">{{ t('navigation.mods') }}</span>
+       </router-link>
+     </li>
+     <li class="nav-item">
+       <router-link
+         to="/profiles"
+         class="nav-link"
+         :class="{ active: isActive('/profiles') }"
+       >
+         <span class="nav-icon">👤</span>
+         <span class="nav-text">{{ t('navigation.profiles') }}</span>
+       </router-link>
+     </li>
+     <li class="nav-item">
+       <router-link
+         to="/settings"
+         class="nav-link"
+         :class="{ active: isActive('/settings') }"
+       >
+         <span class="nav-icon">⚙️</span>
+         <span class="nav-text">{{ t('navigation.settings') }}</span>
+       </router-link>
       </li>
     </ul>
   </nav>
@@ -43,8 +43,10 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
+const { t } = useI18n();
 
 const isActive = (path: string) => {
 	return route.path === path;

@@ -1,7 +1,7 @@
 <template>
   <header class="app-header">
     <div class="header-content">
-      <h1 class="app-title">Game Mod Manager</h1>
+      <h1 class="app-title">{{ t('app.title') }}</h1>
       <div class="header-actions">
         <ProfileSwitcher />
         <ThemeSwitcher />
@@ -18,11 +18,14 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+
 import ProfileSwitcher from "../profile-management/ProfileSwitcher.vue";
 import ThemeSwitcher from "./ThemeSwitcher.vue";
 
-const unreadNotifications = ref(3);
+const { t } = useI18n();
 
+const unreadNotifications = ref(3);
 const showNotifications = () => {
 	console.log("Show notifications");
 	// Implementation would go here

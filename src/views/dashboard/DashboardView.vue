@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-view">
     <div class="dashboard-header">
-      <h1>Dashboard</h1>
+      <h1>{{ t('navigation.dashboard') }}</h1>
       <ProfileSelector />
     </div>
     <SearchAndFilter />
@@ -11,10 +11,13 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import ProfileSelector from "../../components/dashboard/ProfileSelector.vue";
 import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
 import ModList from "../../components/dashboard/ModList.vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";
+
+const { t } = useI18n();
 </script>
 
 <style scoped>

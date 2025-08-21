@@ -1,7 +1,7 @@
 <template>
   <footer class="app-footer">
     <div class="footer-content">
-      <p class="copyright">© 2025 Game Mod Manager. All rights reserved.</p>
+      <p class="copyright">© 2025 {{ t('app.title') }}. All rights reserved.</p>
       <div class="footer-links">
         <a href="#" class="footer-link">Documentation</a>
         <a href="#" class="footer-link">Support</a>
@@ -11,7 +11,11 @@
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+</script>
 
 <style scoped>
 .app-footer {
