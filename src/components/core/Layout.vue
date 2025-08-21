@@ -1,38 +1,47 @@
 <template>
   <div class="layout">
-    <Header class="acrylic" />
-    <div class="layout-content">
-      <Navigation class="acrylic" />
+    <div class="layout-wrapper" :class="{ 'sidebar-collapsed': sidebarState.isCollapsed.value }">
+      <Navigation class="acrylic full-height" />
       <main class="main-content">
         <slot />
       </main>
     </div>
-    <Footer class="acrylic" />
   </div>
 </template>
 
 <script setup lang="ts">
-import Header from "./Header.vue";
+import { inject, ref, watch } from "vue";
 import Navigation from "./Navigation.vue";
-import Footer from "./Footer.vue";
+
+// Inject sidebar state from Navigation component
+const sidebarState = inject('sidebarState', {
+	isCollapsed: ref(false),
+	toggleSidebar: () => {}
+});
 </script>
 
 <style scoped>
 .layout {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
-.layout-content {
+.layout-wrapper {
   display: flex;
   flex: 1;
   min-height: 0;
 }
 
+
 .main-content {
   flex: 1;
   padding: var(--spacing-l);
   overflow-y: auto;
+  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layout-wrapper.sidebar-collapsed .main-content {
+  padding-left: calc(var(--spacing-l) + 60px - 250px);
 }
 </style>

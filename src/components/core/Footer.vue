@@ -25,14 +25,24 @@ const { t } = useI18n();
   margin-top: auto;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  width: 250px;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: none;
+  border-right: 1px solid var(--color-border);
 }
 
 .footer-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  max-width: 100%;
+  margin: 0;
 }
 
 .copyright {
@@ -43,7 +53,9 @@ const { t } = useI18n();
 
 .footer-links {
   display: flex;
-  gap: var(--spacing-m);
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: flex-start;
 }
 
 .footer-link {
