@@ -11,6 +11,7 @@ enum Level {
   ERROR = 4;
 }
 
+
 // SteamCmdConfig holds configuration settings for SteamCMD.
 message SteamCmdConfig {
   // The username used to log into SteamCMD.
@@ -26,9 +27,9 @@ message Config {
   // The logging level for the application (e.g., debug, info, warn, error).
   Level loglevel = 1;
   // The home directory for the game files.
-  string game_home = 2;
+  string gameHome = 2;
   // The home directory for SteamCMD files.
-  string steamcmd_home = 3;
+  string steamcmdHome = 3;
   // Configuration settings specific to SteamCMD.
-  SteamCmdConfig steamcmd_config = 4;
+  SteamCmdConfig steamcmdConfig = 4;
 }

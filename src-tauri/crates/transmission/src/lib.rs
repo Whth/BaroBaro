@@ -10,6 +10,7 @@ pub fn compile_proto_fine_grained(
     field_attrs: &Vec<(&str, &str)>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed={}", PROTO_DIR);
+    println!("cargo:rerun-if-changed={}", format!("{PROTO_DIR}/{name}.proto"));
     fs::create_dir_all(OUT_DIR)?;
     let mut conf = prost_build::Config::new();
     attrs.iter().for_each(|(target, attr)| {
@@ -20,7 +21,7 @@ pub fn compile_proto_fine_grained(
         conf.field_attribute(target, attr);
     });
     conf.out_dir(OUT_DIR).compile_protos(
-        &[format!("../../../proto/{name}.proto").as_str()],
+        &[format!("{PROTO_DIR}/{name}.proto").as_str()],
         &[PROTO_DIR],
     )?;
     Ok(())
@@ -42,6 +43,12 @@ pub fn compile_proto_raw(name: &str, attr: &str) -> Result<(), Box<dyn std::erro
 /// Compiles a protobuf file into Rust code with serde attributes.
 pub fn compile_proto(name: &str) -> Result<(), Box<dyn std::error::Error>> {
     compile_proto_raw(name, "#[derive(serde::Serialize, serde::Deserialize)]")
+}
+
+
+/// Compiles a protobuf file into Rust code with serde attributes and extra attributes.
+pub fn compile_proto_with(name: &str, extra_attr: &str) -> Result<(), Box<dyn std::error::Error>> {
+    compile_proto_raw(name, &format!("#[derive(serde::Serialize, serde::Deserialize)]\n{}", extra_attr))
 }
 
 /// Compiles a protobuf file into Rust code with serde serialize attributes.

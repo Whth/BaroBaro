@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package mods;
 
-
 // Represents a single file entry in the mod, with a file path.
 message FileElement {
   // The file path as specified in the XML attribute.
@@ -20,34 +19,34 @@ message BarotraumaMod {
   string name = 1;
 
   // The version of the mod.
-  string mod_version = 2;
+  string modVersion = 2;
 
   // Whether this is a core package.
-  bool core_package = 3;
+  bool corePackage = 3;
 
   // The Steam Workshop ID of the mod.
-  string steam_workshop_id = 4;
+  string steamWorkshopId = 4;
 
   // The game version this mod is compatible with.
-  string game_version = 5;
+  string gameVersion = 5;
 
   // The expected hash of the mod.
-  string expected_hash = 6;
+  string expectedHash = 6;
 
   // All file entries grouped by their tag names (e.g., "Entity", "Sound", etc.)
-  map<string, FileGroup> file_groups = 7;
+  map<string, FileGroup> fileGroups = 7;
 
   // The home directory of the mod.
-  optional string home_dir = 8;
+  optional string homeDir = 8;
 }
 
 // ModList represents a saved mod profile with ordered local mods.
 message ModList {
   // The name of the mod profile.
-  string profile_name = 1;
+  string profileName = 1;
 
   // The first non-Local tag name, such as "Vanilla"
-  string base_package = 2;
+  string basePackage = 2;
 
   // All Local mod names in order of appearance
   repeated string mods = 3;

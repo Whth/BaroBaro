@@ -5,7 +5,6 @@ import {BarotraumaMod, ModList} from "./proto/mods";
 
 
 export const config = ref(Config.create())
-
 export const installed_mod: Ref<BarotraumaMod[]> = ref([])
 
 export const mod_lists: Ref<ModList[]> = ref([])
@@ -16,7 +15,7 @@ export async function refresh_config() {
 }
 
 export async function save_config() {
-    await invoke("write_config", {config: Config.toJSON(config.value)});
+    await invoke("write_config", {config: config.value});
 }
 
 export async function list_installed_mods() {
