@@ -3,44 +3,28 @@
     <h2>General Settings</h2>
     <div class="settings-form">
       <div class="form-group">
+        <label for="loglevel" class="form-label">Log Level</label>
+        <select id="loglevel" v-model="settings.loglevel" class="form-select">
+          <option value="TRACE">Trace</option>
+          <option value="DEBUG">Debug</option>
+          <option value="INFO">Info</option>
+          <option value="WARN">Warning</option>
+          <option value="ERROR">Error</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label for="language" class="form-label">Language</label>
         <select id="language" v-model="settings.language" class="form-select">
-          <option value="en">English</option>
-          <option value="es">Spanish</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
-          <option value="zh">Chinese</option>
+          <option value="EN">English</option>
+          <option value="ZH">Chinese</option>
         </select>
       </div>
       <div class="form-group">
         <label for="theme" class="form-label">Theme</label>
         <select id="theme" v-model="settings.theme" class="form-select">
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="system">System</option>
+          <option value="LIGHT">Light</option>
+          <option value="DARK">Dark</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label for="auto-check-updates" class="form-label">
-          <input
-            id="auto-check-updates"
-            v-model="settings.autoCheckUpdates"
-            type="checkbox"
-            class="form-checkbox"
-          />
-          Automatically check for updates
-        </label>
-      </div>
-      <div class="form-group">
-        <label for="enable-notifications" class="form-label">
-          <input
-            id="enable-notifications"
-            v-model="settings.enableNotifications"
-            type="checkbox"
-            class="form-checkbox"
-          />
-          Enable notifications
-        </label>
       </div>
       <div class="form-actions">
         <button class="save-button" @click="saveSettings">Save Settings</button>
@@ -57,10 +41,9 @@ import { type Config, Level, Theme, Language } from "../../proto/config";
 const { config, updateConfig } = useModManager();
 
 const settings = ref({
-	language: "en",
-	theme: "system",
-	autoCheckUpdates: true,
-	enableNotifications: true,
+	loglevel: "INFO",
+	language: "EN",
+	theme: "DARK",
 });
 
 // Map protobuf loglevel to string
@@ -95,14 +78,14 @@ const stringToLogLevel = (level: string): Level => {
 	}
 };
 
-const _saveSettings = async () => {
+const saveSettings = async () => {
 	try {
 		// Map theme string to Theme enum
 		const themeToEnum = (theme: string): Theme => {
 			switch (theme) {
-				case "dark":
+				case "DARK":
 					return Theme.DARK;
-				case "light":
+				case "LIGHT":
 					return Theme.LIGHT;
 				default:
 					return Theme.DARK;
@@ -112,18 +95,36 @@ const _saveSettings = async () => {
 		// Map language string to Language enum
 		const languageToEnum = (lang: string): Language => {
 			switch (lang) {
-				case "en":
+				case "EN":
 					return Language.EN;
-				case "zh":
+				case "ZH":
 					return Language.ZH;
 				default:
 					return Language.EN;
 			}
 		};
 
+		// Map loglevel string to Level enum
+		const loglevelToEnum = (loglevel: string): Level => {
+			switch (loglevel) {
+				case "TRACE":
+					return Level.TRACE;
+				case "DEBUG":
+					return Level.DEBUG;
+				case "INFO":
+					return Level.INFO;
+				case "WARN":
+					return Level.WARN;
+				case "ERROR":
+					return Level.ERROR;
+				default:
+					return Level.INFO;
+			}
+		};
+
 		// Create a new config object with the updated settings
 		const newConfig: Config = {
-			loglevel: stringToLogLevel(settings.value.theme), // Using theme as loglevel for now
+			loglevel: loglevelToEnum(settings.value.loglevel),
 			gameHome: config.value.gameHome,
 			steamcmdHome: config.value.steamcmdHome,
 			steamcmdConfig: config.value.steamcmdConfig,
@@ -148,8 +149,27 @@ const _saveSettings = async () => {
 onMounted(() => {
 	// Initialize settings with values from config
 	if (config.value) {
-		settings.value.theme = logLevelToString(config.value.loglevel);
-		// Other settings would be initialized here if they were in the config
+		// Map Level enum to string
+		const levelToString = (level: Level): string => {
+			switch (level) {
+				case Level.TRACE:
+					return "TRACE";
+				case Level.DEBUG:
+					return "DEBUG";
+				case Level.INFO:
+					return "INFO";
+				case Level.WARN:
+					return "WARN";
+				case Level.ERROR:
+					return "ERROR";
+				default:
+					return "INFO";
+			}
+		};
+
+		settings.value.loglevel = levelToString(config.value.loglevel);
+		settings.value.theme = config.value.uiConfig?.theme === Theme.DARK ? "DARK" : "LIGHT";
+		settings.value.language = config.value.uiConfig?.language === Language.ZH ? "ZH" : "EN";
 	}
 	console.log("General settings mounted");
 });

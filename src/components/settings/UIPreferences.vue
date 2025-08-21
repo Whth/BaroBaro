@@ -15,67 +15,16 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="layout-density" class="form-label">Layout Density</label>
-        <select
-          id="layout-density"
-          v-model="preferences.layoutDensity"
-          class="form-select"
-        >
-          <option value="compact">Compact</option>
-          <option value="normal">Normal</option>
-          <option value="spacious">Spacious</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Sidebar Position</label>
-        <div class="radio-group">
-          <label class="radio-option">
-            <input
-              v-model="preferences.sidebarPosition"
-              type="radio"
-              value="left"
-              class="form-radio"
-            />
-            Left
-          </label>
-          <label class="radio-option">
-            <input
-              v-model="preferences.sidebarPosition"
-              type="radio"
-              value="right"
-              class="form-radio"
-            />
-            Right
-          </label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="animation-speed" class="form-label">Animation Speed</label>
-        <input
-          id="animation-speed"
-          v-model.number="preferences.animationSpeed"
-          type="range"
-          min="0"
-          max="2"
-          step="0.1"
-          class="form-range"
-        />
-        <div class="range-labels">
-          <span>Slow</span>
-          <span>Normal</span>
-          <span>Fast</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="show-tooltips" class="form-label">
+        <label for="accent-color" class="form-label">Accent Color</label>
+        <div class="color-picker">
           <input
-            id="show-tooltips"
-            v-model="preferences.showTooltips"
-            type="checkbox"
-            class="form-checkbox"
+            id="accent-color"
+            v-model="preferences.accentColor"
+            type="color"
+            class="color-input"
           />
-          Show tooltips
-        </label>
+          <span class="color-value">{{ preferences.accentColor }}</span>
+        </div>
       </div>
 
       <!-- Background Customization -->
@@ -159,10 +108,6 @@ import { ref, onMounted } from "vue";
 
 interface UIPreferences {
 	accentColor: string;
-	layoutDensity: string;
-	sidebarPosition: string;
-	animationSpeed: number;
-	showTooltips: boolean;
 }
 
 interface BackgroundSettings {
@@ -173,10 +118,6 @@ interface BackgroundSettings {
 
 const preferences = ref<UIPreferences>({
 	accentColor: "#3B82F6",
-	layoutDensity: "normal",
-	sidebarPosition: "left",
-	animationSpeed: 1,
-	showTooltips: true,
 });
 
 const backgroundSettings = ref<BackgroundSettings>({
@@ -209,16 +150,12 @@ const savePreferences = () => {
 	console.log("UI preferences and background settings saved successfully!");
 };
 
-const _resetPreferences = () => {
+const resetPreferences = () => {
 	if (
 		confirm("Are you sure you want to reset all UI preferences to defaults?")
 	) {
 		preferences.value = {
 			accentColor: "#3B82F6",
-			layoutDensity: "normal",
-			sidebarPosition: "left",
-			animationSpeed: 1,
-			showTooltips: true,
 		};
 
 		backgroundSettings.value = {
@@ -234,7 +171,7 @@ const _resetPreferences = () => {
 	}
 };
 
-const _handleBackgroundImageUpload = (event: Event) => {
+const handleBackgroundImageUpload = (event: Event) => {
 	const target = event.target as HTMLInputElement;
 	const file = target.files?.[0];
 
@@ -247,7 +184,7 @@ const _handleBackgroundImageUpload = (event: Event) => {
 	}
 };
 
-const _clearBackgroundImage = () => {
+const clearBackgroundImage = () => {
 	backgroundSettings.value.backgroundImage = "";
 	// Clear the file input
 	const fileInput = document.getElementById(
@@ -263,7 +200,11 @@ onMounted(() => {
 	const savedPreferences = localStorage.getItem("uiPreferences");
 	if (savedPreferences) {
 		try {
-			preferences.value = JSON.parse(savedPreferences);
+			const parsed = JSON.parse(savedPreferences);
+			// Only keep accentColor from saved preferences
+			if (parsed.accentColor) {
+				preferences.value.accentColor = parsed.accentColor;
+			}
 		} catch (e) {
 			console.error("Failed to parse UI preferences", e);
 		}

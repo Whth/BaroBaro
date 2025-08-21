@@ -32,6 +32,43 @@
           </button>
         </div>
       </div>
+
+      <!-- SteamCmd Configuration -->
+      <div class="form-section">
+        <h3>SteamCMD Configuration</h3>
+        <div class="form-group">
+          <label for="steamcmd-username" class="form-label">Steam Username</label>
+          <input
+            id="steamcmd-username"
+            v-model="settings.steamcmdUsername"
+            type="text"
+            class="form-input"
+            placeholder="Enter Steam username"
+          />
+        </div>
+        <div class="form-group">
+          <label for="steamcmd-password" class="form-label">Steam Password</label>
+          <input
+            id="steamcmd-password"
+            v-model="settings.steamcmdPassword"
+            type="password"
+            class="form-input"
+            placeholder="Enter Steam password"
+          />
+        </div>
+        <div class="form-group">
+          <label for="steamcmd-parallel" class="form-label">Parallel Downloads</label>
+          <input
+            id="steamcmd-parallel"
+            v-model.number="settings.steamcmdParallel"
+            type="number"
+            min="1"
+            max="10"
+            class="form-input"
+            placeholder="Number of parallel downloads"
+          />
+        </div>
+      </div>
       <div class="form-actions">
         <button class="save-button" @click="saveSettings">Save Paths</button>
       </div>
@@ -43,12 +80,16 @@
 import { onMounted, ref } from "vue";
 import { useModManager } from "../../composables/useModManager";
 import { message, open } from "@tauri-apps/plugin-dialog";
+import { type Config } from "../../proto/config";
 
 const { config, updateGameHome, updateSteamCmdHome } = useModManager();
 
 const settings = ref({
 	gamePath: "",
 	steamcmdPath: "",
+	steamcmdUsername: "",
+	steamcmdPassword: "",
+	steamcmdParallel: 1,
 });
 
 const showError = async (title: string, error: any) => {
@@ -56,7 +97,7 @@ const showError = async (title: string, error: any) => {
 	await message(`Error: ${error.message || error}`, { title, kind: "error" });
 };
 
-const _browseGamePath = async () => {
+const browseGamePath = async () => {
 	console.log("Browsing for game path");
 	try {
 		const selected = await open({
@@ -77,7 +118,7 @@ const _browseGamePath = async () => {
 	}
 };
 
-const _browseSteamCmdPath = async () => {
+const browseSteamCmdPath = async () => {
 	console.log("Browsing for SteamCMD path");
 	try {
 		const selected = await open({
@@ -98,7 +139,7 @@ const _browseSteamCmdPath = async () => {
 	}
 };
 
-const _saveSettings = async () => {
+const saveSettings = async () => {
 	try {
 		console.log("Saving paths settings:", settings.value);
 
@@ -110,6 +151,17 @@ const _saveSettings = async () => {
 		// Update SteamCMD home
 		if (settings.value.steamcmdPath) {
 			await updateSteamCmdHome(settings.value.steamcmdPath);
+		}
+
+		// Update SteamCmdConfig if username/password are provided
+		if (settings.value.steamcmdUsername || settings.value.steamcmdPassword) {
+			const newSteamCmdConfig = {
+				username: settings.value.steamcmdUsername,
+				password: settings.value.steamcmdPassword,
+				parallel: settings.value.steamcmdParallel,
+			};
+			// TODO: Add updateSteamCmdConfig function to useModManager
+			console.log("SteamCmdConfig to save:", newSteamCmdConfig);
 		}
 
 		console.log("Paths settings saved successfully!");
@@ -127,6 +179,11 @@ onMounted(() => {
 	if (config.value) {
 		settings.value.gamePath = config.value.gameHome;
 		settings.value.steamcmdPath = config.value.steamcmdHome;
+		if (config.value.steamcmdConfig) {
+			settings.value.steamcmdUsername = config.value.steamcmdConfig.username;
+			settings.value.steamcmdPassword = config.value.steamcmdConfig.password;
+			settings.value.steamcmdParallel = config.value.steamcmdConfig.parallel;
+		}
 	}
 	console.log("Paths settings mounted");
 });
