@@ -8,8 +8,8 @@
         <div class="form-group">
           <label for="language" class="form-label">{{ t('settings.languageLabel') }}</label>
           <select id="language" v-model="preferences.language" class="form-select">
-            <option value="EN">{{ t('settings.english') }}</option>
-            <option value="ZH">{{ t('settings.chinese') }}</option>
+            <option value="en">{{ t('settings.english') }}</option>
+            <option value="zh">{{ t('settings.chinese') }}</option>
           </select>
         </div>
         <div class="form-group">
@@ -113,6 +113,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useI18n } from 'vue-i18n';
 import { invoke } from '@tauri-apps/api/core';
+import i18n from '../../i18n';
 
 const { t } = useI18n();
 
@@ -129,7 +130,7 @@ interface BackgroundSettings {
 }
 
 const preferences = ref<UIPreferences>({
-	language: "EN",
+	language: "en",
 	theme: "LIGHT",
 	accentColor: "#0969da",
 });
@@ -146,6 +147,9 @@ const savePreferences = () => {
 
 	// Apply theme immediately
 	applyTheme(preferences.value.theme);
+
+	// Apply language immediately
+	applyLanguage(preferences.value.language);
 
 	// Save to localStorage
 	localStorage.setItem("uiPreferences", JSON.stringify(preferences.value));
@@ -184,6 +188,13 @@ const applyTheme = (theme: string) => {
 	}, 300);
 };
 
+const applyLanguage = (language: string) => {
+	// Change i18n locale using the setLocale method
+	i18n.global.locale = language as 'en' | 'zh';
+	// Save language preference to localStorage for persistence across sessions
+	localStorage.setItem("language", language);
+};
+
 const resetPreferences = async () => {
 	if (
 		confirm(t('settings.resetConfirm'))
@@ -210,7 +221,7 @@ const resetPreferences = async () => {
 			} else {
 				// Fallback to hardcoded defaults if no config
 				preferences.value = {
-					language: "EN",
+					language: "en",
 					theme: "LIGHT",
 					accentColor: "#0969da",
 				};
@@ -230,7 +241,7 @@ const resetPreferences = async () => {
 			console.error("Failed to load backend defaults for reset", e);
 			// Fallback to hardcoded defaults
 			preferences.value = {
-				language: "EN",
+				language: "en",
 				theme: "LIGHT",
 				accentColor: "#0969da",
 			};
@@ -278,7 +289,7 @@ onMounted(async () => {
 			const uiConfig = config.ui_config;
 			// Map backend theme enum to frontend string
 			const themeMap: { [key: number]: string } = { 0: 'DARK', 1: 'LIGHT' };
-			const languageMap: { [key: number]: string } = { 0: 'EN', 1: 'ZH' };
+			const languageMap: { [key: number]: string } = { 0: 'en', 1: 'zh' };
 
 			preferences.value.theme = themeMap[uiConfig.theme] || "LIGHT";
 			preferences.value.language = languageMap[uiConfig.language] || "EN";
@@ -308,6 +319,9 @@ onMounted(async () => {
 		}
 	}
 
+	// Apply the initial language setting
+	applyLanguage(preferences.value.language);
+
 	// Load background settings from localStorage
 	const savedBackgroundSettings = localStorage.getItem("backgroundSettings");
 	if (savedBackgroundSettings) {
@@ -328,6 +342,13 @@ onMounted(async () => {
 watch(() => preferences.value.theme, (newTheme) => {
 	if (newTheme) {
 		applyTheme(newTheme);
+	}
+});
+
+// Watch for language changes and apply them immediately
+watch(() => preferences.value.language, (newLanguage) => {
+	if (newLanguage) {
+		applyLanguage(newLanguage);
 	}
 });
 </script>
