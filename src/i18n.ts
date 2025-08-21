@@ -11,9 +11,17 @@ const messages = {
 	zh: zh,
 };
 
+// Get initial language from localStorage or default to 'en'
+const getInitialLanguage = (): "en" | "zh" => {
+	if (typeof window !== 'undefined') {
+		return (localStorage.getItem('language') as "en" | "zh") || "en";
+	}
+	return "en";
+};
+
 const i18n = createI18n<[MessageSchema], "en" | "zh">({
 	legacy: false, // Use Composition API
-	locale: "en", // Default locale
+	locale: getInitialLanguage(), // Get from localStorage or default
 	fallbackLocale: "en", // Fallback locale
 	messages,
 	globalInjection: true, // Allow $t in templates

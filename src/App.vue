@@ -9,7 +9,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import Layout from "./components/core/Layout.vue";
-import { config, refresh_config } from "./invokes";
+import { initializeApplication, getStoredLanguage } from "./composables/useAppInit";
+import { config } from "./invokes";
+import i18n from "./i18n";
 
 // Background customization state
 const backgroundSettings = ref({
@@ -57,8 +59,8 @@ const applyTheme = (theme: string) => {
 // Load all preferences from backend config
 onMounted(async () => {
 	try {
-		// Load config from backend
-		await refresh_config();
+		// Initialize the application (loads config and sets up everything)
+		await initializeApplication();
 
 		if (config.value.uiConfig) {
 			const uiConfig = config.value.uiConfig;
@@ -77,8 +79,14 @@ onMounted(async () => {
 			backgroundSettings.value.backgroundBlur =
 				Number(uiConfig.backgroundBlur) || 0;
 		}
+
+		// Get stored language from the initialization
+		currentLanguage.value = getStoredLanguage();
+
+		// Set i18n locale
+		i18n.global.locale = currentLanguage.value as "en" | "zh";
 	} catch (e) {
-		console.error("Failed to load config from backend", e);
+		console.error("Failed to initialize app", e);
 	}
 
 	// Apply theme immediately on app load
