@@ -13,6 +13,14 @@ impl Config {
                 password: "".to_string(),
                 parallel: 3,
             }),
+            ui_config: Some(UiConfig {
+                theme: Theme::Dark as i32,
+                language: Language::En as i32,
+                accent_color: "#0969da".to_string(),
+                background_image: "".to_string(),
+                background_opacity: 0.2,
+                background_blur: 0.2,
+            }),
         }
     }
 }

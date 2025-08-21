@@ -32,4 +32,36 @@ message Config {
   string steamcmdHome = 3;
   // Configuration settings specific to SteamCMD.
   SteamCmdConfig steamcmdConfig = 4;
+  // The configuration for the user interface.
+  UIConfig uiConfig = 5;
+}
+
+
+// Theme represents the available themes for the user interface.
+enum Theme {
+  // Dark theme
+  DARK = 0;
+  // Light theme
+  LIGHT = 1;
+}
+
+
+enum Language {
+  EN = 0;
+  ZH = 1;
+}
+
+
+
+// UIConfig holds configuration settings for the user interface.
+message UIConfig {
+  // The selected theme for the user interface (e.g., dark, light).
+  Theme theme = 1;
+  // The selected language for the user interface (e.g., en, fr, es).
+  Language language = 2;
+  // The accent color for the user interface.
+  string accentColor = 6;
+  string backgroundImage = 3;
+  float backgroundOpacity = 4;
+  float backgroundBlur = 5;
 }
