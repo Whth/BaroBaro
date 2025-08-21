@@ -13,6 +13,8 @@ import ModManagementTabs from "../../components/mod-management/ModManagementTabs
 .mods-view {
   padding: var(--spacing-l);
   background: transparent;
+  max-height: calc(100vh - 2 * var(--spacing-l));
+  overflow: hidden;
 }
 
 .mods-view h1 {

@@ -24,6 +24,8 @@ const { t } = useI18n();
   flex-direction: column;
   gap: var(--spacing-l);
   background: transparent;
+  max-height: calc(100vh - 2 * var(--spacing-l));
+  overflow: hidden;
 }
 
 .dashboard-header {

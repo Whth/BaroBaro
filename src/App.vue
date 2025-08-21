@@ -26,16 +26,18 @@ const currentLanguage = ref("en");
 
 // Computed background style
 const backgroundStyle = computed(() => {
-	return {
-		backgroundImage: backgroundSettings.value.backgroundImage
-			? `url("${backgroundSettings.value.backgroundImage}")`
-			: "none",
-		backgroundOpacity: backgroundSettings.value.backgroundOpacity,
-		backdropFilter:
-			backgroundSettings.value.backgroundBlur > 0
-				? `blur(${backgroundSettings.value.backgroundBlur}px)`
-				: "none",
+	const styles: any = {
+		backgroundSize: 'cover',
+		backgroundPosition: 'center',
+		backgroundRepeat: 'no-repeat',
+		transition: 'background 0.3s ease',
 	};
+
+	if (backgroundSettings.value.backgroundImage) {
+		styles.backgroundImage = `url("${backgroundSettings.value.backgroundImage}")`;
+	}
+
+	return styles;
 });
 
 // Theme application functions
@@ -148,14 +150,6 @@ body {
   overflow: hidden;
 }
 
-.app-background {
-  height: 100vh;
-  width: 100vw;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: background 0.3s ease;
-}
 
 /* Scrollbar styles */
 ::-webkit-scrollbar {

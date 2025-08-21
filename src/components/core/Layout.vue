@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="layout-wrapper" :class="{ 'sidebar-collapsed': sidebarState.isCollapsed.value }">
-      <Navigation class="acrylic full-height" />
+      <Navigation />
       <main class="main-content">
         <slot />
       </main>
@@ -38,8 +38,11 @@ const sidebarState = inject('sidebarState', {
    flex: 1;
    padding: var(--spacing-l);
    overflow-y: auto;
+   overflow-x: hidden;
    transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
    background: transparent;
+   max-height: calc(100vh - 2 * var(--spacing-l));
+   min-height: 0;
 }
 
 .layout-wrapper.sidebar-collapsed .main-content {

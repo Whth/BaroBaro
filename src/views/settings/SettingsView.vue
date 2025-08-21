@@ -1,6 +1,5 @@
 <template>
   <div class="settings-view">
-    <h1>Settings</h1>
     <div class="settings-content">
       <div class="settings-sidebar">
         <ul class="settings-menu">
@@ -65,15 +64,16 @@ const setActiveSection = (sectionId: string) => {
 .settings-content {
   display: flex;
   gap: var(--spacing-l);
-  background: rgba(var(--color-surface-rgb, 255, 255, 255), 0.8);
-  backdrop-filter: blur(10px);
+  background: rgba(var(--color-surface-rgb, 255, 255, 255), 0.9);
   border-radius: var(--border-radius-rounded);
   box-shadow: var(--shadow-level-1);
   overflow: hidden;
   height: calc(100vh - 200px);
-  min-height: 600px;
+  min-height: 400px;
   max-height: calc(100vh - 150px);
   border: 1px solid rgba(var(--color-border-rgb, 229, 231, 235), 0.3);
+  width: 100%;
+  max-width: calc(100vw - 2 * var(--spacing-l));
 }
 
 .settings-sidebar {

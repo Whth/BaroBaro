@@ -73,8 +73,6 @@ provide('sidebarState', {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
