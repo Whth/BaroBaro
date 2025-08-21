@@ -4,12 +4,7 @@
     <div v-if="selectedMod" class="mod-details-content">
       <div class="mod-header">
         <h3>{{ selectedMod.name }}</h3>
-        <button
-          class="toggle-button"
-          @click="toggleMod"
-        >
-          Toggle
-        </button>
+        <button class="toggle-button" @click="toggleMod">Toggle</button>
       </div>
       <div class="mod-info-grid">
         <div class="mod-info-item">
@@ -22,8 +17,11 @@
         </div>
         <div class="mod-info-item">
           <span class="info-label">Type:</span>
-          <span class="info-value" :class="`source-${selectedMod.corePackage ? 'core' : 'mod'}`">
-            {{ selectedMod.corePackage ? 'Core Package' : 'Mod' }}
+          <span
+            class="info-value"
+            :class="`source-${selectedMod.corePackage ? 'core' : 'mod'}`"
+          >
+            {{ selectedMod.corePackage ? "Core Package" : "Mod" }}
           </span>
         </div>
         <div class="mod-info-item">
@@ -46,25 +44,24 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { BarotraumaMod } from '../../proto/mods'
+import { ref, onMounted } from "vue";
+import { BarotraumaMod } from "../../proto/mods";
 
-const selectedMod = ref<BarotraumaMod | null>(null)
+const selectedMod = ref<BarotraumaMod | null>(null);
 
 // In a real implementation, this would be set by the parent component or a global state
 // For now, we'll set it to the first installed mod if available
 onMounted(() => {
   // This would be set by the parent component in a real implementation
-  console.log('ModDetails mounted')
-})
+  console.log("ModDetails mounted");
+});
 
 const toggleMod = () => {
   if (selectedMod.value) {
     // In a real implementation, this would call a Tauri command to toggle the mod
-    console.log(`Toggle mod ${selectedMod.value.name}`)
+    console.log(`Toggle mod ${selectedMod.value.name}`);
   }
-}
-
+};
 </script>
 
 <style scoped>

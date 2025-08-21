@@ -16,7 +16,11 @@
       </div>
       <div class="form-group">
         <label for="layout-density" class="form-label">Layout Density</label>
-        <select id="layout-density" v-model="preferences.layoutDensity" class="form-select">
+        <select
+          id="layout-density"
+          v-model="preferences.layoutDensity"
+          class="form-select"
+        >
           <option value="compact">Compact</option>
           <option value="normal">Normal</option>
           <option value="spacious">Spacious</option>
@@ -73,12 +77,14 @@
           Show tooltips
         </label>
       </div>
-      
+
       <!-- Background Customization -->
       <div class="form-section">
         <h3>Background Customization</h3>
         <div class="form-group">
-          <label for="background-image" class="form-label">Background Image</label>
+          <label for="background-image" class="form-label"
+            >Background Image</label
+          >
           <div class="file-upload">
             <input
               id="background-image"
@@ -97,7 +103,9 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="background-opacity" class="form-label">Background Opacity</label>
+          <label for="background-opacity" class="form-label"
+            >Background Opacity</label
+          >
           <input
             id="background-opacity"
             v-model.number="backgroundSettings.backgroundOpacity"
@@ -114,7 +122,9 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="background-blur" class="form-label">Background Blur</label>
+          <label for="background-blur" class="form-label"
+            >Background Blur</label
+          >
           <input
             id="background-blur"
             v-model.number="backgroundSettings.backgroundBlur"
@@ -131,133 +141,146 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-actions">
-        <button class="save-button" @click="savePreferences">Save Preferences</button>
-        <button class="reset-button" @click="resetPreferences">Reset to Defaults</button>
+        <button class="save-button" @click="savePreferences">
+          Save Preferences
+        </button>
+        <button class="reset-button" @click="resetPreferences">
+          Reset to Defaults
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
 interface UIPreferences {
-  accentColor: string
-  layoutDensity: string
-  sidebarPosition: string
-  animationSpeed: number
-  showTooltips: boolean
+  accentColor: string;
+  layoutDensity: string;
+  sidebarPosition: string;
+  animationSpeed: number;
+  showTooltips: boolean;
 }
 
 interface BackgroundSettings {
-  backgroundImage: string
-  backgroundOpacity: number
-  backgroundBlur: number
+  backgroundImage: string;
+  backgroundOpacity: number;
+  backgroundBlur: number;
 }
 
 const preferences = ref<UIPreferences>({
-  accentColor: '#3B82F6',
-  layoutDensity: 'normal',
-  sidebarPosition: 'left',
+  accentColor: "#3B82F6",
+  layoutDensity: "normal",
+  sidebarPosition: "left",
   animationSpeed: 1,
-  showTooltips: true
-})
+  showTooltips: true,
+});
 
 const backgroundSettings = ref<BackgroundSettings>({
-  backgroundImage: '',
+  backgroundImage: "",
   backgroundOpacity: 1,
-  backgroundBlur: 0
-})
+  backgroundBlur: 0,
+});
 
 const savePreferences = () => {
-  console.log('Saving UI preferences:', preferences.value)
-  console.log('Saving background settings:', backgroundSettings.value)
-  
+  console.log("Saving UI preferences:", preferences.value);
+  console.log("Saving background settings:", backgroundSettings.value);
+
   // Save to localStorage
-  localStorage.setItem('uiPreferences', JSON.stringify(preferences.value))
-  localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings.value))
-  
+  localStorage.setItem("uiPreferences", JSON.stringify(preferences.value));
+  localStorage.setItem(
+    "backgroundSettings",
+    JSON.stringify(backgroundSettings.value),
+  );
+
   // Emit an event to notify other components of the changes
-  window.dispatchEvent(new CustomEvent('ui-preferences-updated', {
-    detail: {
-      preferences: preferences.value,
-      backgroundSettings: backgroundSettings.value
-    }
-  }))
-  
-  console.log('UI preferences and background settings saved successfully!')
-}
+  window.dispatchEvent(
+    new CustomEvent("ui-preferences-updated", {
+      detail: {
+        preferences: preferences.value,
+        backgroundSettings: backgroundSettings.value,
+      },
+    }),
+  );
+
+  console.log("UI preferences and background settings saved successfully!");
+};
 
 const resetPreferences = () => {
-  if (confirm('Are you sure you want to reset all UI preferences to defaults?')) {
+  if (
+    confirm("Are you sure you want to reset all UI preferences to defaults?")
+  ) {
     preferences.value = {
-      accentColor: '#3B82F6',
-      layoutDensity: 'normal',
-      sidebarPosition: 'left',
+      accentColor: "#3B82F6",
+      layoutDensity: "normal",
+      sidebarPosition: "left",
       animationSpeed: 1,
-      showTooltips: true
-    }
-    
+      showTooltips: true,
+    };
+
     backgroundSettings.value = {
-      backgroundImage: '',
+      backgroundImage: "",
       backgroundOpacity: 1,
-      backgroundBlur: 0
-    }
-    
+      backgroundBlur: 0,
+    };
+
     // Save the reset preferences
-    savePreferences()
-    
-    console.log('UI preferences reset to defaults')
+    savePreferences();
+
+    console.log("UI preferences reset to defaults");
   }
-}
+};
 
 const handleBackgroundImageUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
   if (file) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      backgroundSettings.value.backgroundImage = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
+      backgroundSettings.value.backgroundImage = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   }
-}
+};
 
 const clearBackgroundImage = () => {
-  backgroundSettings.value.backgroundImage = ''
+  backgroundSettings.value.backgroundImage = "";
   // Clear the file input
-  const fileInput = document.getElementById('background-image') as HTMLInputElement
+  const fileInput = document.getElementById(
+    "background-image",
+  ) as HTMLInputElement;
   if (fileInput) {
-    fileInput.value = ''
+    fileInput.value = "";
   }
-}
+};
 
 onMounted(() => {
   // Load preferences from localStorage
-  const savedPreferences = localStorage.getItem('uiPreferences')
+  const savedPreferences = localStorage.getItem("uiPreferences");
   if (savedPreferences) {
     try {
-      preferences.value = JSON.parse(savedPreferences)
+      preferences.value = JSON.parse(savedPreferences);
     } catch (e) {
-      console.error('Failed to parse UI preferences', e)
+      console.error("Failed to parse UI preferences", e);
     }
   }
-  
+
   // Load background settings from localStorage
-  const savedBackgroundSettings = localStorage.getItem('backgroundSettings')
+  const savedBackgroundSettings = localStorage.getItem("backgroundSettings");
   if (savedBackgroundSettings) {
     try {
-      backgroundSettings.value = JSON.parse(savedBackgroundSettings)
+      backgroundSettings.value = JSON.parse(savedBackgroundSettings);
     } catch (e) {
-      console.error('Failed to parse background settings', e)
+      console.error("Failed to parse background settings", e);
     }
   }
-  
-  console.log('UI preferences mounted')
-})
+
+  console.log("UI preferences mounted");
+});
 </script>
 
 <style scoped>
@@ -355,7 +378,8 @@ onMounted(() => {
   border-top: 1px solid var(--color-border);
 }
 
-.save-button, .reset-button {
+.save-button,
+.reset-button {
   padding: var(--spacing-s) var(--spacing-m);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-soft);

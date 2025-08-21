@@ -22,7 +22,7 @@
           v-for="mod in filteredMods"
           :key="mod.steamWorkshopId"
           class="mod-remove-card"
-          :class="{ 'selected': selectedMods.includes(mod.steamWorkshopId) }"
+          :class="{ selected: selectedMods.includes(mod.steamWorkshopId) }"
         >
           <div class="mod-info">
             <input
@@ -59,62 +59,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { installed_mod, refreshInstalledMods } from '../../composables/useModManager'
+import { ref, computed } from "vue";
+import {
+  installed_mod,
+  refreshInstalledMods,
+} from "../../composables/useModManager";
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
-const selectedMods = ref<string[]>([])
+const selectedMods = ref<string[]>([]);
 
 const filteredMods = computed(() => {
   if (!searchQuery.value) {
-    return installed_mod.value
+    return installed_mod.value;
   }
-  const query = searchQuery.value.toLowerCase()
-  return installed_mod.value.filter(mod =>
-    mod.name.toLowerCase().includes(query) ||
-    mod.steamWorkshopId.toLowerCase().includes(query)
-  )
-})
+  const query = searchQuery.value.toLowerCase();
+  return installed_mod.value.filter(
+    (mod) =>
+      mod.name.toLowerCase().includes(query) ||
+      mod.steamWorkshopId.toLowerCase().includes(query),
+  );
+});
 
 const removeMod = async (modId: string) => {
-  const mod = installed_mod.value.find(m => m.steamWorkshopId === modId)
+  const mod = installed_mod.value.find((m) => m.steamWorkshopId === modId);
   if (mod) {
     if (confirm(`Are you sure you want to remove "${mod.name}"?`)) {
       // In a real app, this would call the Tauri backend to remove the mod
-      console.log(`Removing mod: ${mod.name}`)
+      console.log(`Removing mod: ${mod.name}`);
       try {
         // For now, we'll just simulate the removal and refresh the installed mods list
-        alert(`Removed ${mod.name} successfully!`)
+        alert(`Removed ${mod.name} successfully!`);
         // Refresh the installed mods list after removal
-        await refreshInstalledMods()
+        await refreshInstalledMods();
       } catch (error) {
-        console.error('Failed to remove mod:', error)
-        alert(`Failed to remove ${mod.name}.`)
+        console.error("Failed to remove mod:", error);
+        alert(`Failed to remove ${mod.name}.`);
       }
     }
   }
-}
+};
 
 const removeSelectedMods = async () => {
-  if (selectedMods.value.length === 0) return
-  
-  if (confirm(`Are you sure you want to remove ${selectedMods.value.length} mod(s)?`)) {
+  if (selectedMods.value.length === 0) return;
+
+  if (
+    confirm(
+      `Are you sure you want to remove ${selectedMods.value.length} mod(s)?`,
+    )
+  ) {
     // In a real app, this would call the Tauri backend to remove the mods
-    console.log(`Removing ${selectedMods.value.length} mods`)
+    console.log(`Removing ${selectedMods.value.length} mods`);
     try {
       // For now, we'll just simulate the removal and refresh the installed mods list
-      alert(`Removed ${selectedMods.value.length} mod(s) successfully!`)
+      alert(`Removed ${selectedMods.value.length} mod(s) successfully!`);
       // Refresh the installed mods list after removal
-      await refreshInstalledMods()
+      await refreshInstalledMods();
       // Clear selection
-      selectedMods.value = []
+      selectedMods.value = [];
     } catch (error) {
-      console.error('Failed to remove mods:', error)
-      alert('Failed to remove mods.')
+      console.error("Failed to remove mods:", error);
+      alert("Failed to remove mods.");
     }
   }
-}
+};
 </script>
 
 <style scoped>

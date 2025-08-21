@@ -1,6 +1,6 @@
 <template>
   <div class="profile-editor">
-    <h2>{{ isEditing ? 'Edit Profile' : 'Create New Profile' }}</h2>
+    <h2>{{ isEditing ? "Edit Profile" : "Create New Profile" }}</h2>
     <form @submit.prevent="handleSaveProfile" class="profile-form">
       <div class="form-group">
         <label for="profile-name" class="form-label">Profile Name</label>
@@ -15,7 +15,12 @@
       </div>
       <div class="form-group">
         <label for="base-package" class="form-label">Base Package</label>
-        <select id="base-package" v-model="profileData.basePackage" class="form-select" required>
+        <select
+          id="base-package"
+          v-model="profileData.basePackage"
+          class="form-select"
+          required
+        >
           <option value="Vanilla">Vanilla</option>
           <option value="Experimental">Experimental</option>
         </select>
@@ -23,7 +28,11 @@
       <div class="form-group">
         <label class="form-label">Mod Configuration</label>
         <div class="mod-config">
-          <div v-for="mod in installed_mod" :key="mod.steamWorkshopId" class="mod-config-item">
+          <div
+            v-for="mod in installed_mod"
+            :key="mod.steamWorkshopId"
+            class="mod-config-item"
+          >
             <input
               :id="`mod-${mod.steamWorkshopId}`"
               type="checkbox"
@@ -43,7 +52,7 @@
           Cancel
         </button>
         <button type="submit" class="save-button">
-          {{ isEditing ? 'Update Profile' : 'Create Profile' }}
+          {{ isEditing ? "Update Profile" : "Create Profile" }}
         </button>
       </div>
     </form>
@@ -51,62 +60,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import type { Profile } from '../../types'
-import { useModManager } from '../../composables/useModManager'
+import { ref, computed, onMounted } from "vue";
+import type { Profile } from "../../types";
+import { useModManager } from "../../composables/useModManager";
 
 interface ProfileData {
-  name: string
-  basePackage: string
-  enabledMods: string[]
+  name: string;
+  basePackage: string;
+  enabledMods: string[];
 }
 
 const props = defineProps<{
-  profile?: Profile
-}>()
+  profile?: Profile;
+}>();
 
 const emit = defineEmits<{
-  (e: 'save', profile: Profile): void
-  (e: 'cancel'): void
-}>()
+  (e: "save", profile: Profile): void;
+  (e: "cancel"): void;
+}>();
 
-const { installed_mod, refreshInstalledMods, saveProfile: saveProfileToBackend } = useModManager()
+const {
+  installed_mod,
+  refreshInstalledMods,
+  saveProfile: saveProfileToBackend,
+} = useModManager();
 
-const isEditing = computed(() => !!props.profile)
+const isEditing = computed(() => !!props.profile);
 
 const profileData = ref<ProfileData>({
-  name: props.profile?.name || '',
-  basePackage: props.profile?.basePackage || 'Vanilla',
-  enabledMods: props.profile?.enabledMods || []
-})
+  name: props.profile?.name || "",
+  basePackage: props.profile?.basePackage || "Vanilla",
+  enabledMods: props.profile?.enabledMods || [],
+});
 
 const handleSaveProfile = async () => {
-  if (!profileData.value.name.trim()) return
-  
+  if (!profileData.value.name.trim()) return;
+
   const profile: Profile = {
     id: props.profile?.id || Date.now().toString(),
     name: profileData.value.name,
     basePackage: profileData.value.basePackage,
-    enabledMods: profileData.value.enabledMods
-  }
-  
+    enabledMods: profileData.value.enabledMods,
+  };
+
   try {
-    await saveProfileToBackend(profile)
-    emit('save', profile)
+    await saveProfileToBackend(profile);
+    emit("save", profile);
   } catch (error) {
-    console.error('Failed to save profile:', error)
+    console.error("Failed to save profile:", error);
     // TODO: Show error message to user
   }
-}
+};
 
 const cancel = () => {
-  emit('cancel')
-}
+  emit("cancel");
+};
 
 // Load installed mods when component mounts
 onMounted(() => {
-  refreshInstalledMods()
-})
+  refreshInstalledMods();
+});
 </script>
 
 <style scoped>
@@ -140,7 +153,8 @@ onMounted(() => {
   color: var(--color-text-primary);
 }
 
-.form-input, .form-select {
+.form-input,
+.form-select {
   padding: var(--spacing-s) var(--spacing-m);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-soft);
@@ -149,7 +163,8 @@ onMounted(() => {
   font-size: var(--font-size-body-regular);
 }
 
-.form-input:focus, .form-select:focus {
+.form-input:focus,
+.form-select:focus {
   outline: none;
   border-color: var(--color-primary);
 }
@@ -201,7 +216,8 @@ onMounted(() => {
   border-top: 1px solid var(--color-border);
 }
 
-.cancel-button, .save-button {
+.cancel-button,
+.save-button {
   padding: var(--spacing-s) var(--spacing-m);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-soft);

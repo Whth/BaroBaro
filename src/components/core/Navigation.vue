@@ -8,19 +8,31 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/mods" class="nav-link" :class="{ active: isActive('/mods') }">
+        <router-link
+          to="/mods"
+          class="nav-link"
+          :class="{ active: isActive('/mods') }"
+        >
           <span class="nav-icon">🧩</span>
           <span class="nav-text">Mods</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/profiles" class="nav-link" :class="{ active: isActive('/profiles') }">
+        <router-link
+          to="/profiles"
+          class="nav-link"
+          :class="{ active: isActive('/profiles') }"
+        >
           <span class="nav-icon">👤</span>
           <span class="nav-text">Profiles</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/settings" class="nav-link" :class="{ active: isActive('/settings') }">
+        <router-link
+          to="/settings"
+          class="nav-link"
+          :class="{ active: isActive('/settings') }"
+        >
           <span class="nav-icon">⚙️</span>
           <span class="nav-text">Settings</span>
         </router-link>
@@ -30,13 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router";
 
-const route = useRoute()
+const route = useRoute();
 
 const isActive = (path: string) => {
-  return route.path === path
-}
+  return route.path === path;
+};
 </script>
 
 <style scoped>

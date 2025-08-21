@@ -28,14 +28,14 @@
         </div>
       </div>
       <div class="mod-results">
-        <div v-if="loading" class="loading">Loading mods from Steam Workshop...</div>
-        <div v-else-if="mods.length === 0" class="no-results">No mods found</div>
+        <div v-if="loading" class="loading">
+          Loading mods from Steam Workshop...
+        </div>
+        <div v-else-if="mods.length === 0" class="no-results">
+          No mods found
+        </div>
         <div v-else class="mod-grid">
-          <div
-            v-for="mod in mods"
-            :key="mod.id"
-            class="mod-card"
-          >
+          <div v-for="mod in mods" :key="mod.id" class="mod-card">
             <div class="mod-card-header">
               <h3 class="mod-name">{{ mod.name }}</h3>
               <span class="mod-version">{{ mod.version }}</span>
@@ -51,7 +51,7 @@
                 :disabled="mod.downloading"
                 @click="downloadMod(mod.id)"
               >
-                {{ mod.downloading ? 'Downloading...' : 'Download from Steam' }}
+                {{ mod.downloading ? "Downloading..." : "Download from Steam" }}
               </button>
             </div>
           </div>
@@ -62,88 +62,88 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { downloadMods } from '../../composables/useModManager'
+import { ref, onMounted } from "vue";
+import { downloadMods } from "../../composables/useModManager";
 
 // This component is prepared for SteamCMD integration
 // It will connect to the existing SteamCMD Rust crate in the Tauri backend
 
 interface Mod {
-  id: string
-  name: string
-  version: string
-  author: string
-  description: string
-  downloadCount: number
-  category: string
-  rating: number
-  downloading?: boolean
+  id: string;
+  name: string;
+  version: string;
+  author: string;
+  description: string;
+  downloadCount: number;
+  category: string;
+  rating: number;
+  downloading?: boolean;
 }
 
-const searchQuery = ref('')
-const categoryFilter = ref('all')
-const sortBy = ref('popular')
-const loading = ref(false)
+const searchQuery = ref("");
+const categoryFilter = ref("all");
+const sortBy = ref("popular");
+const loading = ref(false);
 
 const mods = ref<Mod[]>([
   {
-    id: '1',
-    name: 'Enhanced Graphics Pack',
-    version: '2.1.0',
-    author: 'VisualMaster',
-    description: 'High resolution textures and improved lighting effects',
+    id: "1",
+    name: "Enhanced Graphics Pack",
+    version: "2.1.0",
+    author: "VisualMaster",
+    description: "High resolution textures and improved lighting effects",
     downloadCount: 125000,
-    category: 'graphics',
-    rating: 4.8
+    category: "graphics",
+    rating: 4.8,
   },
   {
-    id: '2',
-    name: 'Immersive Soundscapes',
-    version: '1.5.3',
-    author: 'AudioWizard',
-    description: 'Realistic ambient sounds and improved audio effects',
+    id: "2",
+    name: "Immersive Soundscapes",
+    version: "1.5.3",
+    author: "AudioWizard",
+    description: "Realistic ambient sounds and improved audio effects",
     downloadCount: 87500,
-    category: 'audio',
-    rating: 4.6
+    category: "audio",
+    rating: 4.6,
   },
   {
-    id: '3',
-    name: 'Advanced Crafting System',
-    version: '3.0.1',
-    author: 'CraftExpert',
-    description: 'Revamped crafting mechanics with new recipes and items',
+    id: "3",
+    name: "Advanced Crafting System",
+    version: "3.0.1",
+    author: "CraftExpert",
+    description: "Revamped crafting mechanics with new recipes and items",
     downloadCount: 210000,
-    category: 'gameplay',
-    rating: 4.9
-  }
-])
+    category: "gameplay",
+    rating: 4.9,
+  },
+]);
 
 const downloadMod = async (modId: string) => {
-  const mod = mods.value.find(m => m.id === modId)
+  const mod = mods.value.find((m) => m.id === modId);
   if (mod) {
-    mod.downloading = true
-    console.log(`Downloading mod from Steam Workshop: ${mod.name}`)
+    mod.downloading = true;
+    console.log(`Downloading mod from Steam Workshop: ${mod.name}`);
     try {
       // In a real app, this would integrate with the SteamCMD Rust crate
       // For now, we'll call the downloadMods function from the composable
-      await downloadMods([parseInt(modId)])
-      mod.downloading = false
-      alert(`Downloaded ${mod.name} from Steam Workshop successfully!`)
+      await downloadMods([parseInt(modId)]);
+      mod.downloading = false;
+      alert(`Downloaded ${mod.name} from Steam Workshop successfully!`);
     } catch (error) {
-      mod.downloading = false
-      console.error('Failed to download mod:', error)
-      alert(`Failed to download ${mod.name} from Steam Workshop.`)
+      mod.downloading = false;
+      console.error("Failed to download mod:", error);
+      alert(`Failed to download ${mod.name} from Steam Workshop.`);
     }
   }
-}
+};
 
 onMounted(() => {
   // Simulate loading
-  loading.value = true
+  loading.value = true;
   setTimeout(() => {
-    loading.value = false
-  }, 1000)
-})
+    loading.value = false;
+  }, 1000);
+});
 </script>
 
 <style scoped>
@@ -212,7 +212,8 @@ onMounted(() => {
   flex: 1;
 }
 
-.loading, .no-results {
+.loading,
+.no-results {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--color-text-secondary);

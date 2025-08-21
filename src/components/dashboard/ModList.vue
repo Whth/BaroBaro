@@ -21,91 +21,103 @@
       />
     </div>
     <div class="mod-order-actions">
-      <button class="save-order-button" @click="saveModOrder">Save Mod Order</button>
-      <button class="load-order-button" @click="loadModOrder">Load Mod Order</button>
+      <button class="save-order-button" @click="saveModOrder">
+        Save Mod Order
+      </button>
+      <button class="load-order-button" @click="loadModOrder">
+        Load Mod Order
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ModCard from './ModCard.vue'
-import { installed_mod, mod_lists, isModEnabled } from '../../composables/useModManager'
+import { ref } from "vue";
+import ModCard from "./ModCard.vue";
+import {
+  installed_mod,
+  mod_lists,
+  isModEnabled,
+} from "../../composables/useModManager";
 
 // Drag and drop state
-const draggedItemIndex = ref<number | null>(null)
-const dragOverIndex = ref<number | null>(null)
+const draggedItemIndex = ref<number | null>(null);
+const dragOverIndex = ref<number | null>(null);
 
 // For now, we'll use the first mod list as the current one
 // In a real implementation, this would be managed by a global state or prop
-const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null
+const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
 
 const toggleMod = (modId: string) => {
   // In a real implementation, this would call a Tauri command to toggle the mod
-  console.log(`Toggle mod ${modId}`)
-}
+  console.log(`Toggle mod ${modId}`);
+};
 
 const selectMod = (modId: string) => {
-  console.log(`Mod ${modId} selected`)
+  console.log(`Mod ${modId} selected`);
   // In a real app, this would emit an event to show mod details
-}
+};
 
 // Drag and drop methods
 const handleDragStart = (index: number, event: DragEvent) => {
-  draggedItemIndex.value = index
+  draggedItemIndex.value = index;
   // Add visual feedback
   if (event.dataTransfer) {
-    event.dataTransfer.setData('text/plain', index.toString())
-    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData("text/plain", index.toString());
+    event.dataTransfer.effectAllowed = "move";
   }
-}
+};
 
 const handleDragOver = (event: DragEvent) => {
-  event.preventDefault()
+  event.preventDefault();
   if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move'
+    event.dataTransfer.dropEffect = "move";
   }
-  return false
-}
+  return false;
+};
 
 const handleDragEnter = (index: number) => {
-  dragOverIndex.value = index
-}
+  dragOverIndex.value = index;
+};
 
 const handleDragLeave = () => {
-  dragOverIndex.value = null
-}
+  dragOverIndex.value = null;
+};
 
 const handleDrop = (index: number, event: DragEvent) => {
-  event.preventDefault()
-  
-  if (draggedItemIndex.value === null) return
-  
+  event.preventDefault();
+
+  if (draggedItemIndex.value === null) return;
+
   // In a real implementation, this would reorder the mods in the current profile
-  console.log(`Dropped mod at index ${index}`)
-  
+  console.log(`Dropped mod at index ${index}`);
+
   // Reset drag state
-  draggedItemIndex.value = null
-  dragOverIndex.value = null
-}
+  draggedItemIndex.value = null;
+  dragOverIndex.value = null;
+};
 
 const handleDragEnd = () => {
-  draggedItemIndex.value = null
-  dragOverIndex.value = null
-}
+  draggedItemIndex.value = null;
+  dragOverIndex.value = null;
+};
 
 // Save and load mod order as XML
 const saveModOrder = () => {
   // In a real implementation, this would save the current mod order to a profile
-  console.log('Saving mod order')
-  alert('Saving mod order - this would connect to the Rust backend in a real implementation')
-}
+  console.log("Saving mod order");
+  alert(
+    "Saving mod order - this would connect to the Rust backend in a real implementation",
+  );
+};
 
 const loadModOrder = () => {
   // In a real app, this would load mod order from a profile
-  console.log('Loading mod order')
-  alert('Loading mod order - this would connect to the Rust backend in a real implementation')
-}
+  console.log("Loading mod order");
+  alert(
+    "Loading mod order - this would connect to the Rust backend in a real implementation",
+  );
+};
 </script>
 
 <style scoped>
@@ -133,7 +145,8 @@ const loadModOrder = () => {
   margin-top: var(--spacing-m);
 }
 
-.save-order-button, .load-order-button {
+.save-order-button,
+.load-order-button {
   padding: var(--spacing-s) var(--spacing-m);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-soft);

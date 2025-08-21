@@ -25,17 +25,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
-const searchQuery = ref('')
-const statusFilter = ref('all')
-const typeFilter = ref('all')
+const searchQuery = ref("");
+const statusFilter = ref("all");
+const typeFilter = ref("all");
 
 // Emit events when filters change
 watch([searchQuery, statusFilter, typeFilter], () => {
-  console.log('Filters changed:', { searchQuery: searchQuery.value, statusFilter: statusFilter.value, typeFilter: typeFilter.value })
+  console.log("Filters changed:", {
+    searchQuery: searchQuery.value,
+    statusFilter: statusFilter.value,
+    typeFilter: typeFilter.value,
+  });
   // In a real app, this would emit an event to update the mod list
-})
+});
 </script>
 
 <style scoped>

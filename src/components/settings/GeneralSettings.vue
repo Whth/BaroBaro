@@ -50,60 +50,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useModManager } from '../../composables/useModManager'
-import { Config, Level, Theme, Language } from '../../proto/config'
+import { ref, onMounted } from "vue";
+import { useModManager } from "../../composables/useModManager";
+import { Config, Level, Theme, Language } from "../../proto/config";
 
-const { config, updateConfig } = useModManager()
+const { config, updateConfig } = useModManager();
 
 const settings = ref({
-  language: 'en',
-  theme: 'system',
+  language: "en",
+  theme: "system",
   autoCheckUpdates: true,
-  enableNotifications: true
-})
+  enableNotifications: true,
+});
 
 // Map protobuf loglevel to string
 const logLevelToString = (level: Level): string => {
   switch (level) {
-    case Level.DEBUG: return 'debug'
-    case Level.INFO: return 'info'
-    case Level.WARN: return 'warn'
-    case Level.ERROR: return 'error'
-    default: return 'info'
+    case Level.DEBUG:
+      return "debug";
+    case Level.INFO:
+      return "info";
+    case Level.WARN:
+      return "warn";
+    case Level.ERROR:
+      return "error";
+    default:
+      return "info";
   }
-}
+};
 
 // Map string to protobuf loglevel
 const stringToLogLevel = (level: string): Level => {
   switch (level) {
-    case 'debug': return Level.DEBUG
-    case 'info': return Level.INFO
-    case 'warn': return Level.WARN
-    case 'error': return Level.ERROR
-    default: return Level.INFO
+    case "debug":
+      return Level.DEBUG;
+    case "info":
+      return Level.INFO;
+    case "warn":
+      return Level.WARN;
+    case "error":
+      return Level.ERROR;
+    default:
+      return Level.INFO;
   }
-}
+};
 
 const saveSettings = async () => {
   try {
     // Map theme string to Theme enum
     const themeToEnum = (theme: string): Theme => {
       switch (theme) {
-        case 'dark': return Theme.DARK
-        case 'light': return Theme.LIGHT
-        default: return Theme.DARK
+        case "dark":
+          return Theme.DARK;
+        case "light":
+          return Theme.LIGHT;
+        default:
+          return Theme.DARK;
       }
-    }
+    };
 
     // Map language string to Language enum
     const languageToEnum = (lang: string): Language => {
       switch (lang) {
-        case 'en': return Language.EN
-        case 'zh': return Language.ZH
-        default: return Language.EN
+        case "en":
+          return Language.EN;
+        case "zh":
+          return Language.ZH;
+        default:
+          return Language.EN;
       }
-    }
+    };
 
     // Create a new config object with the updated settings
     const newConfig: Config = {
@@ -114,29 +130,29 @@ const saveSettings = async () => {
       uiConfig: {
         theme: themeToEnum(settings.value.theme),
         language: languageToEnum(settings.value.language),
-        accentColor: '#3b82f6', // Default accent color
-        backgroundImage: '',
+        accentColor: "#3b82f6", // Default accent color
+        backgroundImage: "",
         backgroundOpacity: 0.8,
-        backgroundBlur: 10
-      }
-    }
-    
-    await updateConfig(newConfig)
-    console.log('General settings saved successfully!')
+        backgroundBlur: 10,
+      },
+    };
+
+    await updateConfig(newConfig);
+    console.log("General settings saved successfully!");
   } catch (error) {
-    console.error('Failed to save general settings:', error)
+    console.error("Failed to save general settings:", error);
     // TODO: Show error message to user
   }
-}
+};
 
 onMounted(() => {
   // Initialize settings with values from config
   if (config.value) {
-    settings.value.theme = logLevelToString(config.value.loglevel)
+    settings.value.theme = logLevelToString(config.value.loglevel);
     // Other settings would be initialized here if they were in the config
   }
-  console.log('General settings mounted')
-})
+  console.log("General settings mounted");
+});
 </script>
 
 <style scoped>

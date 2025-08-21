@@ -13,20 +13,21 @@
         </button>
       </div>
     </div>
-16 |   </header>
+    16 |
+  </header>
 </template>
 
 <script setup lang="ts">
-import ProfileSwitcher from '@/components/profile-management/ProfileSwitcher.vue'
-import ThemeSwitcher from '@/components/core/ThemeSwitcher.vue'
-import { ref } from 'vue'
+import ProfileSwitcher from "@/components/profile-management/ProfileSwitcher.vue";
+import ThemeSwitcher from "@/components/core/ThemeSwitcher.vue";
+import { ref } from "vue";
 
-const unreadNotifications = ref(3)
+const unreadNotifications = ref(3);
 
 const showNotifications = () => {
-  console.log('Show notifications')
+  console.log("Show notifications");
   // Implementation would go here
-}
+};
 </script>
 
 <style scoped>

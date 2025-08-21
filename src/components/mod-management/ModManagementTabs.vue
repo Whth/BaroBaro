@@ -21,29 +21,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import InstallModTab from './InstallModTab.vue'
-import DownloadModTab from './DownloadModTab.vue'
-import UpdateModTab from './UpdateModTab.vue'
-import RemoveModTab from './RemoveModTab.vue'
+import { ref } from "vue";
+import InstallModTab from "./InstallModTab.vue";
+import DownloadModTab from "./DownloadModTab.vue";
+import UpdateModTab from "./UpdateModTab.vue";
+import RemoveModTab from "./RemoveModTab.vue";
 
 interface Tab {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 const tabs: Tab[] = [
-  { id: 'install', name: 'Install Mod' },
-  { id: 'download', name: 'Download Mod' },
-  { id: 'update', name: 'Update Mod' },
-  { id: 'remove', name: 'Remove Mod' }
-]
+  { id: "install", name: "Install Mod" },
+  { id: "download", name: "Download Mod" },
+  { id: "update", name: "Update Mod" },
+  { id: "remove", name: "Remove Mod" },
+];
 
-const activeTab = ref('install')
+const activeTab = ref("install");
 
 const setActiveTab = (tabId: string) => {
-  activeTab.value = tabId
-}
+  activeTab.value = tabId;
+};
 </script>
 
 <style scoped>

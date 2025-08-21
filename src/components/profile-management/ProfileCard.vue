@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-card" :class="{ 'active': isActive }">
+  <div class="profile-card" :class="{ active: isActive }">
     <div class="profile-card-header">
       <h3 class="profile-name">{{ profile.profileName }}</h3>
       <div v-if="isActive" class="active-indicator">Active</div>
@@ -22,13 +22,16 @@
     </div>
     <div class="profile-card-actions">
       <button class="action-button activate-button" @click="activateProfile">
-        {{ isActive ? 'Active' : 'Activate' }}
+        {{ isActive ? "Active" : "Activate" }}
       </button>
       <div class="more-actions">
         <button class="action-button edit-button" @click="editProfile">
           Edit
         </button>
-        <button class="action-button duplicate-button" @click="duplicateProfile">
+        <button
+          class="action-button duplicate-button"
+          @click="duplicateProfile"
+        >
           Duplicate
         </button>
         <button class="action-button delete-button" @click="deleteProfile">
@@ -40,37 +43,36 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import { ModList } from '../../proto/mods'
+import { defineProps, defineEmits } from "vue";
+import { ModList } from "../../proto/mods";
 
 const props = defineProps<{
-  profile: ModList
-  isActive: boolean
-}>()
+  profile: ModList;
+  isActive: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'edit', name: string): void
-  (e: 'delete', name: string): void
-  (e: 'activate', name: string): void
-  (e: 'duplicate', name: string): void
-}>()
+  (e: "edit", name: string): void;
+  (e: "delete", name: string): void;
+  (e: "activate", name: string): void;
+  (e: "duplicate", name: string): void;
+}>();
 
 const editProfile = () => {
-  emit('edit', props.profile.profileName)
-}
+  emit("edit", props.profile.profileName);
+};
 
 const deleteProfile = () => {
-  emit('delete', props.profile.profileName)
-}
+  emit("delete", props.profile.profileName);
+};
 
 const activateProfile = () => {
-  emit('activate', props.profile.profileName)
-}
+  emit("activate", props.profile.profileName);
+};
 
 const duplicateProfile = () => {
-  emit('duplicate', props.profile.profileName)
-}
-
+  emit("duplicate", props.profile.profileName);
+};
 </script>
 
 <style scoped>

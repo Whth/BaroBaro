@@ -1,7 +1,11 @@
 <template>
   <div class="profile-switcher">
     <label for="profile-switch" class="switcher-label">Profile:</label>
-    <select id="profile-switch" v-model="selectedProfile" class="switcher-select">
+    <select
+      id="profile-switch"
+      v-model="selectedProfile"
+      class="switcher-select"
+    >
       <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
         {{ profile.name }}
       </option>
@@ -10,24 +14,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
 interface Profile {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 const profiles = ref<Profile[]>([
-  { id: '1', name: 'Survival Profile' },
-  { id: '2', name: 'Creative Profile' },
-  { id: '3', name: 'Adventure Profile' }
-])
+  { id: "1", name: "Survival Profile" },
+  { id: "2", name: "Creative Profile" },
+  { id: "3", name: "Adventure Profile" },
+]);
 
-const selectedProfile = ref('1')
+const selectedProfile = ref("1");
 
 onMounted(() => {
-  console.log('Profile switcher mounted')
-})
+  console.log("Profile switcher mounted");
+});
 </script>
 
 <style scoped>

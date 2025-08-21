@@ -25,54 +25,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 interface Theme {
-  name: string
-  value: string
+  name: string;
+  value: string;
 }
 
 const themes: Theme[] = [
-  { name: 'Light', value: 'light' },
-  { name: 'Dark', value: 'dark' },
-  { name: 'Barotrauma', value: 'barotrauma' }
-]
+  { name: "Light", value: "light" },
+  { name: "Dark", value: "dark" },
+  { name: "Barotrauma", value: "barotrauma" },
+];
 
-const currentTheme = ref('light')
-const showThemeMenu = ref(false)
-const themeMenu = ref<HTMLElement | null>(null)
+const currentTheme = ref("light");
+const showThemeMenu = ref(false);
+const themeMenu = ref<HTMLElement | null>(null);
 
 const toggleThemeMenu = () => {
-  showThemeMenu.value = !showThemeMenu.value
-}
+  showThemeMenu.value = !showThemeMenu.value;
+};
 
 const selectTheme = (theme: string) => {
-  currentTheme.value = theme
-  document.documentElement.setAttribute('data-theme', theme)
-  localStorage.setItem('theme', theme)
-  showThemeMenu.value = false
-}
+  currentTheme.value = theme;
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  showThemeMenu.value = false;
+};
 
 const handleClickOutside = (event: MouseEvent) => {
   if (themeMenu.value && !themeMenu.value.contains(event.target as Node)) {
-    showThemeMenu.value = false
+    showThemeMenu.value = false;
   }
-}
+};
 
 onMounted(() => {
   // Load theme from localStorage or default to 'light'
-  const savedTheme = localStorage.getItem('theme') || 'light'
-  currentTheme.value = savedTheme
-  document.documentElement.setAttribute('data-theme', savedTheme)
-  
+  const savedTheme = localStorage.getItem("theme") || "light";
+  currentTheme.value = savedTheme;
+  document.documentElement.setAttribute("data-theme", savedTheme);
+
   // Add event listener for clicking outside
-  document.addEventListener('click', handleClickOutside)
-})
+  document.addEventListener("click", handleClickOutside);
+});
 
 onBeforeUnmount(() => {
   // Clean up event listener
-  document.removeEventListener('click', handleClickOutside)
-})
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style scoped>

@@ -3,7 +3,7 @@
     class="mod-card"
     :class="{
       'mod-card-disabled': !isEnabled,
-      'drag-over': isDragOver
+      'drag-over': isDragOver,
     }"
     :draggable="draggable"
     @dragstart="$emit('dragstart', $event)"
@@ -26,7 +26,7 @@
           :class="{ 'toggle-enabled': isEnabled }"
           @click="toggleMod"
         >
-          {{ isEnabled ? 'Enabled' : 'Disabled' }}
+          {{ isEnabled ? "Enabled" : "Disabled" }}
         </button>
       </div>
     </div>
@@ -36,46 +36,47 @@
       <p class="mod-description">Game Version: {{ mod.gameVersion }}</p>
     </div>
     <div class="mod-card-footer">
-      <span class="mod-source" :class="`source-${mod.corePackage ? 'core' : 'mod'}`">
-        {{ mod.corePackage ? 'Core Package' : 'Mod' }}
+      <span
+        class="mod-source"
+        :class="`source-${mod.corePackage ? 'core' : 'mod'}`"
+      >
+        {{ mod.corePackage ? "Core Package" : "Mod" }}
       </span>
-      <button class="details-button" @click="selectMod">
-        View Details
-      </button>
+      <button class="details-button" @click="selectMod">View Details</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import { BarotraumaMod } from '../../proto/mods'
+import { defineProps, defineEmits } from "vue";
+import { BarotraumaMod } from "../../proto/mods";
 
 const props = defineProps<{
-  mod: BarotraumaMod
-  index: number
-  draggable?: boolean
-  isDragOver?: boolean
-  isEnabled?: boolean
-}>()
+  mod: BarotraumaMod;
+  index: number;
+  draggable?: boolean;
+  isDragOver?: boolean;
+  isEnabled?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'toggleMod', id: string): void
-  (e: 'selectMod', id: string): void
-  (e: 'dragstart', event: DragEvent): void
-  (e: 'dragover', event: DragEvent): void
-  (e: 'dragenter'): void
-  (e: 'dragleave'): void
-  (e: 'drop', event: DragEvent): void
-  (e: 'dragend'): void
-}>()
+  (e: "toggleMod", id: string): void;
+  (e: "selectMod", id: string): void;
+  (e: "dragstart", event: DragEvent): void;
+  (e: "dragover", event: DragEvent): void;
+  (e: "dragenter"): void;
+  (e: "dragleave"): void;
+  (e: "drop", event: DragEvent): void;
+  (e: "dragend"): void;
+}>();
 
 const toggleMod = () => {
-  emit('toggleMod', props.mod.steamWorkshopId)
-}
+  emit("toggleMod", props.mod.steamWorkshopId);
+};
 
 const selectMod = () => {
-  emit('selectMod', props.mod.steamWorkshopId)
-}
+  emit("selectMod", props.mod.steamWorkshopId);
+};
 </script>
 
 <style scoped>
