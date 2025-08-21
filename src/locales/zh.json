@@ -21,7 +21,6 @@
 	"navigation": {
 		"dashboard": "仪表板",
 		"mods": "模组",
-		"profiles": "配置",
 		"settings": "设置"
 	},
 
@@ -61,18 +60,6 @@
 		"disabled": "已禁用"
 	},
 
-	"profile": {
-		"name": "配置名称",
-		"basePackage": "基础包",
-		"enabledMods": "已启用模组",
-		"createProfile": "创建配置",
-		"editProfile": "编辑配置",
-		"deleteProfile": "删除配置",
-		"saveProfile": "保存配置",
-		"cancelEdit": "取消编辑",
-		"management": "配置管理",
-		"noSelection": "选择配置查看详情"
-	},
 
 	"settings": {
 		"general": "通用设置",
@@ -164,8 +151,6 @@
 		"loadingModOrder": "正在加载模组顺序 - 这将连接到 Rust 后端",
 		"toggleMod": "切换模组",
 		"modSelected": "模组已选择",
-		"profileSaved": "配置保存成功",
-		"failedToSaveProfile": "保存配置失败",
 		"creatingModList": "正在创建模组列表",
 		"updatingModList": "正在更新模组列表",
 		"deletingModList": "正在删除模组列表"

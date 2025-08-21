@@ -69,7 +69,7 @@ const searchQuery = ref("");
 
 const selectedMods = ref<string[]>([]);
 
-const _filteredMods = computed(() => {
+const filteredMods = computed(() => {
 	if (!searchQuery.value) {
 		return installed_mod.value;
 	}
@@ -81,7 +81,7 @@ const _filteredMods = computed(() => {
 	);
 });
 
-const _removeMod = async (modId: string) => {
+const removeMod = async (modId: string) => {
 	const mod = installed_mod.value.find((m) => m.steamWorkshopId === modId);
 	if (mod) {
 		if (confirm(`Are you sure you want to remove "${mod.name}"?`)) {
@@ -100,7 +100,7 @@ const _removeMod = async (modId: string) => {
 	}
 };
 
-const _removeSelectedMods = async () => {
+const removeSelectedMods = async () => {
 	if (selectedMods.value.length === 0) return;
 
 	if (

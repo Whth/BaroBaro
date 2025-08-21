@@ -112,7 +112,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { invoke } from "@tauri-apps/api/core";
 import i18n from "../../i18n";
 import { config, refresh_config, save_config } from "../../invokes";
 

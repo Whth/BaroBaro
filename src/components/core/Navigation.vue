@@ -19,16 +19,6 @@
      </li>
      <li class="nav-item">
        <router-link
-         to="/profiles"
-         class="nav-link"
-         :class="{ active: isActive('/profiles') }"
-       >
-         <span class="nav-icon">👤</span>
-         <span class="nav-text">{{ t('navigation.profiles') }}</span>
-       </router-link>
-     </li>
-     <li class="nav-item">
-       <router-link
          to="/settings"
          class="nav-link"
          :class="{ active: isActive('/settings') }"
@@ -59,7 +49,9 @@ const isActive = (path: string) => {
   background-color: var(--color-surface);
   border-right: 1px solid var(--color-border);
   padding: var(--spacing-m);
-  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -68,6 +60,7 @@ const isActive = (path: string) => {
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
 }
 
 .nav-item {
@@ -80,7 +73,6 @@ const isActive = (path: string) => {
 .nav-item:nth-child(1) { animation-delay: 0.1s; }
 .nav-item:nth-child(2) { animation-delay: 0.2s; }
 .nav-item:nth-child(3) { animation-delay: 0.3s; }
-.nav-item:nth-child(4) { animation-delay: 0.4s; }
 
 @keyframes slideInLeft {
 	from {

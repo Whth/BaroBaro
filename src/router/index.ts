@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import DashboardView from "@/views/dashboard/DashboardView.vue";
 import ModsView from "@/views/mods/ModsView.vue";
-import ProfilesView from "@/views/profiles/ProfilesView.vue";
 import SettingsView from "@/views/settings/SettingsView.vue";
 
 const routes = [
@@ -14,11 +13,6 @@ const routes = [
 		path: "/mods",
 		name: "Mods",
 		component: ModsView,
-	},
-	{
-		path: "/profiles",
-		name: "Profiles",
-		component: ProfilesView,
 	},
 	{
 		path: "/settings",

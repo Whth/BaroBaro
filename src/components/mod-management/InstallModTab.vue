@@ -55,33 +55,33 @@ import { refreshInstalledMods } from "../../composables/useModManager";
 const selectedFiles = ref<File[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const _browseFiles = () => {
+const browseFiles = () => {
 	if (fileInput.value) {
 		fileInput.value.click();
 	}
 };
 
-const _handleFileSelect = (event: Event) => {
+const handleFileSelect = (event: Event) => {
 	const target = event.target as HTMLInputElement;
 	if (target.files) {
 		selectedFiles.value = Array.from(target.files);
 	}
 };
 
-const _handleDrop = (event: DragEvent) => {
+const handleDrop = (event: DragEvent) => {
 	if (event.dataTransfer?.files) {
 		selectedFiles.value = Array.from(event.dataTransfer.files);
 	}
 };
 
-const _clearSelection = () => {
+const clearSelection = () => {
 	selectedFiles.value = [];
 	if (fileInput.value) {
 		fileInput.value.value = "";
 	}
 };
 
-const _installMods = async () => {
+const installMods = async () => {
 	console.log("Installing mods:", selectedFiles.value);
 	// In a real app, this would call the Tauri backend to install the mods
 	try {
@@ -95,7 +95,7 @@ const _installMods = async () => {
 	}
 };
 
-const _formatFileSize = (bytes: number) => {
+const formatFileSize = (bytes: number) => {
 	if (bytes === 0) return "0 Bytes";
 	const k = 1024;
 	const sizes = ["Bytes", "KB", "MB", "GB"];

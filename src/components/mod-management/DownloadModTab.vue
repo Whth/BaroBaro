@@ -80,9 +80,9 @@ interface Mod {
 	downloading?: boolean;
 }
 
-const _searchQuery = ref("");
-const _categoryFilter = ref("all");
-const _sortBy = ref("popular");
+const searchQuery = ref("");
+const categoryFilter = ref("all");
+const sortBy = ref("popular");
 const loading = ref(false);
 
 const mods = ref<Mod[]>([
@@ -118,7 +118,7 @@ const mods = ref<Mod[]>([
 	},
 ]);
 
-const _downloadMod = async (modId: string) => {
+const downloadMod = async (modId: string) => {
 	const mod = mods.value.find((m) => m.id === modId);
 	if (mod) {
 		mod.downloading = true;

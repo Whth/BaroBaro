@@ -30,37 +30,6 @@ const settings = ref({
 	loglevel: "INFO",
 });
 
-// Map protobuf loglevel to string
-const logLevelToString = (level: Level): string => {
-	switch (level) {
-		case Level.DEBUG:
-			return "debug";
-		case Level.INFO:
-			return "info";
-		case Level.WARN:
-			return "warn";
-		case Level.ERROR:
-			return "error";
-		default:
-			return "info";
-	}
-};
-
-// Map string to protobuf loglevel
-const stringToLogLevel = (level: string): Level => {
-	switch (level) {
-		case "debug":
-			return Level.DEBUG;
-		case "info":
-			return Level.INFO;
-		case "warn":
-			return Level.WARN;
-		case "error":
-			return Level.ERROR;
-		default:
-			return Level.INFO;
-	}
-};
 
 const saveSettings = async () => {
 	try {

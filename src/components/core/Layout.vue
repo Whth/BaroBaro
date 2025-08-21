@@ -27,6 +27,7 @@ import Footer from "./Footer.vue";
 .layout-content {
   display: flex;
   flex: 1;
+  min-height: 0;
 }
 
 .main-content {

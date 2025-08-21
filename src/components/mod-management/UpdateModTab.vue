@@ -81,7 +81,7 @@ const modsToUpdate = ref<ModUpdate[]>([
 	},
 ]);
 
-const _updateMod = async (modId: string) => {
+const updateMod = async (modId: string) => {
 	const mod = modsToUpdate.value.find((m) => m.id === modId);
 	if (mod) {
 		mod.updating = true;
@@ -104,7 +104,7 @@ const _updateMod = async (modId: string) => {
 	}
 };
 
-const _updateAllMods = async () => {
+const updateAllMods = async () => {
 	for (const mod of modsToUpdate.value) {
 		mod.updating = true;
 		console.log(`Updating mod: ${mod.name}`);
@@ -126,7 +126,7 @@ const _updateAllMods = async () => {
 	alert(`Updated all mods successfully!`);
 };
 
-const _viewChangelog = (modId: string) => {
+const viewChangelog = (modId: string) => {
 	const mod = modsToUpdate.value.find((m) => m.id === modId);
 	if (mod) {
 		alert(
