@@ -1,6 +1,6 @@
 <template>
   <div class="general-settings">
-    <h2>General Settings</h2>
+    <Title type="section">General Settings</Title>
     <div class="settings-form">
       <div class="form-group">
         <label for="loglevel" class="form-label">Log Level</label>
@@ -23,13 +23,13 @@
 import { ref, onMounted } from "vue";
 import { useModManager } from "../../composables/useModManager";
 import { type Config, Level, Theme, Language } from "../../proto/config";
+import Title from "../core/Title.vue";
 
 const { config, updateConfig } = useModManager();
 
 const settings = ref({
 	loglevel: "INFO",
 });
-
 
 const saveSettings = async () => {
 	try {

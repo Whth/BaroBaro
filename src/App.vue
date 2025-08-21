@@ -9,7 +9,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import Layout from "./components/core/Layout.vue";
-import { initializeApplication, getStoredLanguage } from "./composables/useAppInit";
+import {
+	initializeApplication,
+	getStoredLanguage,
+} from "./composables/useAppInit";
 import { config, refresh_config } from "./invokes";
 import i18n from "./i18n";
 
@@ -27,10 +30,10 @@ const currentLanguage = ref("en");
 // Computed background style
 const backgroundStyle = computed(() => {
 	const styles: any = {
-		backgroundSize: 'cover',
-		backgroundPosition: 'center',
-		backgroundRepeat: 'no-repeat',
-		transition: 'background 0.3s ease',
+		backgroundSize: "cover",
+		backgroundPosition: "center",
+		backgroundRepeat: "no-repeat",
+		transition: "background 0.3s ease",
 	};
 
 	if (backgroundSettings.value.backgroundImage) {
@@ -60,9 +63,9 @@ const applyTheme = (theme: string) => {
 
 // Set default theme immediately to prevent UI glitches
 const setDefaultTheme = () => {
-  const root = document.documentElement;
-  root.setAttribute("data-theme", "light");
-  localStorage.setItem('language', 'en');
+	const root = document.documentElement;
+	root.setAttribute("data-theme", "light");
+	localStorage.setItem("language", "en");
 };
 
 // Load all preferences from backend config
@@ -97,7 +100,7 @@ onMounted(async () => {
 			console.log("Configuration loaded successfully:", {
 				theme: currentTheme.value,
 				language: currentLanguage.value,
-				accentColor: uiConfig.accentColor
+				accentColor: uiConfig.accentColor,
 			});
 		}
 

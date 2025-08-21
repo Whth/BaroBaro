@@ -1,26 +1,34 @@
 <template>
-  <div class="dashboard-view staggered-animation">
-    <div class="dashboard-header">
-      <Title type="page">{{ t('navigation.dashboard') }}</Title>
-    </div>
-    <SearchAndFilter />
-    <ModList />
-    <ModDetails />
+  <div class="dashboard-view">
+    <n-space vertical :size="24">
+      <div class="dashboard-header">
+        <h1 class="page-title">{{ t('navigation.dashboard') }}</h1>
+      </div>
+
+      <n-card>
+        <SearchAndFilter />
+      </n-card>
+
+      <n-grid x-gap="24" y-gap="24" cols="12">
+        <n-grid-item span="8">
+          <n-card title="Mods List">
+            <ModList />
+          </n-card>
+        </n-grid-item>
+
+        <n-grid-item span="4">
+          <n-card title="Mod Details">
+            <ModDetails />
+          </n-card>
+        </n-grid-item>
+      </n-grid>
+    </n-space>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
-import ModList from "../../components/dashboard/ModList.vue";
-import ModDetails from "../../components/dashboard/ModDetails.vue";
-import Title from "../../components/core/Title.vue";
-
-const { t } = useI18n();
-</script>
-
-<script setup lang="ts">
-import { useI18n } from "vue-i18n";
+import { NCard, NSpace, NGrid, NGridItem } from "naive-ui";
 import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
 import ModList from "../../components/dashboard/ModList.vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";
@@ -30,21 +38,28 @@ const { t } = useI18n();
 
 <style scoped>
 .dashboard-view {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-l);
-  background: transparent;
-  max-height: calc(100vh - 2 * var(--spacing-l));
-  overflow: hidden;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: 24px;
 }
 
-.dashboard-header h1 {
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--n-color-text-primary);
   margin: 0;
+}
+
+:deep(.n-card) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.n-card-header) {
+  font-weight: 600;
+  font-size: 16px;
 }
 </style>

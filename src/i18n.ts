@@ -13,8 +13,8 @@ const messages = {
 
 // Get initial language from localStorage or default to 'en'
 const getInitialLanguage = (): "en" | "zh" => {
-	if (typeof window !== 'undefined') {
-		return (localStorage.getItem('language') as "en" | "zh") || "en";
+	if (typeof window !== "undefined") {
+		return (localStorage.getItem("language") as "en" | "zh") || "en";
 	}
 	return "en";
 };

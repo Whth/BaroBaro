@@ -18,7 +18,7 @@
         <div class="mod-priority-indicator">
           <span class="priority-number">{{ index + 1 }}</span>
         </div>
-        <h3 class="mod-name">{{ mod.name }}</h3>
+        <Title type="card" class="mod-name">{{ mod.name }}</Title>
       </div>
       <div class="mod-actions">
         <button
@@ -50,6 +50,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
 import type { BarotraumaMod } from "../../proto/mods";
+import Title from "../core/Title.vue";
 
 const props = defineProps<{
 	mod: BarotraumaMod;

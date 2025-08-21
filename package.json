@@ -8,7 +8,7 @@
     "gen": "node scripts/gen_proto.cjs",
     "dev": "pnpm gen && vite ",
     "fmt": "biome format src --write",
-    "lint": "biome lint src --write --max-diagnostics 1000",
+    "lint": "biome lint src --write",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",
     "tauri": "tauri"
@@ -18,6 +18,8 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.3.3",
     "@tauri-apps/plugin-opener": "^2",
+    "@vicons/ionicons5": "^0.13.0",
+    "naive-ui": "^2.42.0",
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.11",
     "vue-router": "^4.5.1"

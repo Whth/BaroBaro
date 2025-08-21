@@ -1,7 +1,7 @@
 <template>
   <div class="version-info">
     <h2>Version Information</h2>
-    <div class="info-cards">
+    <div class="info-cards staggered-animation">
       <div class="info-card">
         <h3>🎮 Game Mod Manager</h3>
         <div class="version-details">

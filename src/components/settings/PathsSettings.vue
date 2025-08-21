@@ -1,6 +1,6 @@
 <template>
   <div class="paths-settings">
-    <h2>Paths Settings</h2>
+    <Title type="section">Paths Settings</Title>
     <div class="settings-form">
       <div class="form-group">
         <label class="form-label" for="game-path">Game Installation Path</label>
@@ -35,7 +35,7 @@
 
       <!-- SteamCmd Configuration -->
       <div class="form-section">
-        <h3>SteamCMD Configuration</h3>
+        <Title type="card">SteamCMD Configuration</Title>
         <div class="form-group">
           <label for="steamcmd-username" class="form-label">Steam Username</label>
           <input
@@ -80,6 +80,7 @@
 import { onMounted, ref } from "vue";
 import { useModManager } from "../../composables/useModManager";
 import { message, open } from "@tauri-apps/plugin-dialog";
+import Title from "../core/Title.vue";
 
 const { config, updateGameHome, updateSteamCmdHome } = useModManager();
 
