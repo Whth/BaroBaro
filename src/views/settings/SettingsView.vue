@@ -26,25 +26,22 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import GeneralSettings from "@/components/settings/GeneralSettings.vue";
-import PathsSettings from "@/components/settings/PathsSettings.vue";
-import UIPreferences from "@/components/settings/UIPreferences.vue";
 
 interface SettingsSection {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 }
 
-const settingsSections: SettingsSection[] = [
-  { id: "general", name: "General" },
-  { id: "paths", name: "Paths" },
-  { id: "ui", name: "UI Preferences" },
+const _settingsSections: SettingsSection[] = [
+	{ id: "general", name: "General" },
+	{ id: "paths", name: "Paths" },
+	{ id: "ui", name: "UI Preferences" },
 ];
 
 const activeSection = ref("general");
 
-const setActiveSection = (sectionId: string) => {
-  activeSection.value = sectionId;
+const _setActiveSection = (sectionId: string) => {
+	activeSection.value = sectionId;
 };
 </script>
 

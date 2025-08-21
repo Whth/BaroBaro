@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import ProfileCard from "./ProfileCard.vue";
 import { useModManager } from "../../composables/useModManager";
 
 const { mod_lists, refreshModLists, deleteModList } = useModManager();
@@ -31,55 +30,55 @@ const { mod_lists, refreshModLists, deleteModList } = useModManager();
 const activeProfileName = ref("");
 
 const emit = defineEmits<{
-  (e: "create"): void;
-  (e: "edit", profileName: string): void;
+	(e: "create"): void;
+	(e: "edit", profileName: string): void;
 }>();
 
-const createNewProfile = () => {
-  emit("create");
+const _createNewProfile = () => {
+	emit("create");
 };
 
-const editProfile = (profileName: string) => {
-  emit("edit", profileName);
+const _editProfile = (profileName: string) => {
+	emit("edit", profileName);
 };
 
-const deleteProfile = async (profileName: string) => {
-  const profile = mod_lists.value.find((p) => p.profileName === profileName);
-  if (profile) {
-    if (confirm(`Are you sure you want to delete "${profile.profileName}"?`)) {
-      try {
-        await deleteModList(profileName);
-        console.log("Deleted profile:", profileName);
-      } catch (error) {
-        console.error("Failed to delete profile:", error);
-        // TODO: Show error message to user
-      }
-    }
-  }
+const _deleteProfile = async (profileName: string) => {
+	const profile = mod_lists.value.find((p) => p.profileName === profileName);
+	if (profile) {
+		if (confirm(`Are you sure you want to delete "${profile.profileName}"?`)) {
+			try {
+				await deleteModList(profileName);
+				console.log("Deleted profile:", profileName);
+			} catch (error) {
+				console.error("Failed to delete profile:", error);
+				// TODO: Show error message to user
+			}
+		}
+	}
 };
 
-const activateProfile = (profileName: string) => {
-  activeProfileName.value = profileName;
-  console.log("Activated profile:", profileName);
+const _activateProfile = (profileName: string) => {
+	activeProfileName.value = profileName;
+	console.log("Activated profile:", profileName);
 };
 
-const duplicateProfile = (profileName: string) => {
-  const profile = mod_lists.value.find((p) => p.profileName === profileName);
-  if (profile) {
-    // In a real implementation, this would call a Tauri command to duplicate the profile
-    console.log("Duplicated profile:", profileName);
-  }
+const _duplicateProfile = (profileName: string) => {
+	const profile = mod_lists.value.find((p) => p.profileName === profileName);
+	if (profile) {
+		// In a real implementation, this would call a Tauri command to duplicate the profile
+		console.log("Duplicated profile:", profileName);
+	}
 };
 
 onMounted(async () => {
-  // Refresh mod lists when component mounts
-  await refreshModLists();
+	// Refresh mod lists when component mounts
+	await refreshModLists();
 
-  // Set the first mod list as the default active profile
-  if (mod_lists.value.length > 0) {
-    activeProfileName.value = mod_lists.value[0].profileName;
-  }
-  console.log("Profile list mounted with", mod_lists.value.length, "profiles");
+	// Set the first mod list as the default active profile
+	if (mod_lists.value.length > 0) {
+		activeProfileName.value = mod_lists.value[0].profileName;
+	}
+	console.log("Profile list mounted with", mod_lists.value.length, "profiles");
 });
 </script>
 

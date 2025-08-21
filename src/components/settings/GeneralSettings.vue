@@ -52,106 +52,106 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useModManager } from "../../composables/useModManager";
-import { Config, Level, Theme, Language } from "../../proto/config";
+import { type Config, Level, Theme, Language } from "../../proto/config";
 
 const { config, updateConfig } = useModManager();
 
 const settings = ref({
-  language: "en",
-  theme: "system",
-  autoCheckUpdates: true,
-  enableNotifications: true,
+	language: "en",
+	theme: "system",
+	autoCheckUpdates: true,
+	enableNotifications: true,
 });
 
 // Map protobuf loglevel to string
 const logLevelToString = (level: Level): string => {
-  switch (level) {
-    case Level.DEBUG:
-      return "debug";
-    case Level.INFO:
-      return "info";
-    case Level.WARN:
-      return "warn";
-    case Level.ERROR:
-      return "error";
-    default:
-      return "info";
-  }
+	switch (level) {
+		case Level.DEBUG:
+			return "debug";
+		case Level.INFO:
+			return "info";
+		case Level.WARN:
+			return "warn";
+		case Level.ERROR:
+			return "error";
+		default:
+			return "info";
+	}
 };
 
 // Map string to protobuf loglevel
 const stringToLogLevel = (level: string): Level => {
-  switch (level) {
-    case "debug":
-      return Level.DEBUG;
-    case "info":
-      return Level.INFO;
-    case "warn":
-      return Level.WARN;
-    case "error":
-      return Level.ERROR;
-    default:
-      return Level.INFO;
-  }
+	switch (level) {
+		case "debug":
+			return Level.DEBUG;
+		case "info":
+			return Level.INFO;
+		case "warn":
+			return Level.WARN;
+		case "error":
+			return Level.ERROR;
+		default:
+			return Level.INFO;
+	}
 };
 
-const saveSettings = async () => {
-  try {
-    // Map theme string to Theme enum
-    const themeToEnum = (theme: string): Theme => {
-      switch (theme) {
-        case "dark":
-          return Theme.DARK;
-        case "light":
-          return Theme.LIGHT;
-        default:
-          return Theme.DARK;
-      }
-    };
+const _saveSettings = async () => {
+	try {
+		// Map theme string to Theme enum
+		const themeToEnum = (theme: string): Theme => {
+			switch (theme) {
+				case "dark":
+					return Theme.DARK;
+				case "light":
+					return Theme.LIGHT;
+				default:
+					return Theme.DARK;
+			}
+		};
 
-    // Map language string to Language enum
-    const languageToEnum = (lang: string): Language => {
-      switch (lang) {
-        case "en":
-          return Language.EN;
-        case "zh":
-          return Language.ZH;
-        default:
-          return Language.EN;
-      }
-    };
+		// Map language string to Language enum
+		const languageToEnum = (lang: string): Language => {
+			switch (lang) {
+				case "en":
+					return Language.EN;
+				case "zh":
+					return Language.ZH;
+				default:
+					return Language.EN;
+			}
+		};
 
-    // Create a new config object with the updated settings
-    const newConfig: Config = {
-      loglevel: stringToLogLevel(settings.value.theme), // Using theme as loglevel for now
-      gameHome: config.value.gameHome,
-      steamcmdHome: config.value.steamcmdHome,
-      steamcmdConfig: config.value.steamcmdConfig,
-      uiConfig: {
-        theme: themeToEnum(settings.value.theme),
-        language: languageToEnum(settings.value.language),
-        accentColor: "#3b82f6", // Default accent color
-        backgroundImage: "",
-        backgroundOpacity: 0.8,
-        backgroundBlur: 10,
-      },
-    };
+		// Create a new config object with the updated settings
+		const newConfig: Config = {
+			loglevel: stringToLogLevel(settings.value.theme), // Using theme as loglevel for now
+			gameHome: config.value.gameHome,
+			steamcmdHome: config.value.steamcmdHome,
+			steamcmdConfig: config.value.steamcmdConfig,
+			uiConfig: {
+				theme: themeToEnum(settings.value.theme),
+				language: languageToEnum(settings.value.language),
+				accentColor: "#3b82f6", // Default accent color
+				backgroundImage: "",
+				backgroundOpacity: 0.8,
+				backgroundBlur: 10,
+			},
+		};
 
-    await updateConfig(newConfig);
-    console.log("General settings saved successfully!");
-  } catch (error) {
-    console.error("Failed to save general settings:", error);
-    // TODO: Show error message to user
-  }
+		await updateConfig(newConfig);
+		console.log("General settings saved successfully!");
+	} catch (error) {
+		console.error("Failed to save general settings:", error);
+		// TODO: Show error message to user
+	}
 };
 
 onMounted(() => {
-  // Initialize settings with values from config
-  if (config.value) {
-    settings.value.theme = logLevelToString(config.value.loglevel);
-    // Other settings would be initialized here if they were in the config
-  }
-  console.log("General settings mounted");
+	// Initialize settings with values from config
+	if (config.value) {
+		settings.value.theme = logLevelToString(config.value.loglevel);
+		// Other settings would be initialized here if they were in the config
+	}
+	console.log("General settings mounted");
 });
 </script>
 

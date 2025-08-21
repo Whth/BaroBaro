@@ -17,20 +17,20 @@
 import { ref, onMounted } from "vue";
 
 interface Profile {
-  id: string;
-  name: string;
+	id: string;
+	name: string;
 }
 
-const profiles = ref<Profile[]>([
-  { id: "1", name: "Survival Profile" },
-  { id: "2", name: "Creative Profile" },
-  { id: "3", name: "Adventure Profile" },
+const _profiles = ref<Profile[]>([
+	{ id: "1", name: "Survival Profile" },
+	{ id: "2", name: "Creative Profile" },
+	{ id: "3", name: "Adventure Profile" },
 ]);
 
-const selectedProfile = ref("1");
+const _selectedProfile = ref("1");
 
 onMounted(() => {
-  console.log("Profile switcher mounted");
+	console.log("Profile switcher mounted");
 });
 </script>
 

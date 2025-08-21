@@ -158,128 +158,128 @@
 import { ref, onMounted } from "vue";
 
 interface UIPreferences {
-  accentColor: string;
-  layoutDensity: string;
-  sidebarPosition: string;
-  animationSpeed: number;
-  showTooltips: boolean;
+	accentColor: string;
+	layoutDensity: string;
+	sidebarPosition: string;
+	animationSpeed: number;
+	showTooltips: boolean;
 }
 
 interface BackgroundSettings {
-  backgroundImage: string;
-  backgroundOpacity: number;
-  backgroundBlur: number;
+	backgroundImage: string;
+	backgroundOpacity: number;
+	backgroundBlur: number;
 }
 
 const preferences = ref<UIPreferences>({
-  accentColor: "#3B82F6",
-  layoutDensity: "normal",
-  sidebarPosition: "left",
-  animationSpeed: 1,
-  showTooltips: true,
+	accentColor: "#3B82F6",
+	layoutDensity: "normal",
+	sidebarPosition: "left",
+	animationSpeed: 1,
+	showTooltips: true,
 });
 
 const backgroundSettings = ref<BackgroundSettings>({
-  backgroundImage: "",
-  backgroundOpacity: 1,
-  backgroundBlur: 0,
+	backgroundImage: "",
+	backgroundOpacity: 1,
+	backgroundBlur: 0,
 });
 
 const savePreferences = () => {
-  console.log("Saving UI preferences:", preferences.value);
-  console.log("Saving background settings:", backgroundSettings.value);
+	console.log("Saving UI preferences:", preferences.value);
+	console.log("Saving background settings:", backgroundSettings.value);
 
-  // Save to localStorage
-  localStorage.setItem("uiPreferences", JSON.stringify(preferences.value));
-  localStorage.setItem(
-    "backgroundSettings",
-    JSON.stringify(backgroundSettings.value),
-  );
+	// Save to localStorage
+	localStorage.setItem("uiPreferences", JSON.stringify(preferences.value));
+	localStorage.setItem(
+		"backgroundSettings",
+		JSON.stringify(backgroundSettings.value),
+	);
 
-  // Emit an event to notify other components of the changes
-  window.dispatchEvent(
-    new CustomEvent("ui-preferences-updated", {
-      detail: {
-        preferences: preferences.value,
-        backgroundSettings: backgroundSettings.value,
-      },
-    }),
-  );
+	// Emit an event to notify other components of the changes
+	window.dispatchEvent(
+		new CustomEvent("ui-preferences-updated", {
+			detail: {
+				preferences: preferences.value,
+				backgroundSettings: backgroundSettings.value,
+			},
+		}),
+	);
 
-  console.log("UI preferences and background settings saved successfully!");
+	console.log("UI preferences and background settings saved successfully!");
 };
 
-const resetPreferences = () => {
-  if (
-    confirm("Are you sure you want to reset all UI preferences to defaults?")
-  ) {
-    preferences.value = {
-      accentColor: "#3B82F6",
-      layoutDensity: "normal",
-      sidebarPosition: "left",
-      animationSpeed: 1,
-      showTooltips: true,
-    };
+const _resetPreferences = () => {
+	if (
+		confirm("Are you sure you want to reset all UI preferences to defaults?")
+	) {
+		preferences.value = {
+			accentColor: "#3B82F6",
+			layoutDensity: "normal",
+			sidebarPosition: "left",
+			animationSpeed: 1,
+			showTooltips: true,
+		};
 
-    backgroundSettings.value = {
-      backgroundImage: "",
-      backgroundOpacity: 1,
-      backgroundBlur: 0,
-    };
+		backgroundSettings.value = {
+			backgroundImage: "",
+			backgroundOpacity: 1,
+			backgroundBlur: 0,
+		};
 
-    // Save the reset preferences
-    savePreferences();
+		// Save the reset preferences
+		savePreferences();
 
-    console.log("UI preferences reset to defaults");
-  }
+		console.log("UI preferences reset to defaults");
+	}
 };
 
-const handleBackgroundImageUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
+const _handleBackgroundImageUpload = (event: Event) => {
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
 
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      backgroundSettings.value.backgroundImage = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  }
+	if (file) {
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			backgroundSettings.value.backgroundImage = e.target?.result as string;
+		};
+		reader.readAsDataURL(file);
+	}
 };
 
-const clearBackgroundImage = () => {
-  backgroundSettings.value.backgroundImage = "";
-  // Clear the file input
-  const fileInput = document.getElementById(
-    "background-image",
-  ) as HTMLInputElement;
-  if (fileInput) {
-    fileInput.value = "";
-  }
+const _clearBackgroundImage = () => {
+	backgroundSettings.value.backgroundImage = "";
+	// Clear the file input
+	const fileInput = document.getElementById(
+		"background-image",
+	) as HTMLInputElement;
+	if (fileInput) {
+		fileInput.value = "";
+	}
 };
 
 onMounted(() => {
-  // Load preferences from localStorage
-  const savedPreferences = localStorage.getItem("uiPreferences");
-  if (savedPreferences) {
-    try {
-      preferences.value = JSON.parse(savedPreferences);
-    } catch (e) {
-      console.error("Failed to parse UI preferences", e);
-    }
-  }
+	// Load preferences from localStorage
+	const savedPreferences = localStorage.getItem("uiPreferences");
+	if (savedPreferences) {
+		try {
+			preferences.value = JSON.parse(savedPreferences);
+		} catch (e) {
+			console.error("Failed to parse UI preferences", e);
+		}
+	}
 
-  // Load background settings from localStorage
-  const savedBackgroundSettings = localStorage.getItem("backgroundSettings");
-  if (savedBackgroundSettings) {
-    try {
-      backgroundSettings.value = JSON.parse(savedBackgroundSettings);
-    } catch (e) {
-      console.error("Failed to parse background settings", e);
-    }
-  }
+	// Load background settings from localStorage
+	const savedBackgroundSettings = localStorage.getItem("backgroundSettings");
+	if (savedBackgroundSettings) {
+		try {
+			backgroundSettings.value = JSON.parse(savedBackgroundSettings);
+		} catch (e) {
+			console.error("Failed to parse background settings", e);
+		}
+	}
 
-  console.log("UI preferences mounted");
+	console.log("UI preferences mounted");
 });
 </script>
 

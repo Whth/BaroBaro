@@ -1,132 +1,132 @@
 :root {
-  /* Colors */
-  /* Primary Colors */
-  --color-primary: #3b82f6;
-  --color-primary-dark: #1d4ed8;
-  --color-primary-light: #93c5fd;
+	/* Colors */
+	/* Primary Colors */
+	--color-primary: #3b82f6;
+	--color-primary-dark: #1d4ed8;
+	--color-primary-light: #93c5fd;
 
-  /* Secondary Colors */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #6366f1;
+	/* Secondary Colors */
+	--color-success: #10b981;
+	--color-warning: #f59e0b;
+	--color-error: #ef4444;
+	--color-info: #6366f1;
 
-  /* Neutral Colors */
-  --color-background-light: #f9fafb;
-  --color-background-dark: #111827;
-  --color-surface-light: #ffffff;
-  --color-surface-dark: #1f2937;
-  --color-text-primary-light: #111827;
-  --color-text-primary-dark: #f9fafb;
-  --color-text-secondary-light: #6b7280;
-  --color-text-secondary-dark: #9ca3af;
-  --color-border-light: #e5e7eb;
-  --color-border-dark: #374151;
+	/* Neutral Colors */
+	--color-background-light: #f9fafb;
+	--color-background-dark: #111827;
+	--color-surface-light: #ffffff;
+	--color-surface-dark: #1f2937;
+	--color-text-primary-light: #111827;
+	--color-text-primary-dark: #f9fafb;
+	--color-text-secondary-light: #6b7280;
+	--color-text-secondary-dark: #9ca3af;
+	--color-border-light: #e5e7eb;
+	--color-border-dark: #374151;
 
-  /* Barotrauma Theme Colors */
-  --color-background-barotrauma: #0a1a2a;
-  --color-surface-barotrauma: #152a3f;
-  --color-text-primary-barotrauma: #e0f0ff;
-  --color-text-secondary-barotrauma: #a0c0e0;
-  --color-border-barotrauma: #2a4a6a;
-  --color-primary-barotrauma: #4a9fff;
-  --color-primary-dark-barotrauma: #2a7fff;
-  --color-primary-light-barotrauma: #7abfff;
+	/* Barotrauma Theme Colors */
+	--color-background-barotrauma: #0a1a2a;
+	--color-surface-barotrauma: #152a3f;
+	--color-text-primary-barotrauma: #e0f0ff;
+	--color-text-secondary-barotrauma: #a0c0e0;
+	--color-border-barotrauma: #2a4a6a;
+	--color-primary-barotrauma: #4a9fff;
+	--color-primary-dark-barotrauma: #2a7fff;
+	--color-primary-light-barotrauma: #7abfff;
 
-  /* Background customization */
-  --background-opacity: 1;
-  --background-blur: 0px;
-  --background-image: none;
+	/* Background customization */
+	--background-opacity: 1;
+	--background-blur: 0px;
+	--background-image: none;
 
-  /* Current theme colors (default to light) */
-  --color-background: var(--color-background-light);
-  --color-surface: var(--color-surface-light);
-  --color-text-primary: var(--color-text-primary-light);
-  --color-text-secondary: var(--color-text-secondary-light);
-  --color-border: var(--color-border-light);
+	/* Current theme colors (default to light) */
+	--color-background: var(--color-background-light);
+	--color-surface: var(--color-surface-light);
+	--color-text-primary: var(--color-text-primary-light);
+	--color-text-secondary: var(--color-text-secondary-light);
+	--color-border: var(--color-border-light);
 
-  /* Typography */
-  --font-family-primary:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  --font-family-monospace:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	/* Typography */
+	--font-family-primary:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+		Arial, sans-serif;
+	--font-family-monospace:
+		"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 
-  /* Font Sizes */
-  --font-size-heading-1: 2rem;
-  --font-size-heading-2: 1.5rem;
-  --font-size-heading-3: 1.25rem;
-  --font-size-body-large: 1.125rem;
-  --font-size-body-regular: 1rem;
-  --font-size-body-small: 0.875rem;
-  --font-size-caption: 0.75rem;
+	/* Font Sizes */
+	--font-size-heading-1: 2rem;
+	--font-size-heading-2: 1.5rem;
+	--font-size-heading-3: 1.25rem;
+	--font-size-body-large: 1.125rem;
+	--font-size-body-regular: 1rem;
+	--font-size-body-small: 0.875rem;
+	--font-size-caption: 0.75rem;
 
-  /* Font Weights */
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semi-bold: 600;
-  --font-weight-bold: 700;
+	/* Font Weights */
+	--font-weight-light: 300;
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semi-bold: 600;
+	--font-weight-bold: 700;
 
-  /* Spacing System */
-  --spacing-xxs: 0.25rem;
-  --spacing-xs: 0.5rem;
-  --spacing-s: 0.75rem;
-  --spacing-m: 1rem;
-  --spacing-l: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-xxl: 3rem;
+	/* Spacing System */
+	--spacing-xxs: 0.25rem;
+	--spacing-xs: 0.5rem;
+	--spacing-s: 0.75rem;
+	--spacing-m: 1rem;
+	--spacing-l: 1.5rem;
+	--spacing-xl: 2rem;
+	--spacing-xxl: 3rem;
 
-  /* Border Radius */
-  --border-radius-sharp: 0;
-  --border-radius-soft: 0.25rem;
-  --border-radius-rounded: 0.5rem;
-  --border-radius-circular: 9999px;
+	/* Border Radius */
+	--border-radius-sharp: 0;
+	--border-radius-soft: 0.25rem;
+	--border-radius-rounded: 0.5rem;
+	--border-radius-circular: 9999px;
 
-  /* Shadows */
-  --shadow-level-0: none;
-  --shadow-level-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-level-2:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-level-3:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	/* Shadows */
+	--shadow-level-0: none;
+	--shadow-level-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+	--shadow-level-2:
+		0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	--shadow-level-3:
+		0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Dark theme overrides */
 [data-theme="dark"] {
-  --color-background: var(--color-background-dark);
-  --color-surface: var(--color-surface-dark);
-  --color-text-primary: var(--color-text-primary-dark);
-  --color-text-secondary: var(--color-text-secondary-dark);
-  --color-border: var(--color-border-dark);
+	--color-background: var(--color-background-dark);
+	--color-surface: var(--color-surface-dark);
+	--color-text-primary: var(--color-text-primary-dark);
+	--color-text-secondary: var(--color-text-secondary-dark);
+	--color-border: var(--color-border-dark);
 }
 
 /* Barotrauma theme overrides */
 [data-theme="barotrauma"] {
-  --color-background: var(--color-background-barotrauma);
-  --color-surface: var(--color-surface-barotrauma);
-  --color-text-primary: var(--color-text-primary-barotrauma);
-  --color-text-secondary: var(--color-text-secondary-barotrauma);
-  --color-border: var(--color-border-barotrauma);
-  --color-primary: var(--color-primary-barotrauma);
-  --color-primary-dark: var(--color-primary-dark-barotrauma);
-  --color-primary-light: var(--color-primary-light-barotrauma);
+	--color-background: var(--color-background-barotrauma);
+	--color-surface: var(--color-surface-barotrauma);
+	--color-text-primary: var(--color-text-primary-barotrauma);
+	--color-text-secondary: var(--color-text-secondary-barotrauma);
+	--color-border: var(--color-border-barotrauma);
+	--color-primary: var(--color-primary-barotrauma);
+	--color-primary-dark: var(--color-primary-dark-barotrauma);
+	--color-primary-light: var(--color-primary-light-barotrauma);
 }
 
 /* Acrylic effect */
 .acrylic {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 [data-theme="dark"] .acrylic {
-  background: rgba(30, 30, 30, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(30, 30, 30, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="barotrauma"] .acrylic {
-  background: rgba(21, 42, 63, 0.3);
-  border: 1px solid rgba(74, 159, 255, 0.2);
+	background: rgba(21, 42, 63, 0.3);
+	border: 1px solid rgba(74, 159, 255, 0.2);
 }

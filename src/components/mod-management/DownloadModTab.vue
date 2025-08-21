@@ -69,80 +69,80 @@ import { downloadMods } from "../../composables/useModManager";
 // It will connect to the existing SteamCMD Rust crate in the Tauri backend
 
 interface Mod {
-  id: string;
-  name: string;
-  version: string;
-  author: string;
-  description: string;
-  downloadCount: number;
-  category: string;
-  rating: number;
-  downloading?: boolean;
+	id: string;
+	name: string;
+	version: string;
+	author: string;
+	description: string;
+	downloadCount: number;
+	category: string;
+	rating: number;
+	downloading?: boolean;
 }
 
-const searchQuery = ref("");
-const categoryFilter = ref("all");
-const sortBy = ref("popular");
+const _searchQuery = ref("");
+const _categoryFilter = ref("all");
+const _sortBy = ref("popular");
 const loading = ref(false);
 
 const mods = ref<Mod[]>([
-  {
-    id: "1",
-    name: "Enhanced Graphics Pack",
-    version: "2.1.0",
-    author: "VisualMaster",
-    description: "High resolution textures and improved lighting effects",
-    downloadCount: 125000,
-    category: "graphics",
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    name: "Immersive Soundscapes",
-    version: "1.5.3",
-    author: "AudioWizard",
-    description: "Realistic ambient sounds and improved audio effects",
-    downloadCount: 87500,
-    category: "audio",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    name: "Advanced Crafting System",
-    version: "3.0.1",
-    author: "CraftExpert",
-    description: "Revamped crafting mechanics with new recipes and items",
-    downloadCount: 210000,
-    category: "gameplay",
-    rating: 4.9,
-  },
+	{
+		id: "1",
+		name: "Enhanced Graphics Pack",
+		version: "2.1.0",
+		author: "VisualMaster",
+		description: "High resolution textures and improved lighting effects",
+		downloadCount: 125000,
+		category: "graphics",
+		rating: 4.8,
+	},
+	{
+		id: "2",
+		name: "Immersive Soundscapes",
+		version: "1.5.3",
+		author: "AudioWizard",
+		description: "Realistic ambient sounds and improved audio effects",
+		downloadCount: 87500,
+		category: "audio",
+		rating: 4.6,
+	},
+	{
+		id: "3",
+		name: "Advanced Crafting System",
+		version: "3.0.1",
+		author: "CraftExpert",
+		description: "Revamped crafting mechanics with new recipes and items",
+		downloadCount: 210000,
+		category: "gameplay",
+		rating: 4.9,
+	},
 ]);
 
-const downloadMod = async (modId: string) => {
-  const mod = mods.value.find((m) => m.id === modId);
-  if (mod) {
-    mod.downloading = true;
-    console.log(`Downloading mod from Steam Workshop: ${mod.name}`);
-    try {
-      // In a real app, this would integrate with the SteamCMD Rust crate
-      // For now, we'll call the downloadMods function from the composable
-      await downloadMods([parseInt(modId)]);
-      mod.downloading = false;
-      alert(`Downloaded ${mod.name} from Steam Workshop successfully!`);
-    } catch (error) {
-      mod.downloading = false;
-      console.error("Failed to download mod:", error);
-      alert(`Failed to download ${mod.name} from Steam Workshop.`);
-    }
-  }
+const _downloadMod = async (modId: string) => {
+	const mod = mods.value.find((m) => m.id === modId);
+	if (mod) {
+		mod.downloading = true;
+		console.log(`Downloading mod from Steam Workshop: ${mod.name}`);
+		try {
+			// In a real app, this would integrate with the SteamCMD Rust crate
+			// For now, we'll call the downloadMods function from the composable
+			await downloadMods([parseInt(modId, 10)]);
+			mod.downloading = false;
+			alert(`Downloaded ${mod.name} from Steam Workshop successfully!`);
+		} catch (error) {
+			mod.downloading = false;
+			console.error("Failed to download mod:", error);
+			alert(`Failed to download ${mod.name} from Steam Workshop.`);
+		}
+	}
 };
 
 onMounted(() => {
-  // Simulate loading
-  loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-  }, 1000);
+	// Simulate loading
+	loading.value = true;
+	setTimeout(() => {
+		loading.value = false;
+	}, 1000);
 });
 </script>
 

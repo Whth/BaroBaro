@@ -15,8 +15,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import ProfileList from "@/components/profile-management/ProfileList.vue";
-import ProfileEditor from "@/components/profile-management/ProfileEditor.vue";
 import type { Profile } from "../../types";
 import { useModManager } from "../../composables/useModManager";
 
@@ -25,33 +23,33 @@ const { getModListByName } = useModManager();
 const showEditor = ref(false);
 const editingProfile = ref<Profile | null>(null);
 
-const handleCreateProfile = () => {
-  editingProfile.value = null;
-  showEditor.value = true;
+const _handleCreateProfile = () => {
+	editingProfile.value = null;
+	showEditor.value = true;
 };
 
-const handleEditProfile = (profileName: string) => {
-  const modList = getModListByName(profileName);
-  if (modList) {
-    editingProfile.value = {
-      id: profileName,
-      name: modList.profileName,
-      basePackage: modList.basePackage,
-      enabledMods: modList.mods,
-    };
-    showEditor.value = true;
-  }
+const _handleEditProfile = (profileName: string) => {
+	const modList = getModListByName(profileName);
+	if (modList) {
+		editingProfile.value = {
+			id: profileName,
+			name: modList.profileName,
+			basePackage: modList.basePackage,
+			enabledMods: modList.mods,
+		};
+		showEditor.value = true;
+	}
 };
 
-const handleSaveProfile = (_profile: Profile) => {
-  // Profile is saved through the composable, so we just need to hide the editor
-  showEditor.value = false;
-  editingProfile.value = null;
+const _handleSaveProfile = (_profile: Profile) => {
+	// Profile is saved through the composable, so we just need to hide the editor
+	showEditor.value = false;
+	editingProfile.value = null;
 };
 
-const handleCancelEdit = () => {
-  showEditor.value = false;
-  editingProfile.value = null;
+const _handleCancelEdit = () => {
+	showEditor.value = false;
+	editingProfile.value = null;
 };
 </script>
 

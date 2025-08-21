@@ -33,12 +33,12 @@ const typeFilter = ref("all");
 
 // Emit events when filters change
 watch([searchQuery, statusFilter, typeFilter], () => {
-  console.log("Filters changed:", {
-    searchQuery: searchQuery.value,
-    statusFilter: statusFilter.value,
-    typeFilter: typeFilter.value,
-  });
-  // In a real app, this would emit an event to update the mod list
+	console.log("Filters changed:", {
+		searchQuery: searchQuery.value,
+		statusFilter: statusFilter.value,
+		typeFilter: typeFilter.value,
+	});
+	// In a real app, this would emit an event to update the mod list
 });
 </script>
 

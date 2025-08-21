@@ -47,88 +47,88 @@ import { message, open } from "@tauri-apps/plugin-dialog";
 const { config, updateGameHome, updateSteamCmdHome } = useModManager();
 
 const settings = ref({
-  gamePath: "",
-  steamcmdPath: "",
+	gamePath: "",
+	steamcmdPath: "",
 });
 
 const showError = async (title: string, error: any) => {
-  console.error(title, error);
-  await message(`Error: ${error.message || error}`, { title, kind: "error" });
+	console.error(title, error);
+	await message(`Error: ${error.message || error}`, { title, kind: "error" });
 };
 
-const browseGamePath = async () => {
-  console.log("Browsing for game path");
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select Barotrauma Game Installation Path",
-    });
+const _browseGamePath = async () => {
+	console.log("Browsing for game path");
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select Barotrauma Game Installation Path",
+		});
 
-    if (selected) {
-      settings.value.gamePath = selected as string;
+		if (selected) {
+			settings.value.gamePath = selected as string;
 
-      // Update the game home in the config
-      await updateGameHome(selected as string);
-      console.log("Game path updated successfully!");
-    }
-  } catch (error) {
-    await showError("Failed to select game path", error);
-  }
+			// Update the game home in the config
+			await updateGameHome(selected as string);
+			console.log("Game path updated successfully!");
+		}
+	} catch (error) {
+		await showError("Failed to select game path", error);
+	}
 };
 
-const browseSteamCmdPath = async () => {
-  console.log("Browsing for SteamCMD path");
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select SteamCMD Path",
-    });
+const _browseSteamCmdPath = async () => {
+	console.log("Browsing for SteamCMD path");
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select SteamCMD Path",
+		});
 
-    if (selected) {
-      settings.value.steamcmdPath = selected as string;
+		if (selected) {
+			settings.value.steamcmdPath = selected as string;
 
-      // Update the SteamCMD home in the config
-      await updateSteamCmdHome(selected as string);
-      console.log("SteamCMD path updated successfully!");
-    }
-  } catch (error) {
-    await showError("Failed to select SteamCMD path", error);
-  }
+			// Update the SteamCMD home in the config
+			await updateSteamCmdHome(selected as string);
+			console.log("SteamCMD path updated successfully!");
+		}
+	} catch (error) {
+		await showError("Failed to select SteamCMD path", error);
+	}
 };
 
-const saveSettings = async () => {
-  try {
-    console.log("Saving paths settings:", settings.value);
+const _saveSettings = async () => {
+	try {
+		console.log("Saving paths settings:", settings.value);
 
-    // Update game home
-    if (settings.value.gamePath) {
-      await updateGameHome(settings.value.gamePath);
-    }
+		// Update game home
+		if (settings.value.gamePath) {
+			await updateGameHome(settings.value.gamePath);
+		}
 
-    // Update SteamCMD home
-    if (settings.value.steamcmdPath) {
-      await updateSteamCmdHome(settings.value.steamcmdPath);
-    }
+		// Update SteamCMD home
+		if (settings.value.steamcmdPath) {
+			await updateSteamCmdHome(settings.value.steamcmdPath);
+		}
 
-    console.log("Paths settings saved successfully!");
-    await message("Paths settings saved successfully!", {
-      title: "Success",
-      kind: "info",
-    });
-  } catch (error) {
-    await showError("Failed to save paths settings", error);
-  }
+		console.log("Paths settings saved successfully!");
+		await message("Paths settings saved successfully!", {
+			title: "Success",
+			kind: "info",
+		});
+	} catch (error) {
+		await showError("Failed to save paths settings", error);
+	}
 };
 
 onMounted(() => {
-  // Initialize settings with values from config
-  if (config.value) {
-    settings.value.gamePath = config.value.gameHome;
-    settings.value.steamcmdPath = config.value.steamcmdHome;
-  }
-  console.log("Paths settings mounted");
+	// Initialize settings with values from config
+	if (config.value) {
+		settings.value.gamePath = config.value.gameHome;
+		settings.value.steamcmdPath = config.value.steamcmdHome;
+	}
+	console.log("Paths settings mounted");
 });
 </script>
 

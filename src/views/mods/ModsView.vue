@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import ModManagementTabs from "@/components/mod-management/ModManagementTabs.vue";
+
 </script>
 
 <style scoped>

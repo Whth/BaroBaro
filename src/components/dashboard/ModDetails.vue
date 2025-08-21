@@ -45,22 +45,22 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { BarotraumaMod } from "../../proto/mods";
+import type { BarotraumaMod } from "../../proto/mods";
 
 const selectedMod = ref<BarotraumaMod | null>(null);
 
 // In a real implementation, this would be set by the parent component or a global state
 // For now, we'll set it to the first installed mod if available
 onMounted(() => {
-  // This would be set by the parent component in a real implementation
-  console.log("ModDetails mounted");
+	// This would be set by the parent component in a real implementation
+	console.log("ModDetails mounted");
 });
 
-const toggleMod = () => {
-  if (selectedMod.value) {
-    // In a real implementation, this would call a Tauri command to toggle the mod
-    console.log(`Toggle mod ${selectedMod.value.name}`);
-  }
+const _toggleMod = () => {
+	if (selectedMod.value) {
+		// In a real implementation, this would call a Tauri command to toggle the mod
+		console.log(`Toggle mod ${selectedMod.value.name}`);
+	}
 };
 </script>
 

@@ -56,87 +56,87 @@ import { ref, onMounted } from "vue";
 import { refreshInstalledMods } from "../../composables/useModManager";
 
 interface ModUpdate {
-  id: string;
-  name: string;
-  currentVersion: string;
-  newVersion: string;
-  description: string;
-  updating?: boolean;
+	id: string;
+	name: string;
+	currentVersion: string;
+	newVersion: string;
+	description: string;
+	updating?: boolean;
 }
 
 const modsToUpdate = ref<ModUpdate[]>([
-  {
-    id: "1",
-    name: "Better Graphics",
-    currentVersion: "1.2.3",
-    newVersion: "1.3.0",
-    description: "Enhanced textures and lighting improvements",
-  },
-  {
-    id: "2",
-    name: "New Weapons Pack",
-    currentVersion: "2.0.1",
-    newVersion: "2.1.0",
-    description: "Added 10 new weapons and balanced existing ones",
-  },
+	{
+		id: "1",
+		name: "Better Graphics",
+		currentVersion: "1.2.3",
+		newVersion: "1.3.0",
+		description: "Enhanced textures and lighting improvements",
+	},
+	{
+		id: "2",
+		name: "New Weapons Pack",
+		currentVersion: "2.0.1",
+		newVersion: "2.1.0",
+		description: "Added 10 new weapons and balanced existing ones",
+	},
 ]);
 
-const updateMod = async (modId: string) => {
-  const mod = modsToUpdate.value.find((m) => m.id === modId);
-  if (mod) {
-    mod.updating = true;
-    console.log(`Updating mod: ${mod.name}`);
-    try {
-      // In a real app, this would call the Tauri backend to update the mod
-      // For now, we'll simulate the update and refresh the installed mods list
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      mod.updating = false;
-      // Remove from list after update
-      modsToUpdate.value = modsToUpdate.value.filter((m) => m.id !== modId);
-      alert(`Updated ${mod.name} successfully!`);
-      // Refresh the installed mods list after update
-      await refreshInstalledMods();
-    } catch (error) {
-      mod.updating = false;
-      console.error("Failed to update mod:", error);
-      alert(`Failed to update ${mod.name}.`);
-    }
-  }
+const _updateMod = async (modId: string) => {
+	const mod = modsToUpdate.value.find((m) => m.id === modId);
+	if (mod) {
+		mod.updating = true;
+		console.log(`Updating mod: ${mod.name}`);
+		try {
+			// In a real app, this would call the Tauri backend to update the mod
+			// For now, we'll simulate the update and refresh the installed mods list
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			mod.updating = false;
+			// Remove from list after update
+			modsToUpdate.value = modsToUpdate.value.filter((m) => m.id !== modId);
+			alert(`Updated ${mod.name} successfully!`);
+			// Refresh the installed mods list after update
+			await refreshInstalledMods();
+		} catch (error) {
+			mod.updating = false;
+			console.error("Failed to update mod:", error);
+			alert(`Failed to update ${mod.name}.`);
+		}
+	}
 };
 
-const updateAllMods = async () => {
-  for (const mod of modsToUpdate.value) {
-    mod.updating = true;
-    console.log(`Updating mod: ${mod.name}`);
-    try {
-      // In a real app, this would call the Tauri backend to update the mod
-      // For now, we'll simulate the update and refresh the installed mods list
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      mod.updating = false;
-      // Refresh the installed mods list after each update
-      await refreshInstalledMods();
-    } catch (error) {
-      mod.updating = false;
-      console.error("Failed to update mod:", error);
-      alert(`Failed to update ${mod.name}.`);
-    }
-  }
-  // Remove all updated mods from the list
-  modsToUpdate.value = modsToUpdate.value.filter((m) => !m.updating);
-  alert(`Updated all mods successfully!`);
+const _updateAllMods = async () => {
+	for (const mod of modsToUpdate.value) {
+		mod.updating = true;
+		console.log(`Updating mod: ${mod.name}`);
+		try {
+			// In a real app, this would call the Tauri backend to update the mod
+			// For now, we'll simulate the update and refresh the installed mods list
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			mod.updating = false;
+			// Refresh the installed mods list after each update
+			await refreshInstalledMods();
+		} catch (error) {
+			mod.updating = false;
+			console.error("Failed to update mod:", error);
+			alert(`Failed to update ${mod.name}.`);
+		}
+	}
+	// Remove all updated mods from the list
+	modsToUpdate.value = modsToUpdate.value.filter((m) => !m.updating);
+	alert(`Updated all mods successfully!`);
 };
 
-const viewChangelog = (modId: string) => {
-  const mod = modsToUpdate.value.find((m) => m.id === modId);
-  if (mod) {
-    alert(
-      `Changelog for ${mod.name}:\n- Improved performance\n- Fixed bugs\n- Added new features`,
-    );
-  }
+const _viewChangelog = (modId: string) => {
+	const mod = modsToUpdate.value.find((m) => m.id === modId);
+	if (mod) {
+		alert(
+			`Changelog for ${mod.name}:\n- Improved performance\n- Fixed bugs\n- Added new features`,
+		);
+	}
 };
 
 onMounted(() => {
-  console.log("Update mod tab mounted");
+	console.log("Update mod tab mounted");
 });
 </script>
 

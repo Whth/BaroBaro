@@ -33,11 +33,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import ModCard from "./ModCard.vue";
 import {
-  installed_mod,
-  mod_lists,
-  isModEnabled,
+	mod_lists,
 } from "../../composables/useModManager";
 
 // Drag and drop state
@@ -46,77 +43,77 @@ const dragOverIndex = ref<number | null>(null);
 
 // For now, we'll use the first mod list as the current one
 // In a real implementation, this would be managed by a global state or prop
-const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
+const _currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
 
-const toggleMod = (modId: string) => {
-  // In a real implementation, this would call a Tauri command to toggle the mod
-  console.log(`Toggle mod ${modId}`);
+const _toggleMod = (modId: string) => {
+	// In a real implementation, this would call a Tauri command to toggle the mod
+	console.log(`Toggle mod ${modId}`);
 };
 
-const selectMod = (modId: string) => {
-  console.log(`Mod ${modId} selected`);
-  // In a real app, this would emit an event to show mod details
+const _selectMod = (modId: string) => {
+	console.log(`Mod ${modId} selected`);
+	// In a real app, this would emit an event to show mod details
 };
 
 // Drag and drop methods
-const handleDragStart = (index: number, event: DragEvent) => {
-  draggedItemIndex.value = index;
-  // Add visual feedback
-  if (event.dataTransfer) {
-    event.dataTransfer.setData("text/plain", index.toString());
-    event.dataTransfer.effectAllowed = "move";
-  }
+const _handleDragStart = (index: number, event: DragEvent) => {
+	draggedItemIndex.value = index;
+	// Add visual feedback
+	if (event.dataTransfer) {
+		event.dataTransfer.setData("text/plain", index.toString());
+		event.dataTransfer.effectAllowed = "move";
+	}
 };
 
-const handleDragOver = (event: DragEvent) => {
-  event.preventDefault();
-  if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = "move";
-  }
-  return false;
+const _handleDragOver = (event: DragEvent) => {
+	event.preventDefault();
+	if (event.dataTransfer) {
+		event.dataTransfer.dropEffect = "move";
+	}
+	return false;
 };
 
-const handleDragEnter = (index: number) => {
-  dragOverIndex.value = index;
+const _handleDragEnter = (index: number) => {
+	dragOverIndex.value = index;
 };
 
-const handleDragLeave = () => {
-  dragOverIndex.value = null;
+const _handleDragLeave = () => {
+	dragOverIndex.value = null;
 };
 
-const handleDrop = (index: number, event: DragEvent) => {
-  event.preventDefault();
+const _handleDrop = (index: number, event: DragEvent) => {
+	event.preventDefault();
 
-  if (draggedItemIndex.value === null) return;
+	if (draggedItemIndex.value === null) return;
 
-  // In a real implementation, this would reorder the mods in the current profile
-  console.log(`Dropped mod at index ${index}`);
+	// In a real implementation, this would reorder the mods in the current profile
+	console.log(`Dropped mod at index ${index}`);
 
-  // Reset drag state
-  draggedItemIndex.value = null;
-  dragOverIndex.value = null;
+	// Reset drag state
+	draggedItemIndex.value = null;
+	dragOverIndex.value = null;
 };
 
-const handleDragEnd = () => {
-  draggedItemIndex.value = null;
-  dragOverIndex.value = null;
+const _handleDragEnd = () => {
+	draggedItemIndex.value = null;
+	dragOverIndex.value = null;
 };
 
 // Save and load mod order as XML
-const saveModOrder = () => {
-  // In a real implementation, this would save the current mod order to a profile
-  console.log("Saving mod order");
-  alert(
-    "Saving mod order - this would connect to the Rust backend in a real implementation",
-  );
+const _saveModOrder = () => {
+	// In a real implementation, this would save the current mod order to a profile
+	console.log("Saving mod order");
+	alert(
+		"Saving mod order - this would connect to the Rust backend in a real implementation",
+	);
 };
 
-const loadModOrder = () => {
-  // In a real app, this would load mod order from a profile
-  console.log("Loading mod order");
-  alert(
-    "Loading mod order - this would connect to the Rust backend in a real implementation",
-  );
+const _loadModOrder = () => {
+	// In a real app, this would load mod order from a profile
+	console.log("Loading mod order");
+	alert(
+		"Loading mod order - this would connect to the Rust backend in a real implementation",
+	);
 };
 </script>
 

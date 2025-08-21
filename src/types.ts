@@ -1,6 +1,6 @@
 export interface Profile {
-  id: string;
-  name: string;
-  basePackage: string;
-  enabledMods: string[];
+	id: string;
+	name: string;
+	basePackage: string;
+	enabledMods: string[];
 }

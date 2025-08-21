@@ -65,60 +65,60 @@ import type { Profile } from "../../types";
 import { useModManager } from "../../composables/useModManager";
 
 interface ProfileData {
-  name: string;
-  basePackage: string;
-  enabledMods: string[];
+	name: string;
+	basePackage: string;
+	enabledMods: string[];
 }
 
 const props = defineProps<{
-  profile?: Profile;
+	profile?: Profile;
 }>();
 
 const emit = defineEmits<{
-  (e: "save", profile: Profile): void;
-  (e: "cancel"): void;
+	(e: "save", profile: Profile): void;
+	(e: "cancel"): void;
 }>();
 
 const {
-  installed_mod,
-  refreshInstalledMods,
-  saveProfile: saveProfileToBackend,
+	installed_mod,
+	refreshInstalledMods,
+	saveProfile: saveProfileToBackend,
 } = useModManager();
 
-const isEditing = computed(() => !!props.profile);
+const _isEditing = computed(() => !!props.profile);
 
 const profileData = ref<ProfileData>({
-  name: props.profile?.name || "",
-  basePackage: props.profile?.basePackage || "Vanilla",
-  enabledMods: props.profile?.enabledMods || [],
+	name: props.profile?.name || "",
+	basePackage: props.profile?.basePackage || "Vanilla",
+	enabledMods: props.profile?.enabledMods || [],
 });
 
-const handleSaveProfile = async () => {
-  if (!profileData.value.name.trim()) return;
+const _handleSaveProfile = async () => {
+	if (!profileData.value.name.trim()) return;
 
-  const profile: Profile = {
-    id: props.profile?.id || Date.now().toString(),
-    name: profileData.value.name,
-    basePackage: profileData.value.basePackage,
-    enabledMods: profileData.value.enabledMods,
-  };
+	const profile: Profile = {
+		id: props.profile?.id || Date.now().toString(),
+		name: profileData.value.name,
+		basePackage: profileData.value.basePackage,
+		enabledMods: profileData.value.enabledMods,
+	};
 
-  try {
-    await saveProfileToBackend(profile);
-    emit("save", profile);
-  } catch (error) {
-    console.error("Failed to save profile:", error);
-    // TODO: Show error message to user
-  }
+	try {
+		await saveProfileToBackend(profile);
+		emit("save", profile);
+	} catch (error) {
+		console.error("Failed to save profile:", error);
+		// TODO: Show error message to user
+	}
 };
 
-const cancel = () => {
-  emit("cancel");
+const _cancel = () => {
+	emit("cancel");
 };
 
 // Load installed mods when component mounts
 onMounted(() => {
-  refreshInstalledMods();
+	refreshInstalledMods();
 });
 </script>
 

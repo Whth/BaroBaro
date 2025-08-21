@@ -24,15 +24,15 @@ import { mod_lists } from "../../composables/useModManager";
 const selectedProfile = ref("");
 
 onMounted(() => {
-  // Set the first mod list as the default selected profile
-  if (mod_lists.value.length > 0) {
-    selectedProfile.value = mod_lists.value[0].profileName;
-  }
-  console.log(
-    "Profile selector mounted with",
-    mod_lists.value.length,
-    "profiles",
-  );
+	// Set the first mod list as the default selected profile
+	if (mod_lists.value.length > 0) {
+		selectedProfile.value = mod_lists.value[0].profileName;
+	}
+	console.log(
+		"Profile selector mounted with",
+		mod_lists.value.length,
+		"profiles",
+	);
 });
 </script>
 

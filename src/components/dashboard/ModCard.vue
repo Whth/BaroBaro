@@ -49,33 +49,33 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
-import { BarotraumaMod } from "../../proto/mods";
+import type { BarotraumaMod } from "../../proto/mods";
 
 const props = defineProps<{
-  mod: BarotraumaMod;
-  index: number;
-  draggable?: boolean;
-  isDragOver?: boolean;
-  isEnabled?: boolean;
+	mod: BarotraumaMod;
+	index: number;
+	draggable?: boolean;
+	isDragOver?: boolean;
+	isEnabled?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "toggleMod", id: string): void;
-  (e: "selectMod", id: string): void;
-  (e: "dragstart", event: DragEvent): void;
-  (e: "dragover", event: DragEvent): void;
-  (e: "dragenter"): void;
-  (e: "dragleave"): void;
-  (e: "drop", event: DragEvent): void;
-  (e: "dragend"): void;
+	(e: "toggleMod", id: string): void;
+	(e: "selectMod", id: string): void;
+	(e: "dragstart", event: DragEvent): void;
+	(e: "dragover", event: DragEvent): void;
+	(e: "dragenter"): void;
+	(e: "dragleave"): void;
+	(e: "drop", event: DragEvent): void;
+	(e: "dragend"): void;
 }>();
 
-const toggleMod = () => {
-  emit("toggleMod", props.mod.steamWorkshopId);
+const _toggleMod = () => {
+	emit("toggleMod", props.mod.steamWorkshopId);
 };
 
-const selectMod = () => {
-  emit("selectMod", props.mod.steamWorkshopId);
+const _selectMod = () => {
+	emit("selectMod", props.mod.steamWorkshopId);
 };
 </script>
 

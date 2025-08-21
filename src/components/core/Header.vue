@@ -18,15 +18,14 @@
 </template>
 
 <script setup lang="ts">
-import ProfileSwitcher from "@/components/profile-management/ProfileSwitcher.vue";
-import ThemeSwitcher from "@/components/core/ThemeSwitcher.vue";
+
 import { ref } from "vue";
 
-const unreadNotifications = ref(3);
+const _unreadNotifications = ref(3);
 
-const showNotifications = () => {
-  console.log("Show notifications");
-  // Implementation would go here
+const _showNotifications = () => {
+	console.log("Show notifications");
+	// Implementation would go here
 };
 </script>
 

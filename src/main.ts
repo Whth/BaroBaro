@@ -6,15 +6,15 @@ import { initializeApp } from "./composables/useModManager";
 
 // Initialize the app with backend data
 initializeApp()
-  .then(() => {
-    const app = createApp(App);
-    app.use(router);
-    app.mount("#app");
-  })
-  .catch((error) => {
-    console.error("Failed to initialize app:", error);
-    // Still mount the app even if initialization fails
-    const app = createApp(App);
-    app.use(router);
-    app.mount("#app");
-  });
+	.then(() => {
+		const app = createApp(App);
+		app.use(router);
+		app.mount("#app");
+	})
+	.catch((error) => {
+		console.error("Failed to initialize app:", error);
+		// Still mount the app even if initialization fails
+		const app = createApp(App);
+		app.use(router);
+		app.mount("#app");
+	});

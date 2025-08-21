@@ -46,8 +46,8 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-const isActive = (path: string) => {
-  return route.path === path;
+const _isActive = (path: string) => {
+	return route.path === path;
 };
 </script>
 

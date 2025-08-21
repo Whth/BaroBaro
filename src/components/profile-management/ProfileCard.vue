@@ -44,34 +44,34 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
-import { ModList } from "../../proto/mods";
+import type { ModList } from "../../proto/mods";
 
 const props = defineProps<{
-  profile: ModList;
-  isActive: boolean;
+	profile: ModList;
+	isActive: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", name: string): void;
-  (e: "delete", name: string): void;
-  (e: "activate", name: string): void;
-  (e: "duplicate", name: string): void;
+	(e: "edit", name: string): void;
+	(e: "delete", name: string): void;
+	(e: "activate", name: string): void;
+	(e: "duplicate", name: string): void;
 }>();
 
-const editProfile = () => {
-  emit("edit", props.profile.profileName);
+const _editProfile = () => {
+	emit("edit", props.profile.profileName);
 };
 
-const deleteProfile = () => {
-  emit("delete", props.profile.profileName);
+const _deleteProfile = () => {
+	emit("delete", props.profile.profileName);
 };
 
-const activateProfile = () => {
-  emit("activate", props.profile.profileName);
+const _activateProfile = () => {
+	emit("activate", props.profile.profileName);
 };
 
-const duplicateProfile = () => {
-  emit("duplicate", props.profile.profileName);
+const _duplicateProfile = () => {
+	emit("duplicate", props.profile.profileName);
 };
 </script>
 
