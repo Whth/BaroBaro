@@ -80,19 +80,43 @@ const setActiveSection = (sectionId: string) => {
 }
 
 .menu-item {
-  padding: var(--spacing-m);
-  cursor: pointer;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+	padding: var(--spacing-m);
+	cursor: pointer;
+	border-bottom: 1px solid var(--color-border);
+	color: var(--color-text-primary);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	opacity: 0;
+	transform: translateY(10px);
+	animation: fadeInUp 0.6s ease-out forwards;
 }
 
+.menu-item:nth-child(1) { animation-delay: 0.1s; }
+.menu-item:nth-child(2) { animation-delay: 0.2s; }
+.menu-item:nth-child(3) { animation-delay: 0.3s; }
+
 .menu-item:hover {
-  background-color: var(--color-background);
+	background-color: var(--color-background);
+	transform: translateX(8px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .menu-item.active {
-  background-color: var(--color-primary);
-  color: white;
+	background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+	color: white;
+	box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.menu-item.active::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 4px;
+	height: 60%;
+	background: white;
+	border-radius: 2px 0 0 2px;
 }
 
 .settings-main {

@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 
 interface UIPreferences {
 	language: string;
@@ -140,6 +140,9 @@ const savePreferences = () => {
 	console.log("Saving UI preferences:", preferences.value);
 	console.log("Saving background settings:", backgroundSettings.value);
 
+	// Apply theme immediately
+	applyTheme(preferences.value.theme);
+
 	// Save to localStorage
 	localStorage.setItem("uiPreferences", JSON.stringify(preferences.value));
 	localStorage.setItem(
@@ -158,6 +161,23 @@ const savePreferences = () => {
 	);
 
 	console.log("UI preferences and background settings saved successfully!");
+};
+
+const applyTheme = (theme: string) => {
+	const root = document.documentElement;
+
+	// Add transition class for smooth theme change
+	root.style.setProperty('--theme-transition-duration', '300ms');
+	root.classList.add('theme-transitioning');
+
+	// Set the theme
+	root.setAttribute('data-theme', theme.toLowerCase());
+
+	// Remove transition class after animation completes
+	setTimeout(() => {
+		root.classList.remove('theme-transitioning');
+		root.style.removeProperty('--theme-transition-duration');
+	}, 300);
 };
 
 const resetPreferences = () => {
@@ -218,9 +238,14 @@ onMounted(() => {
 				theme: parsed.theme || "DARK",
 				accentColor: parsed.accentColor || "#3B82F6",
 			};
+			// Apply the theme immediately
+			applyTheme(preferences.value.theme);
 		} catch (e) {
 			console.error("Failed to parse UI preferences", e);
 		}
+	} else {
+		// Apply default theme
+		applyTheme(preferences.value.theme);
 	}
 
 	// Load background settings from localStorage
@@ -234,6 +259,13 @@ onMounted(() => {
 	}
 
 	console.log("UI preferences mounted");
+});
+
+// Watch for theme changes and apply them immediately
+watch(() => preferences.value.theme, (newTheme) => {
+	if (newTheme) {
+		applyTheme(newTheme);
+	}
 });
 </script>
 

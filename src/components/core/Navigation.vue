@@ -69,17 +69,53 @@ const isActive = (path: string) => {
 }
 
 .nav-item {
-  margin-bottom: var(--spacing-s);
+	margin-bottom: var(--spacing-s);
+	opacity: 0;
+	transform: translateX(-20px);
+	animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-s);
-  border-radius: var(--border-radius-soft);
-  text-decoration: none;
-  color: var(--color-text-primary);
-  transition: background-color 0.2s;
+	display: flex;
+	align-items: center;
+	padding: var(--spacing-s);
+	border-radius: var(--border-radius-soft);
+	text-decoration: none;
+	color: var(--color-text-primary);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.nav-link::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 0;
+	background: linear-gradient(90deg, var(--color-primary), transparent);
+	transition: width 0.3s ease;
+}
+
+.nav-link:hover::before {
+	width: 4px;
 }
 
 .nav-link:hover {

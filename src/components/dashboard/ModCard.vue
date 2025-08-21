@@ -90,9 +90,19 @@ const selectMod = () => {
   -webkit-backdrop-filter: blur(10px);
 }
 
+.mod-card {
+	transform: translateY(0);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .mod-card:hover {
-  box-shadow: var(--shadow-level-2);
-  border-color: var(--color-primary-light);
+	transform: translateY(-8px) scale(1.02);
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	border-color: var(--color-primary-light);
+}
+
+.mod-card:active {
+	transform: translateY(-4px) scale(1.01);
 }
 
 .mod-card-disabled {
@@ -142,14 +152,37 @@ const selectMod = () => {
 }
 
 .toggle-button {
-  padding: var(--spacing-xs) var(--spacing-s);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-body-small);
-  font-weight: var(--font-weight-medium);
+	padding: var(--spacing-xs) var(--spacing-s);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-soft);
+	background-color: var(--color-surface);
+	color: var(--color-text-primary);
+	cursor: pointer;
+	font-size: var(--font-size-body-small);
+	font-weight: var(--font-weight-medium);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.toggle-button::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	transition: left 0.5s;
+}
+
+.toggle-button:hover::before {
+	left: 100%;
+}
+
+.toggle-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .toggle-enabled {

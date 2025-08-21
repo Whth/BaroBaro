@@ -130,3 +130,106 @@
 	background: rgba(21, 42, 63, 0.3);
 	border: 1px solid rgba(74, 159, 255, 0.2);
 }
+
+/* Smooth theme transitions */
+.theme-transitioning * {
+	transition: background-color var(--theme-transition-duration, 300ms) ease,
+		color var(--theme-transition-duration, 300ms) ease,
+		border-color var(--theme-transition-duration, 300ms) ease,
+		box-shadow var(--theme-transition-duration, 300ms) ease !important;
+}
+
+/* Enhanced animations for UI elements */
+* {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+	transform: translateY(-1px);
+}
+
+input:focus, select:focus, textarea:focus {
+	transform: scale(1.02);
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Smooth loading animations */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.mod-card, .settings-form > .form-section {
+	animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.mod-card:nth-child(odd) {
+	animation-delay: 0.1s;
+}
+
+.mod-card:nth-child(even) {
+	animation-delay: 0.2s;
+}
+
+.settings-form > .form-section:nth-child(1) {
+	animation: slideInRight 0.6s ease-out forwards;
+}
+
+.settings-form > .form-section:nth-child(2) {
+	animation-delay: 0.2s;
+}
+
+/* Enhanced hover effects */
+.mod-card:hover {
+	transform: translateY(-4px) scale(1.02);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.settings-sidebar .menu-item:hover {
+	transform: translateX(8px);
+}
+
+.tab-button:hover {
+	transform: translateY(-2px);
+}
+
+/* Smooth page transitions */
+.view-enter-active, .view-leave-active {
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.view-enter-from {
+	opacity: 0;
+	transform: translateY(20px);
+}
+
+.view-leave-to {
+	opacity: 0;
+	transform: translateY(-20px);
+}
+
+/* Enhanced scrollbar animations */
+::-webkit-scrollbar-thumb {
+	transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+}
