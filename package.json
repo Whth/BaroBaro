@@ -7,8 +7,8 @@
   "scripts": {
     "gen": "node scripts/gen_proto.cjs",
     "dev": "pnpm gen && vite ",
-    "fmt": "biome format src --write",
-    "lint": "biome lint src --write",
+    "fmt": "biome format src --write  --vcs-use-ignore-file=true",
+    "lint": "biome lint src --write --vcs-use-ignore-file=true",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",
     "tauri": "tauri"
