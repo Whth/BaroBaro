@@ -22,7 +22,7 @@ const { t } = useI18n();
 
 <style scoped>
 .mods-view {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
 }
 
@@ -40,7 +40,5 @@ const { t } = useI18n();
 :deep(.n-card) {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 200px);
-  min-height: 400px;
 }
 </style>

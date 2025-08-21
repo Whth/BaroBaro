@@ -255,6 +255,16 @@ const selectMod = () => {
   color: white;
 }
 
+.source-core {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.source-mod {
+  background-color: var(--color-warning);
+  color: white;
+}
+
 .details-button {
   padding: var(--spacing-xs) var(--spacing-s);
   border: 1px solid var(--color-border);

@@ -38,7 +38,7 @@ const activeTab = ref("general");
 
 <style scoped>
 .settings-view {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
 }
 
@@ -56,9 +56,6 @@ const activeTab = ref("general");
 :deep(.n-card) {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 200px);
-  min-height: 400px;
-  max-height: calc(100vh - 150px);
 }
 
 :deep(.n-tabs) {
@@ -73,7 +70,6 @@ const activeTab = ref("general");
 }
 
 :deep(.n-tabs-content) {
-  flex: 1;
   overflow-y: auto;
   padding: 24px;
 }

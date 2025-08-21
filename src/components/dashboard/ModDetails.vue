@@ -144,6 +144,16 @@ const toggleMod = () => {
   font-weight: var(--font-weight-bold);
 }
 
+.source-core {
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+.source-mod {
+  color: var(--color-warning);
+  font-weight: var(--font-weight-bold);
+}
+
 .mod-description h4 {
   margin: 0 0 var(--spacing-s) 0;
   color: var(--color-text-primary);

@@ -38,7 +38,7 @@ const { t } = useI18n();
 
 <style scoped>
 .dashboard-view {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
 }
 
