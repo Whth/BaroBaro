@@ -21,7 +21,9 @@
 	"navigation": {
 		"dashboard": "Dashboard",
 		"mods": "Mods",
-		"settings": "Settings"
+		"settings": "Settings",
+		"expand": "Expand",
+		"collapse": "Collapse"
 	},
 
 	"dashboard": {

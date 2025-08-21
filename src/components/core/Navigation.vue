@@ -1,9 +1,12 @@
 <template>
   <nav class="app-navigation" :class="{ 'collapsed': isCollapsed }">
-    <button class="toggle-btn" @click="toggleSidebar" :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-      <span class="toggle-icon">{{ isCollapsed ? '→' : '←' }}</span>
-    </button>
     <ul class="nav-list">
+      <li class="nav-item toggle-item">
+        <button class="nav-link toggle-btn" @click="toggleSidebar" :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <span class="nav-icon">{{ isCollapsed ? '→' : '←' }}</span>
+          <span class="nav-text">{{ isCollapsed ? t('navigation.expand') : t('navigation.collapse') }}</span>
+        </button>
+      </li>
       <li class="nav-item">
         <router-link to="/" class="nav-link" :class="{ active: isActive('/') }" :title="isCollapsed ? t('navigation.dashboard') : ''">
           <span class="nav-icon">📊</span>
@@ -66,7 +69,7 @@ provide('sidebarState', {
   width: 250px;
   background-color: var(--color-surface);
   border-right: 1px solid var(--color-border);
-  padding: var(--spacing-l) var(--spacing-m) var(--spacing-m);
+  padding: var(--spacing-xl) var(--spacing-m) var(--spacing-m);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -80,44 +83,7 @@ provide('sidebarState', {
 
 .app-navigation.collapsed {
   width: 60px;
-  padding: var(--spacing-l) var(--spacing-xs) var(--spacing-m);
-}
-
-.app-navigation.full-height {
-  height: 100vh;
-}
-
-.toggle-btn {
-  position: absolute;
-  top: var(--spacing-m);
-  right: var(--spacing-m);
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--border-radius-soft);
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.app-navigation.collapsed .toggle-btn {
-  right: var(--spacing-xs);
-  top: var(--spacing-m);
-}
-
-.toggle-btn:hover {
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-}
-
-.toggle-icon {
-  font-size: var(--font-size-body);
-  transition: transform 0.3s ease;
-}
-
-.app-navigation.collapsed .toggle-icon {
-  transform: rotate(180deg);
+  padding: var(--spacing-xl) var(--spacing-xs) var(--spacing-m);
 }
 
 .nav-list {
@@ -138,9 +104,10 @@ provide('sidebarState', {
 	margin-bottom: var(--spacing-s);
 }
 
-.nav-item:nth-child(1) { animation-delay: 0.1s; }
-.nav-item:nth-child(2) { animation-delay: 0.2s; }
-.nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-item:nth-child(1) { animation-delay: 0s; }
+.nav-item:nth-child(2) { animation-delay: 0.1s; }
+.nav-item:nth-child(3) { animation-delay: 0.2s; }
+.nav-item:nth-child(4) { animation-delay: 0.3s; }
 
 @keyframes slideInLeft {
 	from {
@@ -214,18 +181,27 @@ provide('sidebarState', {
 .nav-text {
   font-weight: var(--font-weight-medium);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  display: inline;
 }
 
 .app-navigation.collapsed .nav-text {
   opacity: 0;
   transform: translateX(-10px);
   pointer-events: none;
+  display: none;
 }
 
 .app-navigation.collapsed .nav-link {
   justify-content: center;
   padding: var(--spacing-s) var(--spacing-xs);
   min-height: 44px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-navigation.collapsed .nav-icon {
+  margin-right: 0;
+  margin-bottom: 0;
 }
 
 .app-navigation.collapsed .nav-icon {
@@ -234,6 +210,38 @@ provide('sidebarState', {
 
 .app-navigation.collapsed .nav-link:hover {
   transform: scale(1.1);
+}
+
+/* Toggle button styles */
+.toggle-item {
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-m);
+  padding-bottom: var(--spacing-s);
+}
+
+.toggle-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--font-size-body);
+}
+
+.toggle-btn:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.app-navigation.collapsed .toggle-btn {
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-navigation.collapsed .toggle-btn .nav-text {
+  display: none;
 }
 
 </style>
