@@ -16,12 +16,16 @@
 	--color-background-dark: #111827;
 	--color-surface-light: #ffffff;
 	--color-surface-dark: #1f2937;
+	--color-surface-rgb-light: 255, 255, 255;
+	--color-surface-rgb-dark: 31, 41, 55;
 	--color-text-primary-light: #111827;
 	--color-text-primary-dark: #f9fafb;
 	--color-text-secondary-light: #6b7280;
 	--color-text-secondary-dark: #9ca3af;
 	--color-border-light: #e5e7eb;
 	--color-border-dark: #374151;
+	--color-border-rgb-light: 229, 231, 235;
+	--color-border-rgb-dark: 55, 65, 81;
 
 	/* Barotrauma Theme Colors */
 	--color-background-barotrauma: #0a1a2a;
@@ -41,9 +45,11 @@
 	/* Current theme colors (default to light) */
 	--color-background: var(--color-background-light);
 	--color-surface: var(--color-surface-light);
+	--color-surface-rgb: var(--color-surface-rgb-light);
 	--color-text-primary: var(--color-text-primary-light);
 	--color-text-secondary: var(--color-text-secondary-light);
 	--color-border: var(--color-border-light);
+	--color-border-rgb: var(--color-border-rgb-light);
 
 	/* Typography */
 	--font-family-primary:
@@ -96,9 +102,11 @@
 [data-theme="dark"] {
 	--color-background: var(--color-background-dark);
 	--color-surface: var(--color-surface-dark);
+	--color-surface-rgb: var(--color-surface-rgb-dark);
 	--color-text-primary: var(--color-text-primary-dark);
 	--color-text-secondary: var(--color-text-secondary-dark);
 	--color-border: var(--color-border-dark);
+	--color-border-rgb: var(--color-border-rgb-dark);
 }
 
 /* Barotrauma theme overrides */

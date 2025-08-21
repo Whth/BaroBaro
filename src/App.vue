@@ -28,7 +28,7 @@ const currentLanguage = ref("en");
 const backgroundStyle = computed(() => {
 	return {
 		backgroundImage: backgroundSettings.value.backgroundImage
-			? `url(${backgroundSettings.value.backgroundImage})`
+			? `url("${backgroundSettings.value.backgroundImage}")`
 			: "none",
 		backgroundOpacity: backgroundSettings.value.backgroundOpacity,
 		backdropFilter:

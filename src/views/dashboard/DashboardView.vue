@@ -23,6 +23,7 @@ const { t } = useI18n();
   display: flex;
   flex-direction: column;
   gap: var(--spacing-l);
+  background: transparent;
 }
 
 .dashboard-header {

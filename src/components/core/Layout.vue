@@ -35,10 +35,11 @@ const sidebarState = inject('sidebarState', {
 
 
 .main-content {
-  flex: 1;
-  padding: var(--spacing-l);
-  overflow-y: auto;
-  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   flex: 1;
+   padding: var(--spacing-l);
+   overflow-y: auto;
+   transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   background: transparent;
 }
 
 .layout-wrapper.sidebar-collapsed .main-content {

@@ -12,6 +12,7 @@ import ModManagementTabs from "../../components/mod-management/ModManagementTabs
 <style scoped>
 .mods-view {
   padding: var(--spacing-l);
+  background: transparent;
 }
 
 .mods-view h1 {
