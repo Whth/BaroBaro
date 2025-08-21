@@ -2,14 +2,16 @@ import { createI18n } from 'vue-i18n'
 
 // Import locale messages
 import en from '../public/locales/en.json'
+import zh from '../public/locales/zh.json'
 
 export type MessageSchema = typeof en
 
 const messages = {
-  en: en
+  en: en,
+  zh: zh
 }
 
-const i18n = createI18n<[MessageSchema], 'en'>({
+const i18n = createI18n<[MessageSchema], 'en' | 'zh'>({
   legacy: false, // Use Composition API
   locale: 'en', // Default locale
   fallbackLocale: 'en', // Fallback locale

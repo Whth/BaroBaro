@@ -3,6 +3,7 @@
     <div class="header-content">
       <h1 class="app-title">{{ t('app.title') }}</h1>
       <div class="header-actions">
+        <LanguageSwitcher />
         <ProfileSwitcher />
         <ThemeSwitcher />
         <button class="notification-button" @click="showNotifications">
@@ -22,6 +23,7 @@ import { useI18n } from "vue-i18n";
 
 import ProfileSwitcher from "../profile-management/ProfileSwitcher.vue";
 import ThemeSwitcher from "./ThemeSwitcher.vue";
+import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 const { t } = useI18n();
 
