@@ -41,6 +41,8 @@ const settingsSections: SettingsSection[] = [
 	{ id: "ui", name: "UI Preferences" },
 ];
 
+// Note: These will be internationalized later when we add i18n to this component
+
 const activeSection = ref("general");
 
 const setActiveSection = (sectionId: string) => {

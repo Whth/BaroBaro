@@ -1,26 +1,26 @@
 <template>
   <div class="ui-preferences">
-    <h2>UI Preferences</h2>
+    <h2>{{ t('settings.uiPreferences') }}</h2>
     <div class="settings-form">
       <!-- Language and Theme Settings -->
       <div class="form-section">
-        <h3>Appearance & Language</h3>
+        <h3>{{ t('settings.appearanceLanguage') }}</h3>
         <div class="form-group">
-          <label for="language" class="form-label">Language</label>
+          <label for="language" class="form-label">{{ t('settings.languageLabel') }}</label>
           <select id="language" v-model="preferences.language" class="form-select">
-            <option value="EN">English</option>
-            <option value="ZH">Chinese</option>
+            <option value="EN">{{ t('settings.english') }}</option>
+            <option value="ZH">{{ t('settings.chinese') }}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="theme" class="form-label">Theme</label>
+          <label for="theme" class="form-label">{{ t('settings.themeLabel') }}</label>
           <select id="theme" v-model="preferences.theme" class="form-select">
-            <option value="LIGHT">Light</option>
-            <option value="DARK">Dark</option>
+            <option value="LIGHT">{{ t('settings.light') }}</option>
+            <option value="DARK">{{ t('settings.dark') }}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="accent-color" class="form-label">Accent Color</label>
+          <label for="accent-color" class="form-label">{{ t('settings.accentColorLabel') }}</label>
           <div class="color-picker">
             <input
               id="accent-color"
@@ -35,10 +35,10 @@
 
       <!-- Background Customization -->
       <div class="form-section">
-        <h3>Background Customization</h3>
+        <h3>{{ t('settings.backgroundCustomization') }}</h3>
         <div class="form-group">
           <label for="background-image" class="form-label"
-            >Background Image</label
+            >{{ t('settings.backgroundImage') }}</label
           >
           <div class="file-upload">
             <input
@@ -53,13 +53,13 @@
               class="clear-button"
               @click="clearBackgroundImage"
             >
-              Clear
+              {{ t('settings.clear') }}
             </button>
           </div>
         </div>
         <div class="form-group">
           <label for="background-opacity" class="form-label"
-            >Background Opacity</label
+            >{{ t('settings.backgroundOpacity') }}</label
           >
           <input
             id="background-opacity"
@@ -78,7 +78,7 @@
         </div>
         <div class="form-group">
           <label for="background-blur" class="form-label"
-            >Background Blur</label
+            >{{ t('settings.backgroundBlur') }}</label
           >
           <input
             id="background-blur"
@@ -99,10 +99,10 @@
 
       <div class="form-actions">
         <button class="save-button" @click="savePreferences">
-          Save Preferences
+          {{ t('settings.savePreferences') }}
         </button>
         <button class="reset-button" @click="resetPreferences">
-          Reset to Defaults
+          {{ t('settings.resetPreferences') }}
         </button>
       </div>
     </div>
@@ -111,6 +111,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
+import { useI18n } from 'vue-i18n';
+import { invoke } from '@tauri-apps/api/core';
+
+const { t } = useI18n();
 
 interface UIPreferences {
 	language: string;
@@ -126,8 +130,8 @@ interface BackgroundSettings {
 
 const preferences = ref<UIPreferences>({
 	language: "EN",
-	theme: "DARK",
-	accentColor: "#3B82F6",
+	theme: "LIGHT",
+	accentColor: "#0969da",
 });
 
 const backgroundSettings = ref<BackgroundSettings>({
@@ -180,26 +184,65 @@ const applyTheme = (theme: string) => {
 	}, 300);
 };
 
-const resetPreferences = () => {
+const resetPreferences = async () => {
 	if (
-		confirm("Are you sure you want to reset all UI preferences to defaults?")
+		confirm(t('settings.resetConfirm'))
 	) {
-		preferences.value = {
-			language: "EN",
-			theme: "DARK",
-			accentColor: "#3B82F6",
-		};
+		try {
+			// Get backend defaults
+			const config = await invoke('read_config') as any;
+			const themeMap: { [key: number]: string } = { 0: 'DARK', 1: 'LIGHT' };
+			const languageMap: { [key: number]: string } = { 0: 'EN', 1: 'ZH' };
 
-		backgroundSettings.value = {
-			backgroundImage: "",
-			backgroundOpacity: 1,
-			backgroundBlur: 0,
-		};
+			if (config.ui_config) {
+				const uiConfig = config.ui_config;
+				preferences.value = {
+					language: languageMap[uiConfig.language] || "EN",
+					theme: themeMap[uiConfig.theme] || "LIGHT",
+					accentColor: uiConfig.accent_color || "#0969da",
+				};
 
-		// Save the reset preferences
-		savePreferences();
+				backgroundSettings.value = {
+					backgroundImage: uiConfig.background_image || "",
+					backgroundOpacity: uiConfig.background_opacity || 0.2,
+					backgroundBlur: uiConfig.background_blur || 5,
+				};
+			} else {
+				// Fallback to hardcoded defaults if no config
+				preferences.value = {
+					language: "EN",
+					theme: "LIGHT",
+					accentColor: "#0969da",
+				};
 
-		console.log("UI preferences reset to defaults");
+				backgroundSettings.value = {
+					backgroundImage: "",
+					backgroundOpacity: 0.2,
+					backgroundBlur: 5,
+				};
+			}
+
+			// Save the reset preferences
+			savePreferences();
+
+			console.log("UI preferences reset to defaults");
+		} catch (e) {
+			console.error("Failed to load backend defaults for reset", e);
+			// Fallback to hardcoded defaults
+			preferences.value = {
+				language: "EN",
+				theme: "LIGHT",
+				accentColor: "#0969da",
+			};
+
+			backgroundSettings.value = {
+				backgroundImage: "",
+				backgroundOpacity: 0.2,
+				backgroundBlur: 5,
+			};
+
+			savePreferences();
+		}
 	}
 };
 
@@ -227,25 +270,42 @@ const clearBackgroundImage = () => {
 	}
 };
 
-onMounted(() => {
-	// Load preferences from localStorage
+onMounted(async () => {
+	// Load config from backend first
+	try {
+		const config = await invoke('read_config') as any;
+		if (config.ui_config) {
+			const uiConfig = config.ui_config;
+			// Map backend theme enum to frontend string
+			const themeMap: { [key: number]: string } = { 0: 'DARK', 1: 'LIGHT' };
+			const languageMap: { [key: number]: string } = { 0: 'EN', 1: 'ZH' };
+
+			preferences.value.theme = themeMap[uiConfig.theme] || "LIGHT";
+			preferences.value.language = languageMap[uiConfig.language] || "EN";
+			preferences.value.accentColor = uiConfig.accent_color || "#0969da";
+
+			// Update background settings
+			backgroundSettings.value.backgroundImage = uiConfig.background_image || "";
+			backgroundSettings.value.backgroundOpacity = uiConfig.background_opacity || 0.2;
+			backgroundSettings.value.backgroundBlur = uiConfig.background_blur || 5;
+		}
+	} catch (e) {
+		console.error("Failed to load config from backend", e);
+	}
+
+	// Load preferences from localStorage (overrides backend defaults)
 	const savedPreferences = localStorage.getItem("uiPreferences");
 	if (savedPreferences) {
 		try {
 			const parsed = JSON.parse(savedPreferences);
 			preferences.value = {
-				language: parsed.language || "EN",
-				theme: parsed.theme || "DARK",
-				accentColor: parsed.accentColor || "#3B82F6",
+				language: parsed.language || preferences.value.language,
+				theme: parsed.theme || preferences.value.theme,
+				accentColor: parsed.accentColor || preferences.value.accentColor,
 			};
-			// Apply the theme immediately
-			applyTheme(preferences.value.theme);
 		} catch (e) {
 			console.error("Failed to parse UI preferences", e);
 		}
-	} else {
-		// Apply default theme
-		applyTheme(preferences.value.theme);
 	}
 
 	// Load background settings from localStorage
@@ -257,6 +317,9 @@ onMounted(() => {
 			console.error("Failed to parse background settings", e);
 		}
 	}
+
+	// Apply the theme
+	applyTheme(preferences.value.theme);
 
 	console.log("UI preferences mounted");
 });

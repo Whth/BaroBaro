@@ -14,7 +14,7 @@ impl Config {
                 parallel: 3,
             }),
             ui_config: Some(UiConfig {
-                theme: Theme::Dark as i32,
+                theme: Theme::Light as i32,
                 language: Language::En as i32,
                 accent_color: "#0969da".to_string(),
                 background_image: "".to_string(),

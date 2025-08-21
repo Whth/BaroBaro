@@ -126,7 +126,22 @@
     "savePaths": "保存路径",
     "savePreferences": "保存偏好",
     "resetPreferences": "重置为默认",
-    "resetConfirm": "确定要重置所有界面偏好为默认值吗？"
+    "resetConfirm": "确定要重置所有界面偏好为默认值吗？",
+    "uiPreferences": "界面偏好",
+    "languageLabel": "语言",
+    "themeLabel": "主题",
+    "accentColorLabel": "强调色",
+    "english": "英语",
+    "chinese": "中文",
+    "light": "浅色",
+    "dark": "深色",
+    "appearanceLanguage": "外观和语言",
+    "backgroundCustomization": "背景自定义",
+    "backgroundImage": "背景图片",
+    "backgroundOpacity": "背景不透明度",
+    "backgroundBlur": "背景模糊",
+    "clear": "清除",
+    "savePreferences": "保存偏好"
   },
 
   "tabs": {

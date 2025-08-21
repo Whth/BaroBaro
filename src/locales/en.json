@@ -126,7 +126,22 @@
     "savePaths": "Save Paths",
     "savePreferences": "Save Preferences",
     "resetPreferences": "Reset to Defaults",
-    "resetConfirm": "Are you sure you want to reset all UI preferences to defaults?"
+    "resetConfirm": "Are you sure you want to reset all UI preferences to defaults?",
+    "uiPreferences": "UI Preferences",
+    "languageLabel": "Language",
+    "themeLabel": "Theme",
+    "accentColorLabel": "Accent Color",
+    "english": "English",
+    "chinese": "Chinese",
+    "light": "Light",
+    "dark": "Dark",
+    "appearanceLanguage": "Appearance & Language",
+    "backgroundCustomization": "Background Customization",
+    "backgroundImage": "Background Image",
+    "backgroundOpacity": "Background Opacity",
+    "backgroundBlur": "Background Blur",
+    "clear": "Clear",
+    "savePreferences": "Save Preferences"
   },
 
   "tabs": {
