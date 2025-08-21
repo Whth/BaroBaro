@@ -12,20 +12,6 @@
           <option value="ERROR">Error</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="language" class="form-label">Language</label>
-        <select id="language" v-model="settings.language" class="form-select">
-          <option value="EN">English</option>
-          <option value="ZH">Chinese</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="theme" class="form-label">Theme</label>
-        <select id="theme" v-model="settings.theme" class="form-select">
-          <option value="LIGHT">Light</option>
-          <option value="DARK">Dark</option>
-        </select>
-      </div>
       <div class="form-actions">
         <button class="save-button" @click="saveSettings">Save Settings</button>
       </div>
@@ -42,8 +28,6 @@ const { config, updateConfig } = useModManager();
 
 const settings = ref({
 	loglevel: "INFO",
-	language: "EN",
-	theme: "DARK",
 });
 
 // Map protobuf loglevel to string
@@ -80,30 +64,6 @@ const stringToLogLevel = (level: string): Level => {
 
 const saveSettings = async () => {
 	try {
-		// Map theme string to Theme enum
-		const themeToEnum = (theme: string): Theme => {
-			switch (theme) {
-				case "DARK":
-					return Theme.DARK;
-				case "LIGHT":
-					return Theme.LIGHT;
-				default:
-					return Theme.DARK;
-			}
-		};
-
-		// Map language string to Language enum
-		const languageToEnum = (lang: string): Language => {
-			switch (lang) {
-				case "EN":
-					return Language.EN;
-				case "ZH":
-					return Language.ZH;
-				default:
-					return Language.EN;
-			}
-		};
-
 		// Map loglevel string to Level enum
 		const loglevelToEnum = (loglevel: string): Level => {
 			switch (loglevel) {
@@ -129,8 +89,8 @@ const saveSettings = async () => {
 			steamcmdHome: config.value.steamcmdHome,
 			steamcmdConfig: config.value.steamcmdConfig,
 			uiConfig: {
-				theme: themeToEnum(settings.value.theme),
-				language: languageToEnum(settings.value.language),
+				theme: Theme.DARK, // Default theme
+				language: Language.EN, // Default language
 				accentColor: "#3b82f6", // Default accent color
 				backgroundImage: "",
 				backgroundOpacity: 0.8,
@@ -168,8 +128,6 @@ onMounted(() => {
 		};
 
 		settings.value.loglevel = levelToString(config.value.loglevel);
-		settings.value.theme = config.value.uiConfig?.theme === Theme.DARK ? "DARK" : "LIGHT";
-		settings.value.language = config.value.uiConfig?.language === Language.ZH ? "ZH" : "EN";
 	}
 	console.log("General settings mounted");
 });

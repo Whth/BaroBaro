@@ -2,28 +2,34 @@
   <div class="ui-preferences">
     <h2>UI Preferences</h2>
     <div class="settings-form">
-      <div class="form-group">
-        <label for="accent-color" class="form-label">Accent Color</label>
-        <div class="color-picker">
-          <input
-            id="accent-color"
-            v-model="preferences.accentColor"
-            type="color"
-            class="color-input"
-          />
-          <span class="color-value">{{ preferences.accentColor }}</span>
+      <!-- Language and Theme Settings -->
+      <div class="form-section">
+        <h3>Appearance & Language</h3>
+        <div class="form-group">
+          <label for="language" class="form-label">Language</label>
+          <select id="language" v-model="preferences.language" class="form-select">
+            <option value="EN">English</option>
+            <option value="ZH">Chinese</option>
+          </select>
         </div>
-      </div>
-      <div class="form-group">
-        <label for="accent-color" class="form-label">Accent Color</label>
-        <div class="color-picker">
-          <input
-            id="accent-color"
-            v-model="preferences.accentColor"
-            type="color"
-            class="color-input"
-          />
-          <span class="color-value">{{ preferences.accentColor }}</span>
+        <div class="form-group">
+          <label for="theme" class="form-label">Theme</label>
+          <select id="theme" v-model="preferences.theme" class="form-select">
+            <option value="LIGHT">Light</option>
+            <option value="DARK">Dark</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="accent-color" class="form-label">Accent Color</label>
+          <div class="color-picker">
+            <input
+              id="accent-color"
+              v-model="preferences.accentColor"
+              type="color"
+              class="color-input"
+            />
+            <span class="color-value">{{ preferences.accentColor }}</span>
+          </div>
         </div>
       </div>
 
@@ -107,6 +113,8 @@
 import { ref, onMounted } from "vue";
 
 interface UIPreferences {
+	language: string;
+	theme: string;
 	accentColor: string;
 }
 
@@ -117,6 +125,8 @@ interface BackgroundSettings {
 }
 
 const preferences = ref<UIPreferences>({
+	language: "EN",
+	theme: "DARK",
 	accentColor: "#3B82F6",
 });
 
@@ -155,6 +165,8 @@ const resetPreferences = () => {
 		confirm("Are you sure you want to reset all UI preferences to defaults?")
 	) {
 		preferences.value = {
+			language: "EN",
+			theme: "DARK",
 			accentColor: "#3B82F6",
 		};
 
@@ -201,10 +213,11 @@ onMounted(() => {
 	if (savedPreferences) {
 		try {
 			const parsed = JSON.parse(savedPreferences);
-			// Only keep accentColor from saved preferences
-			if (parsed.accentColor) {
-				preferences.value.accentColor = parsed.accentColor;
-			}
+			preferences.value = {
+				language: parsed.language || "EN",
+				theme: parsed.theme || "DARK",
+				accentColor: parsed.accentColor || "#3B82F6",
+			};
 		} catch (e) {
 			console.error("Failed to parse UI preferences", e);
 		}
@@ -226,55 +239,97 @@ onMounted(() => {
 
 <style scoped>
 .ui-preferences h2 {
-  margin: 0 0 var(--spacing-l) 0;
+   margin: 0 0 var(--spacing-xl) 0;
+   color: var(--color-text-primary);
+   font-size: var(--font-size-heading-2);
+   font-weight: 600;
+   letter-spacing: -0.025em;
 }
 
 .settings-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
+   display: flex;
+   flex-direction: column;
+   gap: var(--spacing-xl);
+   min-height: 400px;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+   display: flex;
+   flex-direction: column;
+   gap: var(--spacing-s);
+   margin-bottom: var(--spacing-l);
 }
 
 .form-label {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
+   font-weight: 500;
+   color: var(--color-text-primary);
+   font-size: var(--font-size-body-regular);
+   display: flex;
+   align-items: center;
+   gap: var(--spacing-xs);
+}
+
+.form-label::after {
+   content: ":";
+   opacity: 0.6;
 }
 
 .color-picker {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-m);
+   display: flex;
+   align-items: center;
+   gap: var(--spacing-m);
+   padding: var(--spacing-s);
+   background: var(--color-background);
+   border-radius: var(--border-radius-soft);
+   border: 1px solid var(--color-border);
 }
 
 .color-input {
-  width: 50px;
-  height: 30px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  cursor: pointer;
+   width: 60px;
+   height: 40px;
+   border: 2px solid var(--color-border);
+   border-radius: var(--border-radius-soft);
+   cursor: pointer;
+   transition: all 0.2s ease;
+}
+
+.color-input:hover {
+   border-color: var(--color-primary);
+   transform: scale(1.05);
 }
 
 .color-value {
-  font-family: var(--font-family-monospace);
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
+   font-family: var(--font-family-monospace);
+   font-size: var(--font-size-body-small);
+   color: var(--color-text-secondary);
+   font-weight: 500;
+   background: var(--color-surface);
+   padding: var(--spacing-xs) var(--spacing-s);
+   border-radius: var(--border-radius-soft);
+   border: 1px solid var(--color-border);
 }
 
 .form-select {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-regular);
-  width: 100%;
-  max-width: 300px;
+   padding: var(--spacing-s) var(--spacing-m);
+   border: 2px solid var(--color-border);
+   border-radius: var(--border-radius-soft);
+   background-color: var(--color-background);
+   color: var(--color-text-primary);
+   font-size: var(--font-size-body-regular);
+   transition: all 0.2s ease;
+   cursor: pointer;
+   width: 100%;
+   max-width: 300px;
+}
+
+.form-select:hover {
+   border-color: var(--color-primary);
+}
+
+.form-select:focus {
+   outline: none;
+   border-color: var(--color-primary);
+   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .radio-group {
@@ -313,40 +368,79 @@ onMounted(() => {
 }
 
 .form-actions {
-  display: flex;
-  gap: var(--spacing-m);
-  padding-top: var(--spacing-m);
-  border-top: 1px solid var(--color-border);
+   display: flex;
+   gap: var(--spacing-m);
+   padding-top: var(--spacing-xl);
+   border-top: 1px solid var(--color-border);
+   margin-top: var(--spacing-xl);
+   justify-content: flex-end;
 }
 
 .save-button,
 .reset-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
+   padding: var(--spacing-m) var(--spacing-xl);
+   border: 2px solid var(--color-border);
+   border-radius: var(--border-radius-soft);
+   cursor: pointer;
+   font-weight: 600;
+   font-size: var(--font-size-body-regular);
+   transition: all 0.2s ease;
+   min-width: 120px;
+   height: 44px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
 }
 
 .save-button {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
+   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+   color: white;
+   border-color: var(--color-primary);
+   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.save-button:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .reset-button {
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+   background: var(--color-surface);
+   color: var(--color-text-primary);
+   border-color: var(--color-border);
+}
+
+.reset-button:hover {
+   background: var(--color-background);
+   border-color: var(--color-text-secondary);
 }
 
 .form-section {
-  padding: var(--spacing-m) 0;
-  border-top: 1px solid var(--color-border);
+   background: var(--color-surface);
+   border: 1px solid var(--color-border);
+   border-radius: var(--border-radius-rounded);
+   padding: var(--spacing-xl);
+   transition: all 0.2s ease;
+}
+
+.form-section:hover {
+   border-color: var(--color-primary-light);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .form-section h3 {
-  margin: 0 0 var(--spacing-m) 0;
-  color: var(--color-text-primary);
+   margin: 0 0 var(--spacing-l) 0;
+   color: var(--color-text-primary);
+   font-size: var(--font-size-heading-3);
+   font-weight: 600;
+   display: flex;
+   align-items: center;
+   gap: var(--spacing-s);
+}
+
+.form-section h3::before {
+   content: "⚙️";
+   font-size: var(--font-size-body-large);
 }
 
 .file-upload {
