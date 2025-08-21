@@ -63,7 +63,9 @@ onMounted(() => {
 	// Load theme from localStorage or default to 'light'
 	const savedTheme = localStorage.getItem("theme") || "light";
 	currentTheme.value = savedTheme;
-	document.documentElement.setAttribute("data-theme", savedTheme);
+
+	// Note: Theme is now applied globally in App.vue
+	// We just need to sync with the current state
 
 	// Add event listener for clicking outside
 	document.addEventListener("click", handleClickOutside);

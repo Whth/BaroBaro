@@ -133,7 +133,8 @@
 
 /* Smooth theme transitions */
 .theme-transitioning * {
-	transition: background-color var(--theme-transition-duration, 300ms) ease,
+	transition:
+		background-color var(--theme-transition-duration, 300ms) ease,
 		color var(--theme-transition-duration, 300ms) ease,
 		border-color var(--theme-transition-duration, 300ms) ease,
 		box-shadow var(--theme-transition-duration, 300ms) ease !important;
@@ -141,14 +142,18 @@
 
 /* Enhanced animations for UI elements */
 * {
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
 button:hover {
 	transform: translateY(-1px);
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
 	transform: scale(1.02);
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
@@ -176,7 +181,8 @@ input:focus, select:focus, textarea:focus {
 	}
 }
 
-.mod-card, .settings-form > .form-section {
+.mod-card,
+.settings-form > .form-section {
 	animation: fadeInUp 0.6s ease-out forwards;
 }
 
@@ -211,8 +217,11 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Smooth page transitions */
-.view-enter-active, .view-leave-active {
-	transition: opacity 0.3s ease, transform 0.3s ease;
+.view-enter-active,
+.view-leave-active {
+	transition:
+		opacity 0.3s ease,
+		transform 0.3s ease;
 }
 
 .view-enter-from {
@@ -231,5 +240,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+	background: linear-gradient(
+		135deg,
+		var(--color-primary),
+		var(--color-primary-dark)
+	);
 }

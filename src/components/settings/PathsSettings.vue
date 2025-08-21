@@ -80,7 +80,7 @@
 import { onMounted, ref } from "vue";
 import { useModManager } from "../../composables/useModManager";
 import { message, open } from "@tauri-apps/plugin-dialog";
-import { type Config } from "../../proto/config";
+import type { Config } from "../../proto/config";
 
 const { config, updateGameHome, updateSteamCmdHome } = useModManager();
 

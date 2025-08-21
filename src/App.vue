@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import Layout from "./components/core/Layout.vue";
+import { config, refresh_config } from "./invokes";
 
 // Background customization state
 const backgroundSettings = ref({
@@ -16,6 +17,10 @@ const backgroundSettings = ref({
 	backgroundOpacity: 1,
 	backgroundBlur: 0,
 });
+
+// Theme state
+const currentTheme = ref("LIGHT");
+const currentLanguage = ref("en");
 
 // Computed background style
 const backgroundStyle = computed(() => {
@@ -31,16 +36,53 @@ const backgroundStyle = computed(() => {
 	};
 });
 
-// Load background settings from localStorage
-onMounted(() => {
-	const savedSettings = localStorage.getItem("backgroundSettings");
-	if (savedSettings) {
-		try {
-			backgroundSettings.value = JSON.parse(savedSettings);
-		} catch (e) {
-			console.error("Failed to parse background settings", e);
+// Theme application functions
+const applyTheme = (theme: string) => {
+	const root = document.documentElement;
+
+	// Add transition class for smooth theme change
+	root.style.setProperty("--theme-transition-duration", "300ms");
+	root.classList.add("theme-transitioning");
+
+	// Set the theme
+	root.setAttribute("data-theme", theme.toLowerCase());
+
+	// Remove transition class after animation completes
+	setTimeout(() => {
+		root.classList.remove("theme-transitioning");
+		root.style.removeProperty("--theme-transition-duration");
+	}, 300);
+};
+
+// Load all preferences from backend config
+onMounted(async () => {
+	try {
+		// Load config from backend
+		await refresh_config();
+
+		if (config.value.uiConfig) {
+			const uiConfig = config.value.uiConfig;
+
+			// Map backend theme enum to frontend string
+			const themeMap: { [key: number]: string } = { 0: "DARK", 1: "LIGHT" };
+			const languageMap: { [key: number]: string } = { 0: "en", 1: "zh" };
+
+			currentTheme.value = themeMap[uiConfig.theme] || "LIGHT";
+			currentLanguage.value = languageMap[uiConfig.language] || "en";
+
+			// Update background settings
+			backgroundSettings.value.backgroundImage = uiConfig.backgroundImage || "";
+			backgroundSettings.value.backgroundOpacity =
+				uiConfig.backgroundOpacity || 1;
+			backgroundSettings.value.backgroundBlur =
+				Number(uiConfig.backgroundBlur) || 0;
 		}
+	} catch (e) {
+		console.error("Failed to load config from backend", e);
 	}
+
+	// Apply theme immediately on app load
+	applyTheme(currentTheme.value);
 });
 </script>
 
