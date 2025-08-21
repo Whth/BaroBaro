@@ -64,6 +64,8 @@ const setActiveSection = (sectionId: string) => {
   border-radius: var(--border-radius-rounded);
   box-shadow: var(--shadow-level-1);
   overflow: hidden;
+  height: calc(100vh - 200px);
+  min-height: 400px;
 }
 
 .settings-sidebar {
@@ -96,6 +98,26 @@ const setActiveSection = (sectionId: string) => {
 .settings-main {
   flex: 1;
   padding: var(--spacing-l);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.settings-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-main::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.settings-main::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-secondary);
 }
 
 @media (max-width: 768px) {

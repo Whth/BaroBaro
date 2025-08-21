@@ -22,9 +22,8 @@ import ProfileList from '@/components/profile-management/ProfileList.vue'
 import ProfileEditor from '@/components/profile-management/ProfileEditor.vue'
 import type { Profile } from '../../types'
 import { useModManager } from '../../composables/useModManager'
-import { ModList } from '../../proto/mods'
 
-const { mod_lists, getModListByName } = useModManager()
+const { getModListByName } = useModManager()
 
 const showEditor = ref(false)
 const editingProfile = ref<Profile | null>(null)
@@ -47,7 +46,7 @@ const handleEditProfile = (profileName: string) => {
   }
 }
 
-const handleSaveProfile = (profile: Profile) => {
+const handleSaveProfile = (_profile: Profile) => {
   // Profile is saved through the composable, so we just need to hide the editor
   showEditor.value = false
   editingProfile.value = null

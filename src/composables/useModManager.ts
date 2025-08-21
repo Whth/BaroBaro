@@ -193,7 +193,7 @@ export async function refreshModLists() {
     }
 }
 
-export async function createModList(profileName: string, basePackage: string, mods: string[]) {
+export async function createModList(profileName: string, _basePackage: string, _mods: string[]) {
     try {
         // In a real implementation, this would call a Tauri command to create a new mod list
         // For now, we'll just add it to the local ref and refresh

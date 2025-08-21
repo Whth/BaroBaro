@@ -61,7 +61,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { installed_mod, refreshInstalledMods } from '../../composables/useModManager'
-import { BarotraumaMod } from '../../proto/mods'
 
 const searchQuery = ref('')
 

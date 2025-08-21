@@ -25,7 +25,6 @@
 import { ref, onMounted } from 'vue'
 import ProfileCard from './ProfileCard.vue'
 import { useModManager } from '../../composables/useModManager'
-import { ModList } from '../../proto/mods'
 
 const { mod_lists, refreshModLists, deleteModList } = useModManager()
 

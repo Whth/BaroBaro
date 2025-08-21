@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useModManager } from '../../composables/useModManager'
-import { Config, Level } from '../../proto/config'
+import { Config, Level, Theme, Language } from '../../proto/config'
 
 const { config, updateConfig } = useModManager()
 
@@ -87,12 +87,38 @@ const stringToLogLevel = (level: string): Level => {
 
 const saveSettings = async () => {
   try {
+    // Map theme string to Theme enum
+    const themeToEnum = (theme: string): Theme => {
+      switch (theme) {
+        case 'dark': return Theme.DARK
+        case 'light': return Theme.LIGHT
+        default: return Theme.DARK
+      }
+    }
+
+    // Map language string to Language enum
+    const languageToEnum = (lang: string): Language => {
+      switch (lang) {
+        case 'en': return Language.EN
+        case 'zh': return Language.ZH
+        default: return Language.EN
+      }
+    }
+
     // Create a new config object with the updated settings
     const newConfig: Config = {
       loglevel: stringToLogLevel(settings.value.theme), // Using theme as loglevel for now
       gameHome: config.value.gameHome,
       steamcmdHome: config.value.steamcmdHome,
-      steamcmdConfig: config.value.steamcmdConfig
+      steamcmdConfig: config.value.steamcmdConfig,
+      uiConfig: {
+        theme: themeToEnum(settings.value.theme),
+        language: languageToEnum(settings.value.language),
+        accentColor: '#3b82f6', // Default accent color
+        backgroundImage: '',
+        backgroundOpacity: 0.8,
+        backgroundBlur: 10
+      }
     }
     
     await updateConfig(newConfig)
@@ -116,12 +142,15 @@ onMounted(() => {
 <style scoped>
 .general-settings h2 {
   margin: 0 0 var(--spacing-l) 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-2);
 }
 
 .settings-form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-m);
+  min-height: 300px;
 }
 
 .form-group {

@@ -71,14 +71,6 @@ const duplicateProfile = () => {
   emit('duplicate', props.profile.profileName)
 }
 
-// Since ModList doesn't have a createdAt field, we'll return a placeholder
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 </script>
 
 <style scoped>

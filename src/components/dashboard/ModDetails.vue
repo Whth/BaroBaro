@@ -65,14 +65,6 @@ const toggleMod = () => {
   }
 }
 
-// Since BarotraumaMod doesn't have date fields, we'll return a placeholder
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 </script>
 
 <style scoped>

@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { mod_lists } from '../../composables/useModManager'
-import { ModList } from '../../proto/mods'
 
 const selectedProfile = ref('')
 
