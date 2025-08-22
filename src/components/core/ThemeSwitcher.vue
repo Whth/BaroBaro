@@ -23,22 +23,22 @@ import { NIcon, NButton, NDropdown } from "naive-ui";
 const { themeMode, setTheme } = useTheme();
 
 const themeIcon = computed(() =>
-  themeMode.value === 'dark' ? MoonOutline : SunnyOutline
+	themeMode.value === "dark" ? MoonOutline : SunnyOutline,
 );
 
 const themeOptions = [
-  {
-    label: "Light",
-    key: "light",
-  },
-  {
-    label: "Dark",
-    key: "dark",
-  },
+	{
+		label: "Light",
+		key: "light",
+	},
+	{
+		label: "Dark",
+		key: "dark",
+	},
 ];
 
 const handleThemeSelect = (key: string) => {
-  setTheme(key as "light" | "dark");
+	setTheme(key as "light" | "dark");
 };
 </script>
 

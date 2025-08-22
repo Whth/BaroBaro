@@ -7,7 +7,7 @@
   "scripts": {
     "gen": "node scripts/gen_proto.cjs",
     "dev": "pnpm gen && vite ",
-    "fmt": "biome format src --write  --vcs-use-ignore-file=true",
+    "fmt": "biome format src --write  --vcs-use-ignore-file=true && cargo fmt --manifest-path src-tauri/Cargo.toml",
     "lint": "biome lint src --write --vcs-use-ignore-file=true",
     "build": "pnpm gen && vue-tsc --noEmit && vite build",
     "preview": "pnpm gen && vite preview",

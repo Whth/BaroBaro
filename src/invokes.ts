@@ -5,7 +5,6 @@ import type { BarotraumaMod, ModList } from "./proto/mods";
 
 export const config = ref(Config.create());
 export const installed_mod: Ref<BarotraumaMod[]> = ref([]);
-
 export const mod_lists: Ref<ModList[]> = ref([]);
 
 export async function refresh_config() {
@@ -27,9 +26,11 @@ export async function download_mod(mods: number[]) {
 }
 
 export async function list_mod_lists() {
-  mod_lists.value = await invoke("list_mod_lists");
+	mod_lists.value = await invoke("list_mod_lists");
 }
 
+// get the background image in base64
+// format like ("data:{};base64,{}", mime_type, base64_data)
 export async function get_background_image(): Promise<string | null> {
-  return await invoke("get_background_image");
+	return await invoke("get_background_image");
 }

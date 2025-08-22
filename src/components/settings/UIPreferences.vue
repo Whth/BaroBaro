@@ -48,12 +48,6 @@
               Browse for Image
             </button>
             <button
-                class="test-bg-button"
-                @click="setTestBackground"
-            >
-              Test Background
-            </button>
-            <button
                 v-if="backgroundSettings.backgroundImage"
                 class="clear-button"
                 @click="clearBackgroundImage"
@@ -121,7 +115,12 @@
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import i18n from "../../i18n";
-import { config, refresh_config, save_config, get_background_image } from "../../invokes";
+import {
+	config,
+	refresh_config,
+	save_config,
+	get_background_image,
+} from "../../invokes";
 import { open } from "@tauri-apps/plugin-dialog";
 import Title from "../../components/core/Title.vue";
 import { useTheme } from "../../composables/useTheme";
@@ -175,35 +174,70 @@ const savePreferences = async () => {
 				backgroundSettings.value.backgroundBlur,
 			);
 
-			// Save to localStorage for immediate theme application
-			const bgImage = backgroundSettings.value.backgroundImage || '';
-			const bgOpacity = backgroundSettings.value.backgroundOpacity.toString();
-			const bgBlur = Math.round(backgroundSettings.value.backgroundBlur).toString();
-
-			localStorage.setItem('backgroundImage', bgImage);
-			localStorage.setItem('backgroundOpacity', bgOpacity);
-			localStorage.setItem('backgroundBlur', bgBlur);
-
 			// Debug logging
-			console.log('Background settings saved to localStorage:', {
-				backgroundImage: bgImage,
-				backgroundOpacity: bgOpacity,
-				backgroundBlur: bgBlur
-			});
-
-			// Force update CSS variables immediately
-			document.documentElement.style.setProperty('--background-image', bgImage ? `url(${bgImage})` : 'none');
-			document.documentElement.style.setProperty('--background-opacity', bgOpacity);
-			document.documentElement.style.setProperty('--background-blur', `${bgBlur}px`);
-
-			console.log('CSS variables updated:', {
-				backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-				backgroundOpacity: bgOpacity,
-				backgroundBlur: `${bgBlur}px`
+			console.log("Background settings being saved:", {
+				backgroundImage: backgroundSettings.value.backgroundImage,
+				backgroundOpacity: backgroundSettings.value.backgroundOpacity,
+				backgroundBlur: backgroundSettings.value.backgroundBlur,
 			});
 
 			// Save to backend
 			await save_config();
+
+			// Refresh config from backend to get latest values
+			await refresh_config();
+
+			// Update local component state from refreshed config
+			if (config.value.uiConfig) {
+				const uiConfig = config.value.uiConfig;
+				const themeMap: { [key: number]: string } = { 0: "DARK", 1: "LIGHT" };
+				const languageMap: { [key: number]: string } = { 0: "en", 1: "zh" };
+
+				// Update preferences from config
+				preferences.value = {
+					language: languageMap[uiConfig.language] || "en",
+					theme: themeMap[uiConfig.theme] || "LIGHT",
+					accentColor: uiConfig.accentColor || "#0969da",
+				};
+
+				// Update background settings from config
+				backgroundSettings.value = {
+					backgroundImage: uiConfig.backgroundImage || "",
+					backgroundOpacity: uiConfig.backgroundOpacity || 0.2,
+					backgroundBlur: Number(uiConfig.backgroundBlur) || 5,
+				};
+
+				console.log("Local state updated from refreshed config:", {
+					theme: preferences.value.theme,
+					language: preferences.value.language,
+					backgroundImage: backgroundSettings.value.backgroundImage,
+				});
+			}
+
+			// Reload background image from config
+			try {
+				const { get_background_image } = await import("../../invokes");
+				const backgroundDataUrl = await get_background_image();
+				if (backgroundDataUrl) {
+					document.documentElement.style.setProperty(
+						"--background-image",
+						backgroundDataUrl,
+					);
+					console.log("Background image reloaded after save");
+				} else {
+					document.documentElement.style.setProperty(
+						"--background-image",
+						"none",
+					);
+					console.log("No background image after save");
+				}
+			} catch (error) {
+				console.error("Failed to reload background image:", error);
+				document.documentElement.style.setProperty(
+					"--background-image",
+					"none",
+				);
+			}
 
 			// Apply theme and language immediately when saving
 			applyTheme(preferences.value.theme);
@@ -227,12 +261,12 @@ const savePreferences = async () => {
 };
 
 const applyTheme = (theme: string) => {
-  // Import and use the theme composable
-  const { setTheme } = useTheme();
+	// Import and use the theme composable
+	const { setTheme } = useTheme();
 
-  // Use the proper theme mode format
-  const themeMode = theme.toLowerCase() as "light" | "dark";
-  setTheme(themeMode);
+	// Use the proper theme mode format
+	const themeMode = theme.toLowerCase() as "light" | "dark";
+	setTheme(themeMode);
 };
 
 const applyLanguage = (language: string) => {
@@ -242,10 +276,13 @@ const applyLanguage = (language: string) => {
 };
 
 // Watch for theme changes but don't apply immediately - only apply on save
-watch(() => preferences.value.theme, (newTheme) => {
-	// Theme will be applied only when user saves preferences
-	console.log('Theme selected:', newTheme);
-});
+watch(
+	() => preferences.value.theme,
+	(newTheme) => {
+		// Theme will be applied only when user saves preferences
+		console.log("Theme selected:", newTheme);
+	},
+);
 
 const resetPreferences = async () => {
 	if (confirm(t("settings.resetConfirm"))) {
@@ -308,44 +345,37 @@ const resetPreferences = async () => {
 };
 
 const selectBackgroundImage = async () => {
- 	try {
- 		// Use Tauri's open dialog to get the actual file path
- 		const selectedPath = await open({
- 			multiple: false,
- 			title: "Select Background Image",
- 			filters: [
- 				{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] },
- 			],
- 		});
+	try {
+		// Use Tauri's open dialog to get the actual file path
+		const selectedPath = await open({
+			multiple: false,
+			title: "Select Background Image",
+			filters: [
+				{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] },
+			],
+		});
 
- 		if (selectedPath) {
- 			console.log("Background image path selected:", selectedPath);
+		if (selectedPath) {
+			console.log("Background image path selected:", selectedPath);
 
- 			// Store the selected path - the backend will read it from config later
- 			backgroundSettings.value.backgroundImage = selectedPath;
- 			console.log("Background image path stored:", selectedPath);
- 		}
- 	} catch (error) {
- 		console.error("Failed to select background image:", error);
- 	}
+			// Store the selected path - the backend will read it from config later
+			backgroundSettings.value.backgroundImage = selectedPath;
+			console.log("Background image path stored:", selectedPath);
+		}
+	} catch (error) {
+		console.error("Failed to select background image:", error);
+	}
 };
 
 const clearBackgroundImage = () => {
- 	backgroundSettings.value.backgroundImage = "";
- 	// Clear the file input
- 	const fileInput = document.getElementById(
- 		"background-image",
- 	) as HTMLInputElement;
- 	if (fileInput) {
- 		fileInput.value = "";
- 	}
-};
-
-const setTestBackground = () => {
- 	// Set a test gradient background
- 	backgroundSettings.value.backgroundImage = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
- 	backgroundSettings.value.backgroundOpacity = 0.8;
- 	backgroundSettings.value.backgroundBlur = 5;
+	backgroundSettings.value.backgroundImage = "";
+	// Clear the file input
+	const fileInput = document.getElementById(
+		"background-image",
+	) as HTMLInputElement;
+	if (fileInput) {
+		fileInput.value = "";
+	}
 };
 
 // Watch for theme changes - only apply when saved
@@ -653,23 +683,6 @@ onMounted(async () => {
    background-color: var(--color-primary-dark);
 }
 
-.test-bg-button {
-   padding: var(--spacing-s) var(--spacing-m);
-   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-   color: white;
-   border: none;
-   border-radius: var(--border-radius-soft);
-   cursor: pointer;
-   font-weight: var(--font-weight-medium);
-   font-size: var(--font-size-body-regular);
-   margin-left: var(--spacing-s);
-   transition: all 0.3s ease;
-}
-
-.test-bg-button:hover {
-   transform: translateY(-2px);
-   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
 
 .clear-button {
   padding: var(--spacing-xs) var(--spacing-s);

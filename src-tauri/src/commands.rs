@@ -16,7 +16,8 @@ use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
+use logger::{debug, info};
 use toml::{from_str, to_string_pretty};
 
 /// Writes the given configuration to disk in TOML format.
@@ -45,7 +46,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-        .map_err(|e| format!("{}, failed to write config file.", e))
+    .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -66,6 +67,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
 #[tauri::command]
 pub fn read_config() -> Result<Config, String> {
     if GLOBAL_CONFIG_FILE.exists() {
+        debug!("Reading config file.");
         let config_file = fs::read_to_string(GLOBAL_CONFIG_FILE.clone())
             .map_err(|e| format!("{}, failed to read config file.", e))?;
         let config: Config =
@@ -101,6 +103,7 @@ pub fn read_config() -> Result<Config, String> {
 #[tauri::command]
 pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
     let conf: Config = read_config()?;
+    info!("Listing installed mods for Barotrauma.");
     Ok(BARO_MANAGER
         .write()
         .await
@@ -119,6 +122,7 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
 pub async fn download_mods(mods: Vec<usize>) -> Result<(), String> {
     let conf: Config = read_config()?;
 
+    info!("Starting to download mods: {:?}", mods);
     STEAMCMD_MANAGER
         .write()
         .await
@@ -181,11 +185,12 @@ pub fn get_background_image() -> Result<Option<String>, String> {
     // Read current configuration
     let config: Config = read_config()?;
 
-    if let Some(ui_conf) = config.ui_config &&
-        let Ok(image_path) = PathBuf::from_str(ui_conf.background_image.as_str()) &&
-        !image_path.exists() &&
-        let Ok(image_data) = fs::read(&image_path)
+    if let Some(ui_conf) = config.ui_config
+        && let Ok(image_path) = PathBuf::from_str(ui_conf.background_image.as_str())
+        && image_path.exists()
+        && let Ok(image_data) = fs::read(&image_path)
     {
+        info!("Reading background image from {}", image_path.display());
         // Determine MIME type based on file extension
         let mime_type = match image_path
             .extension()
@@ -209,6 +214,7 @@ pub fn get_background_image() -> Result<Option<String>, String> {
         // Return as data URL
         Ok(Some(format!("data:{};base64,{}", mime_type, base64_data)))
     } else {
+        info!("No background image configured or image does not exist.");
         Ok(None)
     }
 }

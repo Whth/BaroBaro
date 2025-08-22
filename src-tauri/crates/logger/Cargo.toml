@@ -7,3 +7,4 @@ edition = "2024"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 tracing-appender = "0.2.3"
 constants = { path = "../constants" }
+tracing = "0.1.41"
