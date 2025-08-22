@@ -14,7 +14,8 @@
       {
         "title": "barobaro",
         "width": 1200,
-        "height": 600
+        "height": 600,
+        "transparent": true
       }
     ],
     "security": {

@@ -135,8 +135,7 @@ onMounted(async () => {
       document.documentElement.style.setProperty("--background-image", "none");
     }
   };
-
-  loadInitialBackground();
+  await loadInitialBackground();
 });
 </script>
 
@@ -169,7 +168,7 @@ body {
   background-size: var(--background-size);
   background-position: var(--background-position);
   background-repeat: var(--background-repeat);
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
 }
 
 body::before {
@@ -187,10 +186,6 @@ body::before {
   pointer-events: none;
 }
 
-#app {
-  height: 100vh;
-  overflow: hidden;
-}
 
 .app-container {
   min-height: 100vh;
