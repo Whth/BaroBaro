@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { lightTheme, darkTheme } from "naive-ui";
 import type { GlobalTheme } from "naive-ui";
 
@@ -122,25 +122,31 @@ export function useTheme() {
 		updateNaiveUITheme(newTheme);
 	});
 
-	onMounted(async () => {
-		const storedTheme = getStoredTheme();
-		await setTheme(storedTheme);
-	});
-
-	// Initialize CSS variables on first load
-	const initializeTheme = async () => {
-		const storedTheme = getStoredTheme();
-		await updateCSSVariables(storedTheme);
-	};
-
-	// Call initialization
-	initializeTheme();
 
 	return {
-		themeMode: computed(() => themeMode.value),
-		naiveTheme,
-		setTheme,
-		toggleTheme,
-		getStoredTheme,
-	};
+	  themeMode: computed(() => themeMode.value),
+	  naiveTheme,
+	  setTheme,
+	  toggleTheme,
+	  getStoredTheme,
+	  initializeTheme: async () => {
+	    const storedTheme = getStoredTheme();
+	    console.log("Initializing theme from localStorage:", storedTheme);
+
+	    // Ensure theme mode is updated
+	    themeMode.value = storedTheme;
+
+	    // Update CSS variables for the theme
+	    await updateCSSVariables(storedTheme);
+
+	    // Force a re-render by dispatching a custom event
+	    window.dispatchEvent(
+	      new CustomEvent("theme-changed", {
+	        detail: { theme: storedTheme },
+	      }),
+	    );
+
+	    console.log("Theme initialization complete");
+	  }
+	}
 }
