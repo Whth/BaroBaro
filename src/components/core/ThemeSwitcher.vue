@@ -1,9 +1,10 @@
 <template>
   <n-dropdown
     :options="themeOptions"
-    :value="currentTheme"
+    :value="themeMode"
     @select="handleThemeSelect"
     trigger="click"
+    placement="bottom-end"
   >
     <n-button quaternary circle>
       <template #icon>
@@ -21,20 +22,16 @@ import { NIcon, NButton, NDropdown } from "naive-ui";
 
 const { themeMode, setTheme } = useTheme();
 
-const currentTheme = computed(() => themeMode.value);
-
 const themeIcon = computed(() =>
-  currentTheme.value === 'dark' ? MoonOutline : SunnyOutline
+  themeMode.value === 'dark' ? MoonOutline : SunnyOutline
 );
 
 const themeOptions = [
   {
-    type: 'default',
     label: "Light",
     key: "light",
   },
   {
-    type: 'default',
     label: "Dark",
     key: "dark",
   },

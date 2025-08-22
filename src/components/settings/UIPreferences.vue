@@ -112,12 +112,13 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import i18n from "../../i18n";
 import { config, refresh_config, save_config } from "../../invokes";
 import { open } from "@tauri-apps/plugin-dialog";
 import Title from "../../components/core/Title.vue";
+import { useTheme } from "../../composables/useTheme";
 
 const { t } = useI18n();
 
@@ -168,10 +169,15 @@ const savePreferences = async () => {
 				backgroundSettings.value.backgroundBlur,
 			);
 
+			// Save to localStorage for immediate theme application
+			localStorage.setItem('backgroundImage', backgroundSettings.value.backgroundImage || '');
+			localStorage.setItem('backgroundOpacity', backgroundSettings.value.backgroundOpacity.toString());
+			localStorage.setItem('backgroundBlur', Math.round(backgroundSettings.value.backgroundBlur).toString());
+
 			// Save to backend
 			await save_config();
 
-			// Apply theme and language immediately
+			// Apply theme and language immediately when saving
 			applyTheme(preferences.value.theme);
 			applyLanguage(preferences.value.language);
 
@@ -193,20 +199,12 @@ const savePreferences = async () => {
 };
 
 const applyTheme = (theme: string) => {
-	const root = document.documentElement;
+  // Import and use the theme composable
+  const { setTheme } = useTheme();
 
-	// Add transition class for smooth theme change
-	root.style.setProperty("--theme-transition-duration", "300ms");
-	root.classList.add("theme-transitioning");
-
-	// Set the theme
-	root.setAttribute("data-theme", theme.toLowerCase());
-
-	// Remove transition class after animation completes
-	setTimeout(() => {
-		root.classList.remove("theme-transitioning");
-		root.style.removeProperty("--theme-transition-duration");
-	}, 300);
+  // Use the proper theme mode format
+  const themeMode = theme.toLowerCase() as "light" | "dark";
+  setTheme(themeMode);
 };
 
 const applyLanguage = (language: string) => {
@@ -214,6 +212,12 @@ const applyLanguage = (language: string) => {
 	i18n.global.locale = language as "en" | "zh";
 	// Note: Language preference is now saved to backend config
 };
+
+// Watch for theme changes but don't apply immediately - only apply on save
+watch(() => preferences.value.theme, (newTheme) => {
+	// Theme will be applied only when user saves preferences
+	console.log('Theme selected:', newTheme);
+});
 
 const resetPreferences = async () => {
 	if (confirm(t("settings.resetConfirm"))) {
@@ -529,12 +533,25 @@ onMounted(async () => {
 }
 
 .form-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  padding: var(--spacing-xl);
-  transition: all 0.2s ease;
-  animation-delay: 0.2s;
+   background: rgba(255, 255, 255, 0.15);
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   border-radius: var(--border-radius-rounded);
+   padding: var(--spacing-xl);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(20px);
+   box-shadow:
+     0 8px 32px rgba(31, 38, 135, 0.15),
+     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   animation-delay: 0.2s;
+}
+
+[data-theme="dark"] .form-section {
+   background: rgba(31, 41, 55, 0.4);
+   border-color: rgba(255, 255, 255, 0.15);
+   box-shadow:
+     0 8px 32px rgba(0, 0, 0, 0.3),
+     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .form-section:nth-child(2) {
@@ -542,8 +559,20 @@ onMounted(async () => {
 }
 
 .form-section:hover {
-  border-color: var(--color-primary-light);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+   border-color: rgba(255, 255, 255, 0.35);
+   box-shadow:
+     0 12px 40px rgba(31, 38, 135, 0.2),
+     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+   background: rgba(255, 255, 255, 0.2);
+   transform: translateY(-2px);
+}
+
+[data-theme="dark"] .form-section:hover {
+   border-color: rgba(255, 255, 255, 0.25);
+   box-shadow:
+     0 12px 40px rgba(0, 0, 0, 0.4),
+     inset 0 1px 0 rgba(255, 255, 255, 0.15);
+   background: rgba(31, 41, 55, 0.5);
 }
 
 .form-section h3 {

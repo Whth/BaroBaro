@@ -82,15 +82,26 @@ const selectMod = () => {
 
 <style scoped>
 .mod-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  padding: var(--spacing-m);
-  background-color: var(--color-surface);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  opacity: 0;
+   border: 1px solid rgba(255, 255, 255, 0.2);
+   border-radius: var(--border-radius-rounded);
+   padding: var(--spacing-m);
+   background: rgba(255, 255, 255, 0.15);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(20px);
+   box-shadow:
+     0 8px 32px rgba(31, 38, 135, 0.15),
+     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+   opacity: 0;
+}
+
+[data-theme="dark"] .mod-card {
+   background: rgba(31, 41, 55, 0.4);
+   border-color: rgba(255, 255, 255, 0.15);
+   box-shadow:
+     0 8px 32px rgba(0, 0, 0, 0.3),
+     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .mod-card:nth-child(1) {
@@ -114,9 +125,20 @@ const selectMod = () => {
 }
 
 .mod-card:hover {
-	transform: translateY(-10px) scale(1.03);
-	box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-	border-color: var(--color-primary-light);
+ 	transform: translateY(-12px) scale(1.03);
+ 	border-color: rgba(255, 255, 255, 0.35);
+ 	box-shadow:
+ 		0 20px 60px rgba(31, 38, 135, 0.25),
+ 		inset 0 1px 0 rgba(255, 255, 255, 0.3);
+ 	background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .mod-card:hover {
+ 	border-color: rgba(255, 255, 255, 0.25);
+ 	box-shadow:
+ 		0 20px 60px rgba(0, 0, 0, 0.4),
+ 		inset 0 1px 0 rgba(255, 255, 255, 0.15);
+ 	background: rgba(31, 41, 55, 0.5);
 }
 
 .mod-card:active {
