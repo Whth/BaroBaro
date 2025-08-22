@@ -99,6 +99,26 @@ onMounted(async () => {
 	window.addEventListener('theme-changed', (event: any) => {
 		console.log('Theme changed to:', event.detail.theme);
 	});
+
+	// Load background image on app start
+	const loadInitialBackground = async () => {
+		try {
+			const { get_background_image } = await import('./invokes');
+			const backgroundDataUrl = await get_background_image();
+			if (backgroundDataUrl) {
+				document.documentElement.style.setProperty('--background-image', backgroundDataUrl);
+				console.log('Initial background image loaded');
+			} else {
+				document.documentElement.style.setProperty('--background-image', 'none');
+				console.log('No initial background image configured');
+			}
+		} catch (error) {
+			console.error('Failed to load initial background image:', error);
+			document.documentElement.style.setProperty('--background-image', 'none');
+		}
+	};
+
+	loadInitialBackground();
 });
 </script>
 
@@ -127,7 +147,7 @@ onMounted(async () => {
 body {
    margin: 0;
    padding: 0;
-   background-image: var(--background-image);
+   background: var(--background-image, none);
    background-size: var(--background-size);
    background-position: var(--background-position);
    background-repeat: var(--background-repeat);
@@ -141,7 +161,7 @@ body::before {
    left: 0;
    width: 100%;
    height: 100%;
-   background: var(--color-background);
+   background: var(--background-image, var(--color-background));
    opacity: var(--background-opacity);
    backdrop-filter: blur(var(--background-blur));
    -webkit-backdrop-filter: blur(var(--background-blur));

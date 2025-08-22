@@ -46,27 +46,31 @@ export function useTheme() {
       root.setAttribute('data-theme', 'light')
     }
 
-    // Update background-related variables from localStorage
-    const savedBackgroundImage = localStorage.getItem('backgroundImage')
-    const savedBackgroundOpacity = localStorage.getItem('backgroundOpacity')
-    const savedBackgroundBlur = localStorage.getItem('backgroundBlur')
+    // Load background image from config via Tauri
+    loadBackgroundImage()
+  }
 
-    if (savedBackgroundImage) {
-      root.style.setProperty('--background-image', `url(${savedBackgroundImage})`)
-    } else {
-      root.style.setProperty('--background-image', 'none')
-    }
+  const loadBackgroundImage = async () => {
+    try {
+      // Import here to avoid circular dependencies
+      const { get_background_image } = await import('../invokes')
 
-    if (savedBackgroundOpacity) {
-      root.style.setProperty('--background-opacity', savedBackgroundOpacity)
-    } else {
-      root.style.setProperty('--background-opacity', '1')
-    }
+      const backgroundDataUrl = await get_background_image()
 
-    if (savedBackgroundBlur) {
-      root.style.setProperty('--background-blur', `${savedBackgroundBlur}px`)
-    } else {
-      root.style.setProperty('--background-blur', '0px')
+      if (backgroundDataUrl) {
+        document.documentElement.style.setProperty('--background-image', backgroundDataUrl)
+        // Update localStorage for consistency
+        localStorage.setItem('backgroundImage', backgroundDataUrl)
+        console.log('Background image loaded from config')
+      } else {
+        document.documentElement.style.setProperty('--background-image', 'none')
+        localStorage.removeItem('backgroundImage')
+        console.log('No background image configured')
+      }
+    } catch (error) {
+      console.error('Failed to load background image:', error)
+      document.documentElement.style.setProperty('--background-image', 'none')
+      localStorage.removeItem('backgroundImage')
     }
   }
 

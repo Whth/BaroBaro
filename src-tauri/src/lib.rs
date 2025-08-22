@@ -8,7 +8,7 @@ use commands::*;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() -> Result<(), String> {
     let conf: Config = read_config()?;
-    
+
     let level = Level::try_from(conf.loglevel).map_err(|e| format!("{}, invalid loglevel.", e))?;
     logger::init_logger(level.as_str_name())?;
     tauri::Builder::default()
@@ -19,7 +19,8 @@ pub fn run() -> Result<(), String> {
             write_config,
             list_installed_mods,
             download_mods,
-            list_mod_lists
+            list_mod_lists,
+            get_background_image
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

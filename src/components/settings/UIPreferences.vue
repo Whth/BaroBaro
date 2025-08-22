@@ -48,6 +48,12 @@
               Browse for Image
             </button>
             <button
+                class="test-bg-button"
+                @click="setTestBackground"
+            >
+              Test Background
+            </button>
+            <button
                 v-if="backgroundSettings.backgroundImage"
                 class="clear-button"
                 @click="clearBackgroundImage"
@@ -115,7 +121,7 @@
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import i18n from "../../i18n";
-import { config, refresh_config, save_config } from "../../invokes";
+import { config, refresh_config, save_config, get_background_image } from "../../invokes";
 import { open } from "@tauri-apps/plugin-dialog";
 import Title from "../../components/core/Title.vue";
 import { useTheme } from "../../composables/useTheme";
@@ -170,9 +176,31 @@ const savePreferences = async () => {
 			);
 
 			// Save to localStorage for immediate theme application
-			localStorage.setItem('backgroundImage', backgroundSettings.value.backgroundImage || '');
-			localStorage.setItem('backgroundOpacity', backgroundSettings.value.backgroundOpacity.toString());
-			localStorage.setItem('backgroundBlur', Math.round(backgroundSettings.value.backgroundBlur).toString());
+			const bgImage = backgroundSettings.value.backgroundImage || '';
+			const bgOpacity = backgroundSettings.value.backgroundOpacity.toString();
+			const bgBlur = Math.round(backgroundSettings.value.backgroundBlur).toString();
+
+			localStorage.setItem('backgroundImage', bgImage);
+			localStorage.setItem('backgroundOpacity', bgOpacity);
+			localStorage.setItem('backgroundBlur', bgBlur);
+
+			// Debug logging
+			console.log('Background settings saved to localStorage:', {
+				backgroundImage: bgImage,
+				backgroundOpacity: bgOpacity,
+				backgroundBlur: bgBlur
+			});
+
+			// Force update CSS variables immediately
+			document.documentElement.style.setProperty('--background-image', bgImage ? `url(${bgImage})` : 'none');
+			document.documentElement.style.setProperty('--background-opacity', bgOpacity);
+			document.documentElement.style.setProperty('--background-blur', `${bgBlur}px`);
+
+			console.log('CSS variables updated:', {
+				backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+				backgroundOpacity: bgOpacity,
+				backgroundBlur: `${bgBlur}px`
+			});
 
 			// Save to backend
 			await save_config();
@@ -280,35 +308,44 @@ const resetPreferences = async () => {
 };
 
 const selectBackgroundImage = async () => {
-	try {
-		// Use Tauri's open dialog to get the actual file path
-		const selectedPath = await open({
-			multiple: false,
-			title: "Select Background Image",
-			filters: [
-				{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] },
-			],
-		});
+ 	try {
+ 		// Use Tauri's open dialog to get the actual file path
+ 		const selectedPath = await open({
+ 			multiple: false,
+ 			title: "Select Background Image",
+ 			filters: [
+ 				{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] },
+ 			],
+ 		});
 
-		if (selectedPath) {
-			// Save the full file path instead of just the name
-			backgroundSettings.value.backgroundImage = selectedPath;
-			console.log("Background image path selected:", selectedPath);
-		}
-	} catch (error) {
-		console.error("Failed to select background image:", error);
-	}
+ 		if (selectedPath) {
+ 			console.log("Background image path selected:", selectedPath);
+
+ 			// Store the selected path - the backend will read it from config later
+ 			backgroundSettings.value.backgroundImage = selectedPath;
+ 			console.log("Background image path stored:", selectedPath);
+ 		}
+ 	} catch (error) {
+ 		console.error("Failed to select background image:", error);
+ 	}
 };
 
 const clearBackgroundImage = () => {
-	backgroundSettings.value.backgroundImage = "";
-	// Clear the file input
-	const fileInput = document.getElementById(
-		"background-image",
-	) as HTMLInputElement;
-	if (fileInput) {
-		fileInput.value = "";
-	}
+ 	backgroundSettings.value.backgroundImage = "";
+ 	// Clear the file input
+ 	const fileInput = document.getElementById(
+ 		"background-image",
+ 	) as HTMLInputElement;
+ 	if (fileInput) {
+ 		fileInput.value = "";
+ 	}
+};
+
+const setTestBackground = () => {
+ 	// Set a test gradient background
+ 	backgroundSettings.value.backgroundImage = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+ 	backgroundSettings.value.backgroundOpacity = 0.8;
+ 	backgroundSettings.value.backgroundBlur = 5;
 };
 
 // Watch for theme changes - only apply when saved
@@ -613,7 +650,25 @@ onMounted(async () => {
 }
 
 .browse-button:hover {
-  background-color: var(--color-primary-dark);
+   background-color: var(--color-primary-dark);
+}
+
+.test-bg-button {
+   padding: var(--spacing-s) var(--spacing-m);
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+   color: white;
+   border: none;
+   border-radius: var(--border-radius-soft);
+   cursor: pointer;
+   font-weight: var(--font-weight-medium);
+   font-size: var(--font-size-body-regular);
+   margin-left: var(--spacing-s);
+   transition: all 0.3s ease;
+}
+
+.test-bg-button:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .clear-button {

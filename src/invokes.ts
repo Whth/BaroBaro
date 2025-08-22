@@ -27,5 +27,9 @@ export async function download_mod(mods: number[]) {
 }
 
 export async function list_mod_lists() {
-	mod_lists.value = await invoke("list_mod_lists");
+  mod_lists.value = await invoke("list_mod_lists");
+}
+
+export async function get_background_image(): Promise<string | null> {
+  return await invoke("get_background_image");
 }

@@ -16,6 +16,7 @@ use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
+use base64::{engine::general_purpose, Engine as _};
 use toml::{from_str, to_string_pretty};
 
 /// Writes the given configuration to disk in TOML format.
@@ -44,7 +45,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-    .map_err(|e| format!("{}, failed to write config file.", e))
+        .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -144,4 +145,70 @@ pub async fn list_mod_lists() -> Result<Vec<ModList>, String> {
                 .map_err(|e| format!("{}, failed to set game directory.", e))?,
         )?
         .discover_mod_lists()
+}
+
+/// Retrieves the background image for the UI as a base64-encoded data URL.
+///
+/// This function reads the current configuration to determine the background image path,
+/// reads the image file from disk, and returns it as a base64-encoded data URL suitable
+/// for direct use in HTML/CSS. The MIME type is determined automatically based on the
+/// file extension.
+///
+/// # Returns
+/// - `Ok(Some(String))`: A base64-encoded data URL of the image if a valid image path
+///   is configured and the file exists.
+/// - `Ok(None)`: If no background image is configured or the configured path is invalid.
+/// - `Err(String)`: If there's an error reading the configuration or the image file.
+///
+/// # Supported Image Formats
+/// - PNG (.png)
+/// - JPEG (.jpg, .jpeg)
+/// - GIF (.gif)
+/// - WebP (.webp)
+/// - BMP (.bmp)
+/// - SVG (.svg)
+///
+/// # Configuration
+/// The image path is read from `config.ui_config.background_image`. If this path is
+/// relative, it's interpreted relative to the application's working directory.
+///
+/// # Security Note
+/// This function reads arbitrary files from the filesystem based on user configuration.
+/// In a production environment, consider validating the file path to prevent directory
+/// traversal attacks.
+#[tauri::command]
+pub fn get_background_image() -> Result<Option<String>, String> {
+    // Read current configuration
+    let config: Config = read_config()?;
+
+    if let Some(ui_conf) = config.ui_config &&
+        let Ok(image_path) = PathBuf::from_str(ui_conf.background_image.as_str()) &&
+        !image_path.exists() &&
+        let Ok(image_data) = fs::read(&image_path)
+    {
+        // Determine MIME type based on file extension
+        let mime_type = match image_path
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .map(|ext| ext.to_lowercase())
+        {
+            Some(ext) => match ext.as_str() {
+                "png" => "image/png",
+                "jpg" | "jpeg" => "image/jpeg",
+                "gif" => "image/gif",
+                "webp" => "image/webp",
+                "bmp" => "image/bmp",
+                "svg" => "image/svg+xml",
+                _ => "image/png", // Default fallback
+            },
+            None => "image/png", // Default if no extension
+        };
+
+        // Encode as base64
+        let base64_data = general_purpose::STANDARD.encode(&image_data);
+        // Return as data URL
+        Ok(Some(format!("data:{};base64,{}", mime_type, base64_data)))
+    } else {
+        Ok(None)
+    }
 }
