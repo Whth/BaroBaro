@@ -10,7 +10,7 @@
 
         <n-form-item :label="$t('settings.languageLabel')">
           <n-select
-              v-model:value="lang"
+              v-model:value="languageModel"
               :options="[
                 { label: lang_show_mapping[Language.EN], value: Language.EN },
                 { label: lang_show_mapping[Language.ZH], value: Language.ZH }
@@ -20,7 +20,7 @@
 
         <n-form-item :label="$t('settings.themeLabel')">
           <n-select
-              v-model:value="theme"
+              v-model:value="themeModel"
               :options="
               [
                 { label: $t('settings.light'), value: Theme.Light },
@@ -30,8 +30,8 @@
         </n-form-item>
 
         <n-form-item :label="$t('settings.accentColorLabel')">
-          <n-color-picker v-model:value="config.uiConfig.accentColor"/>
-          <span class="color-value">{{ config.uiConfig?.accentColor }}</span>
+          <n-color-picker v-model:value="accentColorModel"/>
+          <span class="color-value">{{ accentColorModel }}</span>
         </n-form-item>
       </n-card>
 
@@ -45,43 +45,43 @@
               {{ $t('settings.browseForImage') }}
             </n-button>
             <n-button
-                v-if="config.uiConfig.backgroundImage"
+                v-if="backgroundImageModel"
                 class="clear-button"
                 type="error"
                 @click="clearBackgroundImage"
             >
               {{ $t('settings.clear') }}
             </n-button>
-            <div v-if="config.uiConfig.backgroundImage" class="file-info">
-              Selected: {{ config.uiConfig?.backgroundImage }}
+            <div v-if="backgroundImageModel" class="file-info">
+              Selected: {{ backgroundImageModel }}
             </div>
           </div>
         </n-form-item>
 
         <n-form-item :label="$t('settings.backgroundOpacity')">
           <n-slider
-              v-model:value="config.uiConfig.backgroundOpacity"
+              v-model:value="backgroundOpacityModel"
               :max="1"
               :min="0"
               :step="0.1"
           />
           <div class="range-labels">
             <span>Transparent</span>
-            <span>{{ config.uiConfig?.backgroundOpacity }}</span>
+            <span>{{ backgroundOpacityModel }}</span>
             <span>Opaque</span>
           </div>
         </n-form-item>
 
         <n-form-item :label="$t('settings.backgroundBlur')">
           <n-slider
-              v-model:value="config.uiConfig.backgroundBlur"
+              v-model:value="backgroundBlurModel"
               :max="20"
               :min="0"
               :step="1"
           />
           <div class="range-labels">
             <span>None</span>
-            <span>{{ config.uiConfig?.backgroundBlur }}px</span>
+            <span>{{ backgroundBlurModel }}px</span>
             <span>Blurry</span>
           </div>
         </n-form-item>
@@ -100,13 +100,12 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, Ref, watch} from "vue";
-import {i18n} from "../../i18n";
-import {config, refresh_config, reset_config, save_config,} from "../../invokes";
+import {computed, onMounted} from "vue";
+import {i18n} from "@/i18n.ts";
+import {config, refresh_config, reset_config, save_config} from "@/invokes.ts";
 import {open} from "@tauri-apps/plugin-dialog";
-import {Language, languageToJSON, Theme, UIConfig} from "../../proto/config.ts";
-import {currentTheme, theme_mapping} from "../../composables/useTheme.ts";
-
+import {Language, languageToJSON, Theme, UIConfig} from "@/proto/config.ts";
+import {currentTheme, theme_mapping} from "@/composables/useTheme.ts";
 
 const lang_show_mapping = {
   [Language.EN]: "English",
@@ -114,42 +113,81 @@ const lang_show_mapping = {
   [Language.UNRECOGNIZED]: "Unknown"
 }
 
-
-const lang: Ref<Language> = ref(Language.EN);
-const theme: Ref<Theme> = ref(Theme.Light);
-
-watch(lang, (value, oldValue) => {
-  console.log(`lang changing ${oldValue} => ${value}`)
-  if (value != oldValue) {
-    if (config.value.uiConfig !== undefined) {
-      console.log("Change language to " + value)
-      config.value.uiConfig.language = value;
-    } else {
+// 计算属性处理所有可能为 undefined 的字段
+const languageModel = computed({
+  get: () => config.value.uiConfig?.language ?? Language.ZH,
+  set: (value) => {
+    if (!config.value.uiConfig) {
       config.value.uiConfig = UIConfig.fromPartial({language: value});
+    } else {
+      config.value.uiConfig.language = value;
     }
   }
 })
-watch(theme, (value, oldValue) => {
-  if (value != oldValue) {
-    if (config.value.uiConfig !== undefined) {
-      console.log("Change theme to " + value)
-      config.value.uiConfig.theme = value;
-    } else {
+
+const themeModel = computed({
+  get: () => config.value.uiConfig?.theme ?? Theme.Light,
+  set: (value) => {
+    if (!config.value.uiConfig) {
       config.value.uiConfig = UIConfig.fromPartial({theme: value});
+    } else {
+      config.value.uiConfig.theme = value;
+    }
+  }
+})
+
+const accentColorModel = computed({
+  get: () => config.value.uiConfig?.accentColor ?? '#18a058',
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({accentColor: value});
+    } else {
+      config.value.uiConfig.accentColor = value;
+    }
+  }
+})
+
+const backgroundImageModel = computed({
+  get: () => config.value.uiConfig?.backgroundImage ?? '',
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({backgroundImage: value});
+    } else {
+      config.value.uiConfig.backgroundImage = value;
+    }
+  }
+})
+
+const backgroundOpacityModel = computed({
+  get: () => config.value.uiConfig?.backgroundOpacity ?? 1,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({backgroundOpacity: value});
+    } else {
+      config.value.uiConfig.backgroundOpacity = value;
+    }
+  }
+})
+
+const backgroundBlurModel = computed({
+  get: () => config.value.uiConfig?.backgroundBlur ?? 0,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({backgroundBlur: value});
+    } else {
+      config.value.uiConfig.backgroundBlur = value;
     }
   }
 })
 
 const apply_and_save_config = async () => {
   await save_config()
-  i18n.global.locale.value = languageToJSON(config.value.uiConfig?.language ?? Language.ZH);
-  currentTheme.value = theme_mapping[config.value.uiConfig?.theme ?? Theme.Light];
+  i18n.global.locale.value = languageToJSON(languageModel.value);
+  currentTheme.value = theme_mapping[themeModel.value];
 };
-
 
 const selectBackgroundImage = async () => {
   try {
-    // Use Tauri's open dialog to get the actual file path
     const selectedPath = await open({
       multiple: false,
       title: "Select Background Image",
@@ -159,16 +197,7 @@ const selectBackgroundImage = async () => {
     });
 
     if (selectedPath) {
-      console.log("Background image path selected:", selectedPath);
-
-      // Store the selected path - the backend will read it from config later
-
-      if (config.value.uiConfig !== undefined) {
-        config.value.uiConfig.backgroundImage = selectedPath;
-      } else {
-        config.value.uiConfig = UIConfig.fromPartial({backgroundImage: selectedPath});
-      }
-      console.log("Background image path stored:", selectedPath);
+      backgroundImageModel.value = selectedPath;
     }
   } catch (error) {
     console.error("Failed to select background image:", error);
@@ -176,16 +205,11 @@ const selectBackgroundImage = async () => {
 };
 
 const clearBackgroundImage = () => {
-  if (config.value.uiConfig !== undefined) {
-    config.value.uiConfig.backgroundImage = "";
-  }
+  backgroundImageModel.value = '';
 };
+
 onMounted(async () => {
   await refresh_config();
-  if (config.value.uiConfig !== undefined) {
-    lang.value = config.value.uiConfig.language;
-    theme.value = config.value.uiConfig.theme;
-  }
 });
 </script>
 
