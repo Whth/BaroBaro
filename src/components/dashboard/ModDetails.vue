@@ -1,86 +1,102 @@
 <template>
-  <div class="mod-details">
+  <n-card :bordered="false" class="mod-details-card">
     <h2>Mod Details</h2>
-    <div v-if="selectedMod" class="mod-details-content">
+
+    <div v-if="selectedMod" class="mod-content">
+      <!-- Header -->
       <div class="mod-header">
-        <h3>{{ selectedMod.name }}</h3>
-        <button class="toggle-button" @click="toggleMod">Toggle</button>
+        <n-h3>{{ selectedMod.name }}</n-h3>
+        <n-button
+            secondary
+            strong
+            type="primary"
+            @click="toggleMod"
+        >
+          Toggle
+        </n-button>
       </div>
-      <div class="mod-info-grid">
-        <div class="mod-info-item">
-          <span class="info-label">Version:</span>
-          <span class="info-value">{{ selectedMod.modVersion }}</span>
-        </div>
-        <div class="mod-info-item">
-          <span class="info-label">Steam ID:</span>
-          <span class="info-value">{{ selectedMod.steamWorkshopId }}</span>
-        </div>
-        <div class="mod-info-item">
-          <span class="info-label">Type:</span>
-          <span
-            class="info-value"
-            :class="`source-${selectedMod.corePackage ? 'core' : 'mod'}`"
-          >
-            {{ selectedMod.corePackage ? "Core Package" : "Mod" }}
-          </span>
-        </div>
-        <div class="mod-info-item">
-          <span class="info-label">Game Version:</span>
-          <span class="info-value">{{ selectedMod.gameVersion }}</span>
-        </div>
-      </div>
+
+      <!-- Info Grid -->
+      <n-grid :cols="2" :x-gap="12" :y-gap="12">
+        <n-gi>
+          <n-statistic :value="selectedMod.modVersion" label="Version"/>
+        </n-gi>
+        <n-gi>
+          <n-statistic :value="selectedMod.steamWorkshopId" label="Steam ID"/>
+        </n-gi>
+        <n-gi>
+          <n-statistic
+              :class="selectedMod.corePackage ? 'core-package' : 'regular-mod'"
+              :value="selectedMod.corePackage ? 'Core Package' : 'Mod'"
+              label="Type"
+          />
+        </n-gi>
+        <n-gi>
+          <n-statistic :value="selectedMod.gameVersion" label="Game Version"/>
+        </n-gi>
+      </n-grid>
+
+      <!-- File Groups -->
       <div class="mod-description">
-        <h4>File Groups</h4>
+        <n-h4>File Groups</n-h4>
         <p>{{ Object.keys(selectedMod.fileGroups).length }} file groups</p>
       </div>
+
+      <!-- Actions -->
       <div class="mod-actions">
-        <button class="action-button update-button">Update</button>
-        <button class="action-button remove-button">Remove</button>
+        <n-button type="primary" @click="updateMod">Update</n-button>
+        <n-button type="error" @click="removeMod">Remove</n-button>
       </div>
     </div>
-    <div v-else class="no-selection">
-      <p>Select a mod to view details</p>
-    </div>
-  </div>
+
+    <n-empty v-else description="Select a mod to view details"/>
+  </n-card>
 </template>
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { BarotraumaMod } from "../../proto/mods";
 
-const selectedMod = ref<BarotraumaMod | null>(null);
+<script lang="ts" setup>
+import type {BarotraumaMod} from "../../proto/mods"
 
-// In a real implementation, this would be set by the parent component or a global state
-// For now, we'll set it to the first installed mod if available
-onMounted(() => {
-	// This would be set by the parent component in a real implementation
-	console.log("ModDetails mounted");
-});
+// Props (接收父组件传入的选中mod)
+const props = defineProps<{
+  selectedMod: BarotraumaMod | null
+}>()
 
+// Emits (向父组件发送事件)
+const emit = defineEmits<{
+  (e: 'toggle', mod: BarotraumaMod): void
+  (e: 'update', mod: BarotraumaMod): void
+  (e: 'remove', mod: BarotraumaMod): void
+}>()
+
+// 操作函数
 const toggleMod = () => {
-	if (selectedMod.value) {
-		// In a real implementation, this would call a Tauri command to toggle the mod
-		console.log(`Toggle mod ${selectedMod.value.name}`);
-	}
-};
+  if (props.selectedMod) {
+    emit('toggle', props.selectedMod)
+  }
+}
+
+const updateMod = () => {
+  if (props.selectedMod) {
+    emit('update', props.selectedMod)
+  }
+}
+
+const removeMod = () => {
+  if (props.selectedMod) {
+    emit('remove', props.selectedMod)
+  }
+}
 </script>
 
 <style scoped>
-.mod-details {
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius-rounded);
-  box-shadow: var(--shadow-level-1);
-  padding: var(--spacing-l);
+.mod-details-card {
+  height: 100%;
 }
 
-.mod-details h2 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-m);
-}
-
-.mod-details-content {
+.mod-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-m);
+  gap: 20px;
 }
 
 .mod-header {
@@ -89,114 +105,27 @@ const toggleMod = () => {
   align-items: center;
 }
 
-.mod-header h3 {
-  margin: 0;
-  font-size: var(--font-size-heading-2);
-  color: var(--color-text-primary);
-}
-
-.toggle-button {
-  padding: var(--spacing-xs) var(--spacing-s);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: var(--font-size-body-small);
-  font-weight: var(--font-weight-medium);
-}
-
-.toggle-enabled {
-  background-color: var(--color-success);
-  color: white;
-  border-color: var(--color-success);
-}
-
-.mod-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--spacing-m);
-}
-
-.mod-info-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.info-label {
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium);
-}
-
-.info-value {
-  font-size: var(--font-size-body-regular);
-  color: var(--color-text-primary);
-}
-
-.source-local {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
-}
-
-.source-remote {
-  color: var(--color-info);
-  font-weight: var(--font-weight-bold);
-}
-
-.source-core {
-  color: var(--color-success);
-  font-weight: var(--font-weight-bold);
-}
-
-.source-mod {
-  color: var(--color-warning);
-  font-weight: var(--font-weight-bold);
-}
-
-.mod-description h4 {
-  margin: 0 0 var(--spacing-s) 0;
-  color: var(--color-text-primary);
+.mod-description {
+  margin: 10px 0;
 }
 
 .mod-description p {
-  margin: 0;
-  color: var(--color-text-primary);
-  line-height: 1.5;
+  color: #666;
 }
 
 .mod-actions {
   display: flex;
-  gap: var(--spacing-m);
-  padding-top: var(--spacing-m);
-  border-top: 1px solid var(--color-border);
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
 }
 
-.action-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
+.core-package {
+  color: #18a058;
 }
 
-.update-button {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-}
-
-.remove-button {
-  background-color: var(--color-error);
-  color: white;
-  border-color: var(--color-error);
-}
-
-.no-selection {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-text-secondary);
+.regular-mod {
+  color: #f0a020;
 }
 </style>

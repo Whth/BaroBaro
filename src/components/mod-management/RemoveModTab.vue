@@ -1,284 +1,169 @@
 <template>
-  <div class="remove-mod-tab">
-    <h2>Remove Mods</h2>
-    <div class="remove-content">
-      <div class="search-section">
-        <div class="search-container">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search mods to remove..."
-            class="search-input"
-          />
-          <button class="search-button">🔍</button>
-        </div>
-      </div>
-      <div class="installed-mods">
-        <div v-if="filteredMods.length === 0" class="no-mods">
-          No mods found
-        </div>
-        <div
-          v-else
-          v-for="mod in filteredMods"
-          :key="mod.steamWorkshopId"
-          class="mod-remove-card"
-          :class="{ selected: selectedMods.includes(mod.steamWorkshopId) }"
-        >
-          <div class="mod-info">
-            <input
-              type="checkbox"
-              :id="`mod-${mod.steamWorkshopId}`"
-              :value="mod.steamWorkshopId"
-              v-model="selectedMods"
-              class="mod-checkbox"
-            />
-            <label :for="`mod-${mod.steamWorkshopId}`" class="mod-label">
-              <h3 class="mod-name">{{ mod.name }}</h3>
-              <p class="mod-version">Version: {{ mod.modVersion }}</p>
-              <p class="mod-description">Steam ID: {{ mod.steamWorkshopId }}</p>
-            </label>
-          </div>
-          <div class="mod-actions">
-            <button
-              class="remove-button"
-              @click="removeMod(mod.steamWorkshopId)"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      </div>
+  <n-card :bordered="false" class="remove-mod-card">
+    <n-h2>Remove Mods</n-h2>
+
+    <!-- 搜索框 -->
+    <n-input
+        v-model:value="searchQuery"
+        clearable
+        placeholder="Search mods to remove..."
+        style="margin-bottom: 20px"
+    >
+      <template #prefix>
+        <n-icon>
+          <SearchOutline/>
+        </n-icon>
+      </template>
+    </n-input>
+
+    <!-- 无数据状态 -->
+    <n-result
+        v-if="filteredMods.length === 0"
+        description="Try adjusting your search query"
+        status="info"
+        title="No mods found"
+    />
+
+    <!-- Mod列表 -->
+    <div v-else>
+      <n-list>
+        <n-list-item v-for="mod in filteredMods" :key="mod.steamWorkshopId">
+          <n-thing>
+            <template #avatar>
+              <n-checkbox
+                  :checked="selectedMods.includes(mod.steamWorkshopId)"
+                  @update:checked="toggleModSelection(mod.steamWorkshopId)"
+              />
+            </template>
+
+            <template #header>
+              <n-ellipsis style="max-width: 200px">
+                {{ mod.name }}
+              </n-ellipsis>
+            </template>
+
+            <template #description>
+              <n-space size="small" vertical>
+                <n-text depth="3">Version: {{ mod.modVersion }}</n-text>
+                <n-text depth="3">Steam ID: {{ mod.steamWorkshopId }}</n-text>
+              </n-space>
+            </template>
+
+            <template #actions>
+              <n-button
+                  secondary
+                  size="small"
+                  type="error"
+                  @click="removeMod(mod.steamWorkshopId)"
+              >
+                Remove
+              </n-button>
+            </template>
+          </n-thing>
+        </n-list-item>
+      </n-list>
+
+      <!-- 批量操作 -->
       <div v-if="selectedMods.length > 0" class="bulk-actions">
-        <p>{{ selectedMods.length }} mod(s) selected</p>
-        <button class="remove-selected-button" @click="removeSelectedMods">
-          Remove Selected
-        </button>
+        <n-space align="center" justify="space-between">
+          <n-text>{{ selectedMods.length }} mod(s) selected</n-text>
+          <n-button
+              type="error"
+              @click="removeSelectedMods"
+          >
+            Remove Selected
+          </n-button>
+        </n-space>
       </div>
     </div>
-  </div>
+  </n-card>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from "vue";
-import {
-	installed_mod,
-	refreshInstalledMods,
-} from "../../composables/useModManager";
+<script lang="ts" setup>
+import {computed, ref} from 'vue'
+import {SearchOutline} from '@vicons/ionicons5'
+import {installed_mod, refreshInstalledMods,} from "../../composables/useModManager"
 
-const searchQuery = ref("");
+// 响应式数据
+const searchQuery = ref("")
+const selectedMods = ref<string[]>([])
 
-const selectedMods = ref<string[]>([]);
-
+// 过滤后的mods
 const filteredMods = computed(() => {
-	if (!searchQuery.value) {
-		return installed_mod.value;
-	}
-	const query = searchQuery.value.toLowerCase();
-	return installed_mod.value.filter(
-		(mod) =>
-			mod.name.toLowerCase().includes(query) ||
-			mod.steamWorkshopId.toLowerCase().includes(query),
-	);
-});
+  if (!searchQuery.value) return installed_mod.value
 
+  const query = searchQuery.value.toLowerCase()
+  return installed_mod.value.filter(mod =>
+      mod.name.toLowerCase().includes(query) ||
+      mod.steamWorkshopId.toLowerCase().includes(query)
+  )
+})
+
+// 切换mod选择状态
+const toggleModSelection = (modId: string) => {
+  const index = selectedMods.value.indexOf(modId)
+  if (index > -1) {
+    selectedMods.value.splice(index, 1)
+  } else {
+    selectedMods.value.push(modId)
+  }
+}
+
+// 删除单个mod
 const removeMod = async (modId: string) => {
-	const mod = installed_mod.value.find((m) => m.steamWorkshopId === modId);
-	if (mod) {
-		if (confirm(`Are you sure you want to remove "${mod.name}"?`)) {
-			// In a real app, this would call the Tauri backend to remove the mod
-			console.log(`Removing mod: ${mod.name}`);
-			try {
-				// For now, we'll just simulate the removal and refresh the installed mods list
-				alert(`Removed ${mod.name} successfully!`);
-				// Refresh the installed mods list after removal
-				await refreshInstalledMods();
-			} catch (error) {
-				console.error("Failed to remove mod:", error);
-				alert(`Failed to remove ${mod.name}.`);
-			}
-		}
-	}
-};
+  const mod = installed_mod.value.find(m => m.steamWorkshopId === modId)
+  if (!mod) return
 
+  const confirmed = await window.$dialog?.warning({
+    title: 'Confirm Removal',
+    content: `Are you sure you want to remove "${mod.name}"?`,
+    positiveText: 'Remove',
+    negativeText: 'Cancel'
+  })
+
+  if (confirmed) {
+    try {
+      // 模拟删除操作
+      window.$message?.success(`Removed ${mod.name} successfully!`)
+      await refreshInstalledMods()
+    } catch (error) {
+      window.$message?.error(`Failed to remove ${mod.name}`)
+    }
+  }
+}
+
+// 删除选中的mods
 const removeSelectedMods = async () => {
-	if (selectedMods.value.length === 0) return;
+  if (selectedMods.value.length === 0) return
 
-	if (
-		confirm(
-			`Are you sure you want to remove ${selectedMods.value.length} mod(s)?`,
-		)
-	) {
-		// In a real app, this would call the Tauri backend to remove the mods
-		console.log(`Removing ${selectedMods.value.length} mods`);
-		try {
-			// For now, we'll just simulate the removal and refresh the installed mods list
-			alert(`Removed ${selectedMods.value.length} mod(s) successfully!`);
-			// Refresh the installed mods list after removal
-			await refreshInstalledMods();
-			// Clear selection
-			selectedMods.value = [];
-		} catch (error) {
-			console.error("Failed to remove mods:", error);
-			alert("Failed to remove mods.");
-		}
-	}
-};
+  const confirmed = await window.$dialog?.warning({
+    title: 'Confirm Bulk Removal',
+    content: `Are you sure you want to remove ${selectedMods.value.length} mod(s)?`,
+    positiveText: 'Remove All',
+    negativeText: 'Cancel'
+  })
+
+  if (confirmed) {
+    try {
+      // 模拟批量删除操作
+      window.$message?.success(`Removed ${selectedMods.value.length} mod(s) successfully!`)
+      await refreshInstalledMods()
+      selectedMods.value = [] // 清空选择
+    } catch (error) {
+      window.$message?.error('Failed to remove mods')
+    }
+  }
+}
 </script>
 
 <style scoped>
-.remove-mod-tab h2 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-l);
-}
-
-.remove-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-l);
-}
-
-.search-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  max-width: 500px;
-}
-
-.search-input {
-  flex: 1;
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-regular);
-}
-
-.search-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-left: none;
-  border-radius: var(--border-radius-soft);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.installed-mods {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.no-mods {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-text-secondary);
-}
-
-.mod-remove-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  background-color: var(--color-surface);
-  transition: all 0.2s ease;
-}
-
-.mod-remove-card:hover {
-  border-color: var(--color-primary-light);
-}
-
-.mod-remove-card.selected {
-  border-color: var(--color-primary);
-  background-color: rgba(59, 130, 246, 0.05);
-}
-
-.mod-info {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-m);
-  flex: 1;
-}
-
-.mod-checkbox {
-  margin-top: var(--spacing-xs);
-}
-
-.mod-label {
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-}
-
-.mod-name {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: var(--font-size-heading-3);
-  color: var(--color-text-primary);
-}
-
-.mod-version {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
-}
-
-.mod-description {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-small);
-  line-height: 1.4;
-}
-
-.mod-actions {
-  display: flex;
-  gap: var(--spacing-s);
-}
-
-.remove-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  background-color: var(--color-error);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-soft);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
+.remove-mod-card {
+  height: 100%;
 }
 
 .bulk-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  background-color: var(--color-surface);
-}
-
-.bulk-actions p {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.remove-selected-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  background-color: var(--color-error);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-soft);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
+  margin-top: 20px;
+  padding: 16px;
+  border-top: 1px solid #eee;
 }
 </style>

@@ -1,94 +1,83 @@
 <template>
   <n-layout-sider
-      :collapsed="isCollapsed"
+      v-model:collapsed="isCollapsed"
+      :native-scrollbar="false"
       bordered
       collapse-mode="width"
       show-trigger="bar"
-      @collapse="handleCollapse"
-      @expand="handleExpand"
   >
     <div class="sidebar-header">
-      <n-text v-if="!isCollapsed" strong style="font-size: 18px; color: var(--n-text-color-primary);">
-        Mod Manager
+      <n-text v-show="!isCollapsed" strong style="font-size: 18px;">
+        BaroBaro
       </n-text>
     </div>
+
     <n-menu
+        v-model:value="activeKey"
         :collapsed="isCollapsed"
         :options="menuOptions"
-        :value="activeKey"
-        @update:value="handleMenuSelect"
+        @update:value="goTo"
     />
   </n-layout-sider>
 </template>
 
 <script lang="ts" setup>
-import {computed, h, provide, ref} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import {useI18n} from "vue-i18n";
-import {NIcon} from "naive-ui";
-import {
-  ExtensionPuzzleOutline as ModsIcon,
-  HomeOutline as HomeIcon,
-  SettingsOutline as SettingsIcon,
-} from "@vicons/ionicons5";
+import {computed, h, ref} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import {NIcon} from 'naive-ui'
+import {ExtensionPuzzleOutline, HomeOutline, SettingsOutline} from '@vicons/ionicons5'
 
-const route = useRoute();
-const router = useRouter();
-const {t} = useI18n();
+// 路由相关
+const route = useRoute()
+const router = useRouter()
 
-const isCollapsed = ref(false);
+// 折叠状态
+const isCollapsed = ref(false)
 
+// 当前激活的菜单项
 const activeKey = computed(() => {
-  if (route.path === "/") return "dashboard";
-  if (route.path === "/mods") return "mods";
-  if (route.path === "/settings") return "settings";
-  return null;
-});
-
-const menuOptions = computed(() => [
-  {
-    label: t("navigation.dashboard"),
-    key: "dashboard",
-    path: "/",
-    icon: () => h(NIcon, null, {default: () => h(HomeIcon)}),
-  },
-  {
-    label: t("navigation.mods"),
-    key: "mods",
-    path: "/mods",
-    icon: () => h(NIcon, null, {default: () => h(ModsIcon)}),
-  },
-  {
-    label: t("navigation.settings"),
-    key: "settings",
-    path: "/settings",
-    icon: () => h(NIcon, null, {default: () => h(SettingsIcon)}),
-  },
-]);
-
-const handleMenuSelect = (key: string) => {
-  const option = menuOptions.value.find((opt) => opt.key === key);
-  if (option && option.path) {
-    router.push(option.path);
+  const map: Record<string, string> = {
+    '/': 'dashboard',
+    '/mods': 'mods',
+    '/settings': 'settings'
   }
-};
+  return map[route.path] || ''
+})
 
-const handleCollapse = () => {
-  isCollapsed.value = true;
-};
-
-const handleExpand = () => {
-  isCollapsed.value = false;
-};
-
-// Provide sidebar state to parent components
-provide("sidebarState", {
-  isCollapsed: isCollapsed,
-  toggleSidebar: () => {
-    isCollapsed.value = !isCollapsed.value;
+// 菜单项配置
+const menuOptions = [
+  {
+    label: 'Dashboard',
+    key: 'dashboard',
+    path: '/',
+    icon: () => h(NIcon, null, {default: () => h(HomeOutline)})
   },
-});
+  {
+    label: 'Mods',
+    key: 'mods',
+    path: '/mods',
+    icon: () => h(NIcon, null, {default: () => h(ExtensionPuzzleOutline)})
+  },
+  {
+    label: 'Settings',
+    key: 'settings',
+    path: '/settings',
+    icon: () => h(NIcon, null, {default: () => h(SettingsOutline)})
+  }
+]
+
+// 跳转函数
+const goTo = (key: string) => {
+  const item = menuOptions.find(opt => opt.key === key)
+  if (item?.path) router.push(item.path)
+}
 </script>
 
-
-
+<style scoped>
+.sidebar-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

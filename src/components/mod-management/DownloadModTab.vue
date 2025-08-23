@@ -1,300 +1,217 @@
 <template>
-  <div class="download-mod-tab">
-    <h2>Download Mods from Steam Workshop</h2>
-    <div class="download-content">
-      <div class="search-section">
-        <div class="search-container">
-          <input
-            v-model="searchQuery"
-            type="text"
+  <n-card :bordered="false" class="download-mod-card">
+    <n-h2>Download Mods from Steam Workshop</n-h2>
+
+    <!-- 搜索和过滤区域 -->
+    <n-space vertical>
+      <n-input-group>
+        <n-input
+            v-model:value="searchQuery"
+            clearable
             placeholder="Search for mods on Steam Workshop..."
-            class="search-input"
-          />
-          <button class="search-button">🔍</button>
-        </div>
-        <div class="filter-options">
-          <select v-model="categoryFilter" class="filter-select">
-            <option value="all">All Categories</option>
-            <option value="graphics">Graphics</option>
-            <option value="audio">Audio</option>
-            <option value="gameplay">Gameplay</option>
-            <option value="utility">Utility</option>
-          </select>
-          <select v-model="sortBy" class="filter-select">
-            <option value="popular">Most Popular</option>
-            <option value="newest">Newest</option>
-            <option value="rating">Highest Rated</option>
-          </select>
-        </div>
-      </div>
-      <div class="mod-results">
-        <div v-if="loading" class="loading">
-          Loading mods from Steam Workshop...
-        </div>
-        <div v-else-if="mods.length === 0" class="no-results">
-          No mods found
-        </div>
-        <div v-else class="mod-grid">
-          <div v-for="mod in mods" :key="mod.id" class="mod-card">
-            <div class="mod-card-header">
-              <h3 class="mod-name">{{ mod.name }}</h3>
-              <span class="mod-version">{{ mod.version }}</span>
-            </div>
-            <p class="mod-description">{{ mod.description }}</p>
-            <div class="mod-meta">
-              <span class="mod-author">by {{ mod.author }}</span>
-              <span class="mod-downloads">📥 {{ mod.downloadCount }}</span>
-            </div>
-            <div class="mod-actions">
-              <button
-                class="download-button"
-                :disabled="mod.downloading"
+        >
+          <template #prefix>
+            <n-icon>
+              <SearchOutline/>
+            </n-icon>
+          </template>
+        </n-input>
+        <n-button type="primary">Search</n-button>
+      </n-input-group>
+
+      <n-space>
+        <n-select
+            v-model:value="categoryFilter"
+            :options="categoryOptions"
+            placeholder="Category"
+            style="width: 150px"
+        />
+        <n-select
+            v-model:value="sortBy"
+            :options="sortOptions"
+            placeholder="Sort by"
+            style="width: 150px"
+        />
+      </n-space>
+    </n-space>
+
+    <!-- 加载状态 -->
+    <n-spin :show="loading">
+      <!-- 无数据状态 -->
+      <n-result
+          v-if="mods.length === 0 && !loading"
+          description="Try adjusting your search criteria"
+          status="info"
+          title="No mods found"
+      />
+
+      <!-- Mod网格 -->
+      <div v-else class="mod-grid">
+        <n-card
+            v-for="mod in mods"
+            :key="mod.id"
+            class="mod-card"
+            hoverable
+            size="small"
+        >
+          <template #header>
+            <n-ellipsis style="max-width: 200px">
+              {{ mod.name }}
+            </n-ellipsis>
+          </template>
+
+          <template #header-extra>
+            <n-tag type="default">{{ mod.version }}</n-tag>
+          </template>
+
+          <n-ellipsis :line-clamp="2" style="margin-bottom: 12px">
+            {{ mod.description }}
+          </n-ellipsis>
+
+          <n-space size="small" vertical>
+            <n-text depth="3">by {{ mod.author }}</n-text>
+            <n-space justify="space-between">
+              <n-text depth="3">📥 {{ formatNumber(mod.downloadCount) }}</n-text>
+              <n-rate :allow-half="true" :value="mod.rating" readonly size="small"/>
+            </n-space>
+          </n-space>
+
+          <template #action>
+            <n-button
+                :loading="mod.downloading"
+                block
+                secondary
+                size="small"
+                type="primary"
                 @click="downloadMod(mod.id)"
-              >
-                {{ mod.downloading ? "Downloading..." : "Download from Steam" }}
-              </button>
-            </div>
-          </div>
-        </div>
+            >
+              {{ mod.downloading ? 'Downloading...' : 'Download' }}
+            </n-button>
+          </template>
+        </n-card>
       </div>
-    </div>
-  </div>
+    </n-spin>
+  </n-card>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { downloadMods } from "../../composables/useModManager";
+<script lang="ts" setup>
+import {ref} from 'vue'
+import {SearchOutline} from '@vicons/ionicons5'
+import {downloadMods} from "../../composables/useModManager"
+import type {SelectOption} from 'naive-ui'
 
-// This component is prepared for SteamCMD integration
-// It will connect to the existing SteamCMD Rust crate in the Tauri backend
-
+// 定义接口
 interface Mod {
-	id: string;
-	name: string;
-	version: string;
-	author: string;
-	description: string;
-	downloadCount: number;
-	category: string;
-	rating: number;
-	downloading?: boolean;
+  id: string
+  name: string
+  version: string
+  author: string
+  description: string
+  downloadCount: number
+  category: string
+  rating: number
+  downloading?: boolean
 }
 
-const searchQuery = ref("");
-const categoryFilter = ref("all");
-const sortBy = ref("popular");
-const loading = ref(false);
+// 响应式数据
+const searchQuery = ref("")
+const categoryFilter = ref("all")
+const sortBy = ref("popular")
+const loading = ref(false)
 
+// 下拉选项
+const categoryOptions: SelectOption[] = [
+  {label: 'All Categories', value: 'all'},
+  {label: 'Graphics', value: 'graphics'},
+  {label: 'Audio', value: 'audio'},
+  {label: 'Gameplay', value: 'gameplay'},
+  {label: 'Utility', value: 'utility'}
+]
+
+const sortOptions: SelectOption[] = [
+  {label: 'Most Popular', value: 'popular'},
+  {label: 'Newest', value: 'newest'},
+  {label: 'Highest Rated', value: 'rating'}
+]
+
+// 模拟数据
 const mods = ref<Mod[]>([
-	{
-		id: "1",
-		name: "Enhanced Graphics Pack",
-		version: "2.1.0",
-		author: "VisualMaster",
-		description: "High resolution textures and improved lighting effects",
-		downloadCount: 125000,
-		category: "graphics",
-		rating: 4.8,
-	},
-	{
-		id: "2",
-		name: "Immersive Soundscapes",
-		version: "1.5.3",
-		author: "AudioWizard",
-		description: "Realistic ambient sounds and improved audio effects",
-		downloadCount: 87500,
-		category: "audio",
-		rating: 4.6,
-	},
-	{
-		id: "3",
-		name: "Advanced Crafting System",
-		version: "3.0.1",
-		author: "CraftExpert",
-		description: "Revamped crafting mechanics with new recipes and items",
-		downloadCount: 210000,
-		category: "gameplay",
-		rating: 4.9,
-	},
-]);
+  {
+    id: "1",
+    name: "Enhanced Graphics Pack",
+    version: "2.1.0",
+    author: "VisualMaster",
+    description: "High resolution textures and improved lighting effects",
+    downloadCount: 125000,
+    category: "graphics",
+    rating: 4.8,
+  },
+  {
+    id: "2",
+    name: "Immersive Soundscapes",
+    version: "1.5.3",
+    author: "AudioWizard",
+    description: "Realistic ambient sounds and improved audio effects",
+    downloadCount: 87500,
+    category: "audio",
+    rating: 4.6,
+  },
+  {
+    id: "3",
+    name: "Advanced Crafting System",
+    version: "3.0.1",
+    author: "CraftExpert",
+    description: "Revamped crafting mechanics with new recipes and items",
+    downloadCount: 210000,
+    category: "gameplay",
+    rating: 4.9,
+  },
+])
 
+// 下载mod
 const downloadMod = async (modId: string) => {
-	const mod = mods.value.find((m) => m.id === modId);
-	if (mod) {
-		mod.downloading = true;
-		console.log(`Downloading mod from Steam Workshop: ${mod.name}`);
-		try {
-			// In a real app, this would integrate with the SteamCMD Rust crate
-			// For now, we'll call the downloadMods function from the composable
-			await downloadMods([parseInt(modId, 10)]);
-			mod.downloading = false;
-			alert(`Downloaded ${mod.name} from Steam Workshop successfully!`);
-		} catch (error) {
-			mod.downloading = false;
-			console.error("Failed to download mod:", error);
-			alert(`Failed to download ${mod.name} from Steam Workshop.`);
-		}
-	}
-};
+  const mod = mods.value.find(m => m.id === modId)
+  if (!mod) return
 
-onMounted(() => {
-	// Simulate loading
-	loading.value = true;
-	setTimeout(() => {
-		loading.value = false;
-	}, 1000);
-});
+  mod.downloading = true
+  try {
+    // 调用下载函数
+    await downloadMods([parseInt(modId, 10)])
+    window.$message?.success(`Downloaded ${mod.name} successfully!`)
+  } catch (error) {
+    window.$message?.error(`Failed to download ${mod.name}`)
+  } finally {
+    mod.downloading = false
+  }
+}
+
+// 格式化数字显示
+const formatNumber = (num: number) => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
+  return num.toString()
+}
+
+// 模拟加载
+loading.value = true
+setTimeout(() => {
+  loading.value = false
+}, 1000)
 </script>
 
 <style scoped>
-.download-mod-tab h2 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-l);
-}
-
-.download-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-l);
-}
-
-.search-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  max-width: 500px;
-}
-
-.search-input {
-  flex: 1;
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-regular);
-}
-
-.search-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-left: none;
-  border-radius: var(--border-radius-soft);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.filter-options {
-  display: flex;
-  gap: var(--spacing-m);
-}
-
-.filter-select {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-regular);
-}
-
-.mod-results {
-  flex: 1;
-}
-
-.loading,
-.no-results {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--color-text-secondary);
+.download-mod-card {
+  height: 100%;
 }
 
 .mod-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-m);
+  gap: 16px;
+  margin-top: 20px;
 }
 
 .mod-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  padding: var(--spacing-m);
-  background-color: var(--color-surface);
-  transition: all 0.2s ease;
-}
-
-.mod-card:hover {
-  box-shadow: var(--shadow-level-2);
-  border-color: var(--color-primary-light);
-}
-
-.mod-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-s);
-}
-
-.mod-name {
-  margin: 0;
-  font-size: var(--font-size-heading-3);
-  color: var(--color-text-primary);
-}
-
-.mod-version {
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
-}
-
-.mod-description {
-  margin: 0 0 var(--spacing-m) 0;
-  color: var(--color-text-primary);
-  line-height: 1.4;
-}
-
-.mod-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-m);
-}
-
-.mod-author {
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
-}
-
-.mod-downloads {
-  font-size: var(--font-size-body-small);
-  color: var(--color-text-secondary);
-}
-
-.mod-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.download-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-soft);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
-}
-
-.download-button:disabled {
-  background-color: var(--color-text-secondary);
-  cursor: not-allowed;
+  height: fit-content;
 }
 </style>

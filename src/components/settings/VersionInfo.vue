@@ -1,136 +1,118 @@
 <template>
-  <div class="version-info">
-    <h2>Version Information</h2>
-    <div class="info-cards staggered-animation">
-      <div class="info-card">
-        <h3>🎮 Game Mod Manager</h3>
-        <div class="version-details">
-          <p><strong>Version:</strong> 0.1.0</p>
-          <p><strong>Build:</strong> Alpha</p>
-          <p><strong>Release Date:</strong> 2025</p>
-        </div>
-      </div>
+  <n-card :bordered="false" class="version-info-card">
+    <n-h2>Version Information</n-h2>
 
-      <div class="info-card">
-        <h3>📋 About</h3>
-        <p>A modern, user-friendly mod manager for Barotrauma game.</p>
-        <p>Built with Vue.js and Tauri for cross-platform compatibility.</p>
-      </div>
+    <n-grid :cols="3" :x-gap="16" :y-gap="16">
+      <n-gi>
+        <n-card hoverable size="small">
+          <template #header>
+            <n-space align="center">
+              <n-icon size="20">
+                <GameController/>
+              </n-icon>
+              <span>Game Mod Manager</span>
+            </n-space>
+          </template>
+          <n-descriptions :column="1" label-placement="left" size="small">
+            <n-descriptions-item label="Version">0.1.0</n-descriptions-item>
+            <n-descriptions-item label="Build">Alpha</n-descriptions-item>
+            <n-descriptions-item label="Release Date">2025</n-descriptions-item>
+          </n-descriptions>
+        </n-card>
+      </n-gi>
 
-      <div class="info-card">
-        <h3>🔗 Links & Support</h3>
-        <div class="link-list">
-          <a href="#" class="info-link">📚 Documentation</a>
-          <a href="#" class="info-link">🆘 Support</a>
-          <a href="#" class="info-link">🐛 Report Issues</a>
-        </div>
-      </div>
+      <n-gi>
+        <n-card hoverable size="small">
+          <template #header>
+            <n-space align="center">
+              <n-icon size="20">
+                <InformationCircle/>
+              </n-icon>
+              <span>About</span>
+            </n-space>
+          </template>
+          <n-space vertical>
+            <n-text>
+              A modern, user-friendly mod manager for Barotrauma game.
+            </n-text>
+            <n-text>
+              Built with Vue.js and Tauri for cross-platform compatibility.
+            </n-text>
+          </n-space>
+        </n-card>
+      </n-gi>
 
-      <div class="info-card">
-        <h3>© Copyright</h3>
-        <p>© 2025 Game Mod Manager. All rights reserved.</p>
-        <p>This software is provided as-is without warranty.</p>
-      </div>
-    </div>
-  </div>
+      <n-gi>
+        <n-card hoverable size="small">
+          <template #header>
+            <n-space align="center">
+              <n-icon size="20">
+                <Link/>
+              </n-icon>
+              <span>Links & Support</span>
+            </n-space>
+          </template>
+          <n-space vertical>
+            <n-button href="#" tag="a" text type="primary">
+              Documentation
+            </n-button>
+            <n-button href="#" tag="a" text type="primary">
+              Support
+            </n-button>
+            <n-button href="#" tag="a" text type="primary">
+              Report Issues
+            </n-button>
+          </n-space>
+        </n-card>
+      </n-gi>
+
+      <n-gi>
+        <n-card hoverable size="small">
+          <template #header>
+            <n-space align="center">
+              <n-icon size="20">
+                <DocumentText/>
+              </n-icon>
+              <span>Copyright</span>
+            </n-space>
+          </template>
+          <n-space vertical>
+            <n-text>© 2025 Game Mod Manager. All rights reserved.</n-text>
+            <n-text depth="3">This software is provided as-is without warranty.</n-text>
+          </n-space>
+        </n-card>
+      </n-gi>
+    </n-grid>
+  </n-card>
 </template>
 
-<script setup lang="ts">
-// Version info component - displays app version, copyright, and support links
+<script lang="ts" setup>
+import {DocumentText, GameController, InformationCircle, Link} from '@vicons/ionicons5'
 </script>
 
 <style scoped>
-.version-info h2 {
-  margin: 0 0 var(--spacing-l) 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-heading-2);
+.version-info-card {
+  height: 100%;
 }
 
-.info-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-l);
+:deep(.n-card-header__main) {
+  font-weight: 600;
 }
 
-.info-card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-rounded);
-  padding: var(--spacing-l);
-  transition: all 0.3s ease;
+/* 响应式：小屏幕时变为2列 */
+:deep(.n-grid) {
+  --n-grid-cols: 3;
 }
 
-.info-card:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.info-card h3 {
-  margin: 0 0 var(--spacing-m) 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-heading-3);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-s);
-}
-
-.version-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.version-details p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-body-regular);
-}
-
-.version-details strong {
-  color: var(--color-text-primary);
-}
-
-.info-card p {
-  margin: 0 0 var(--spacing-s) 0;
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-}
-
-.info-card p:last-child {
-  margin-bottom: 0;
-}
-
-.link-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-s);
-}
-
-.info-link {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-s);
-  padding: var(--spacing-s);
-  color: var(--color-text-primary);
-  text-decoration: none;
-  border-radius: var(--border-radius-soft);
-  transition: all 0.3s ease;
-  font-size: var(--font-size-body-regular);
-}
-
-.info-link:hover {
-  background-color: var(--color-background);
-  color: var(--color-primary);
-  transform: translateX(4px);
+@media (max-width: 1200px) {
+  :deep(.n-grid) {
+    --n-grid-cols: 2;
+  }
 }
 
 @media (max-width: 768px) {
-  .info-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .info-card {
-    padding: var(--spacing-m);
+  :deep(.n-grid) {
+    --n-grid-cols: 1;
   }
 }
 </style>

@@ -1,164 +1,137 @@
 <template>
-  <div class="mod-list">
-    <h2>Installed Mods</h2>
-    <div class="mod-list-container" @dragover="handleDragOver">
-      <ModCard
-        v-for="(mod, index) in installed_mod"
-        :key="mod.steamWorkshopId"
-        :mod="mod"
-        :index="index"
-        :is-enabled="isModEnabled(mod.steamWorkshopId, currentModList)"
-        :draggable="true"
-        :is-drag-over="dragOverIndex === index"
-        @toggle-mod="toggleMod"
-        @select-mod="selectMod"
-        @dragstart="handleDragStart(index, $event)"
+  <n-card :bordered="false" class="mod-list-card">
+    <n-h2>Installed Mods</n-h2>
+
+    <div
+        class="mod-list-container"
         @dragover="handleDragOver"
-        @dragenter="handleDragEnter(index)"
-        @dragleave="handleDragLeave"
-        @drop="handleDrop(index, $event)"
-        @dragend="handleDragEnd"
+    >
+      <ModCard
+          v-for="(mod, index) in installed_mod"
+          :key="mod.steamWorkshopId"
+          :draggable="true"
+          :index="index"
+          :is-drag-over="dragOverIndex === index"
+          :is-enabled="isModEnabled(mod.steamWorkshopId, currentModList)"
+          :mod="mod"
+          @dragend="handleDragEnd"
+          @dragenter="handleDragEnter(index)"
+          @dragleave="handleDragLeave"
+          @dragstart="handleDragStart(index, $event)"
+          @drop="handleDrop(index, $event)"
+          @toggle-mod="toggleMod"
+          @select-mod="selectMod"
       />
     </div>
-    <div class="mod-order-actions">
-      <button class="save-order-button" @click="saveModOrder">
-        Save Mod Order
-      </button>
-      <button class="load-order-button" @click="loadModOrder">
-        Load Mod Order
-      </button>
+
+    <div class="mod-actions">
+      <n-space>
+        <n-button type="primary" @click="saveModOrder">
+          Save Mod Order
+        </n-button>
+        <n-button @click="loadModOrder">
+          Load Mod Order
+        </n-button>
+      </n-space>
     </div>
-  </div>
+  </n-card>
 </template>
 
-<script setup lang="ts">
-import { ref } from "vue";
-import {
-	mod_lists,
-	installed_mod,
-	isModEnabled,
-} from "../../composables/useModManager";
-import ModCard from "./ModCard.vue";
+<script lang="ts" setup>
+import {ref} from 'vue'
+import {installed_mod, isModEnabled, mod_lists} from "../../composables/useModManager"
+import ModCard from "./ModCard.vue"
 
 // Drag and drop state
-const draggedItemIndex = ref<number | null>(null);
-const dragOverIndex = ref<number | null>(null);
+const draggedItemIndex = ref<number | null>(null)
+const dragOverIndex = ref<number | null>(null)
 
-// For now, we'll use the first mod list as the current one
-// In a real implementation, this would be managed by a global state or prop
-const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null;
+// 当前mod列表
+const currentModList = mod_lists.value.length > 0 ? mod_lists.value[0] : null
+
+// 事件处理
+const emit = defineEmits<{
+  (e: 'toggle-mod', modId: string): void
+  (e: 'select-mod', modId: string): void
+}>()
 
 const toggleMod = (modId: string) => {
-	// In a real implementation, this would call a Tauri command to toggle the mod
-	console.log(`Toggle mod ${modId}`);
-};
+  emit('toggle-mod', modId)
+}
 
 const selectMod = (modId: string) => {
-	console.log(`Mod ${modId} selected`);
-	// In a real app, this would emit an event to show mod details
-};
+  emit('select-mod', modId)
+}
 
-// Drag and drop methods
+// 拖拽相关方法
 const handleDragStart = (index: number, event: DragEvent) => {
-	draggedItemIndex.value = index;
-	// Add visual feedback
-	if (event.dataTransfer) {
-		event.dataTransfer.setData("text/plain", index.toString());
-		event.dataTransfer.effectAllowed = "move";
-	}
-};
+  draggedItemIndex.value = index
+  event.dataTransfer?.setData("text/plain", index.toString())
+  event.dataTransfer!.effectAllowed = "move"
+}
 
 const handleDragOver = (event: DragEvent) => {
-	event.preventDefault();
-	if (event.dataTransfer) {
-		event.dataTransfer.dropEffect = "move";
-	}
-	return false;
-};
+  event.preventDefault()
+  event.dataTransfer!.dropEffect = "move"
+}
 
 const handleDragEnter = (index: number) => {
-	dragOverIndex.value = index;
-};
+  dragOverIndex.value = index
+}
 
 const handleDragLeave = () => {
-	dragOverIndex.value = null;
-};
+  dragOverIndex.value = null
+}
 
 const handleDrop = (index: number, event: DragEvent) => {
-	event.preventDefault();
+  event.preventDefault()
 
-	if (draggedItemIndex.value === null) return;
+  if (draggedItemIndex.value !== null) {
+    // 这里应该实现实际的重新排序逻辑
+    console.log(`Move item from ${draggedItemIndex.value} to ${index}`)
+  }
 
-	// In a real implementation, this would reorder the mods in the current profile
-	console.log(`Dropped mod at index ${index}`);
-
-	// Reset drag state
-	draggedItemIndex.value = null;
-	dragOverIndex.value = null;
-};
+  resetDragState()
+}
 
 const handleDragEnd = () => {
-	draggedItemIndex.value = null;
-	dragOverIndex.value = null;
-};
+  resetDragState()
+}
 
-// Save and load mod order as XML
+const resetDragState = () => {
+  draggedItemIndex.value = null
+  dragOverIndex.value = null
+}
+
+// 保存和加载mod顺序
 const saveModOrder = () => {
-	// In a real implementation, this would save the current mod order to a profile
-	console.log("Saving mod order");
-	alert(
-		"Saving mod order - this would connect to the Rust backend in a real implementation",
-	);
-};
+  // 实际实现应该调用后端API
+  console.log("Saving mod order")
+  window.$message?.success("Mod order saved!")
+}
 
 const loadModOrder = () => {
-	// In a real app, this would load mod order from a profile
-	console.log("Loading mod order");
-	alert(
-		"Loading mod order - this would connect to the Rust backend in a real implementation",
-	);
-};
+  // 实际实现应该调用后端API
+  console.log("Loading mod order")
+  window.$message?.info("Mod order loaded!")
+}
 </script>
 
 <style scoped>
-.mod-list {
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius-rounded);
-  box-shadow: var(--shadow-level-1);
-  padding: var(--spacing-l);
-}
-
-.mod-list h2 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-m);
+.mod-list-card {
+  height: 100%;
 }
 
 .mod-list-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-m);
+  gap: 12px;
+  margin: 20px 0;
 }
 
-.mod-order-actions {
-  display: flex;
-  gap: var(--spacing-m);
-  margin-top: var(--spacing-m);
-}
-
-.save-order-button,
-.load-order-button {
-  padding: var(--spacing-s) var(--spacing-m);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-soft);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
-}
-
-.save-order-button {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
+.mod-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
 }
 </style>
