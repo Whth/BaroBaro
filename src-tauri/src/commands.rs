@@ -16,7 +16,7 @@ use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
-use base64::{Engine as _, engine::general_purpose};
+use base64::{engine::general_purpose, Engine as _};
 use logger::{debug, info};
 use toml::{from_str, to_string_pretty};
 
@@ -46,7 +46,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-    .map_err(|e| format!("{}, failed to write config file.", e))
+        .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -76,6 +76,11 @@ pub fn read_config() -> Result<Config, String> {
     } else {
         Ok(Config::default_settings())
     }
+}
+
+#[tauri::command]
+pub fn get_default_config() -> Config {
+    Config::default_settings()
 }
 
 /// Lists all installed Barotrauma mods found in the configured game directory.

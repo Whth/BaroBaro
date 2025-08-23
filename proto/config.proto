@@ -4,11 +4,11 @@ package config;
 
 // Level represents the logging levels supported by the application.
 enum Level {
-  TRACE = 0;
-  DEBUG = 1;
-  INFO = 2;
-  WARN = 3;
-  ERROR = 4;
+  Trace = 0;
+  Debug = 1;
+  Info = 2;
+  Warn = 3;
+  Error = 4;
 }
 
 
@@ -40,9 +40,9 @@ message Config {
 // Theme represents the available themes for the user interface.
 enum Theme {
   // Dark theme
-  DARK = 0;
+  Dark = 0;
   // Light theme
-  LIGHT = 1;
+  Light = 1;
 }
 
 
