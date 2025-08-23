@@ -1,9 +1,9 @@
 <template>
-  <div class="ui-preferences">
-    <n-form class="settings-form" label-placement="left" label-width="160">
+  <n-grid :cols="1" :x-gap="16" :y-gap="16">
+    <n-gi>
 
       <!-- Language and Theme Settings -->
-      <n-card class="form-section animate-fade-in-up">
+      <n-card class="form-section animate-fade-in">
         <n-h2>{{ $t('settings.appearanceLanguage') }}</n-h2>
 
         <n-form-item :label="$t('settings.languageLabel')">
@@ -28,32 +28,36 @@
         </n-form-item>
 
         <n-form-item :label="$t('settings.accentColorLabel')">
-          <n-color-picker v-model:value="accentColorModel"/>
-          <span class="color-value">{{ accentColorModel }}</span>
+          <n-color-picker v-model:value="accentColorModel" size="small"/>
         </n-form-item>
       </n-card>
+    </n-gi>
 
+
+    <n-gi>
       <!-- Background Customization -->
-      <n-card class="form-section animate-fade-in-up">
+      <n-card class="form-section animate-fade-in">
         <n-h2>{{ $t('settings.backgroundCustomization') }}</n-h2>
 
         <n-form-item :label="$t('settings.backgroundImage')">
-          <div class="file-upload-group">
-            <n-button @click="selectBackgroundImage">
-              {{ $t('settings.browseForImage') }}
-            </n-button>
-            <n-button
-                v-if="backgroundImageModel"
-                class="clear-button"
-                type="error"
-                @click="clearBackgroundImage"
-            >
-              {{ $t('settings.clear') }}
-            </n-button>
-            <div v-if="backgroundImageModel" class="file-info">
-              Selected: {{ backgroundImageModel }}
-            </div>
-          </div>
+          <n-input
+              v-model:value="backgroundImageModel"
+              :placeholder="$t('settings.noImageSelected')"
+              readonly
+              style="margin-right: 10px;"
+          />
+          <n-button @click="selectBackgroundImage">
+            {{ $t('settings.browseForImage') }}
+          </n-button>
+          <n-button
+              v-if="backgroundImageModel"
+              class="clear-button"
+              style="margin-left: 10px;"
+              type="error"
+              @click="clearBackgroundImage"
+          >
+            {{ $t('settings.clear') }}
+          </n-button>
         </n-form-item>
 
         <n-form-item :label="$t('settings.backgroundOpacity')">
@@ -63,11 +67,6 @@
               :min="0"
               :step="0.1"
           />
-          <div class="range-labels">
-            <span>Transparent</span>
-            <span>{{ backgroundOpacityModel }}</span>
-            <span>Opaque</span>
-          </div>
         </n-form-item>
 
         <n-form-item :label="$t('settings.backgroundBlur')">
@@ -77,33 +76,18 @@
               :min="0"
               :step="1"
           />
-          <div class="range-labels">
-            <span>None</span>
-            <span>{{ backgroundBlurModel }}px</span>
-            <span>Blurry</span>
-          </div>
         </n-form-item>
       </n-card>
 
-      <div class="form-actions">
-        <n-button class="save-button animate-pulse" type="primary" @click="apply_and_save_config">
-          {{ $t('settings.savePreferences') }}
-        </n-button>
-        <n-button @click="reset_config">
-          {{ $t('settings.resetPreferences') }}
-        </n-button>
-      </div>
-    </n-form>
-  </div>
+    </n-gi>
+  </n-grid>
 </template>
 
 <script lang="ts" setup>
 import {computed, onMounted} from "vue";
-import {i18n} from "@/i18n.ts";
-import {config, refresh_config, reset_config, save_config} from "@/invokes.ts";
+import {config, refresh_config} from "@/invokes.ts";
 import {open} from "@tauri-apps/plugin-dialog";
-import {Language, languageToJSON, Theme, UIConfig} from "@/proto/config.ts";
-import {currentTheme, theme_mapping} from "@/composables/useTheme.ts";
+import {Language, Theme, UIConfig} from "@/proto/config.ts";
 
 const lang_show_mapping = {
   [Language.EN]: "English",
@@ -178,12 +162,6 @@ const backgroundBlurModel = computed({
   }
 })
 
-const apply_and_save_config = async () => {
-  await save_config()
-  i18n.global.locale.value = languageToJSON(languageModel.value);
-  currentTheme.value = theme_mapping[themeModel.value];
-
-};
 
 const selectBackgroundImage = async () => {
   try {
@@ -211,48 +189,3 @@ onMounted(async () => {
   await refresh_config();
 });
 </script>
-
-<style scoped>
-.ui-preferences {
-  padding: 2rem;
-  max-width: 900px;
-  margin: auto;
-}
-
-.settings-form {
-  margin-top: 1rem;
-}
-
-.form-section {
-  margin-bottom: 2rem;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.file-upload-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.file-info {
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 4px;
-}
-
-.range-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85em;
-  margin-top: 6px;
-  color: #777;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 2rem;
-}
-</style>
