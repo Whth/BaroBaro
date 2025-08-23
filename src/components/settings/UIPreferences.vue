@@ -10,7 +10,7 @@
 
         <n-form-item :label="$t('settings.languageLabel')">
           <n-select
-              v-model:value="lang_show_mapping[lang]"
+              v-model:value="lang"
               :options="[
                 { label: lang_show_mapping[Language.EN], value: Language.EN },
                 { label: lang_show_mapping[Language.ZH], value: Language.ZH }
@@ -119,8 +119,10 @@ const lang: Ref<Language> = ref(Language.EN);
 const theme: Ref<Theme> = ref(Theme.Light);
 
 watch(lang, (value, oldValue) => {
+  console.log(`lang changing ${oldValue} => ${value}`)
   if (value != oldValue) {
     if (config.value.uiConfig !== undefined) {
+      console.log("Change language to " + value)
       config.value.uiConfig.language = value;
     } else {
       config.value.uiConfig = UIConfig.fromPartial({language: value});
@@ -130,6 +132,7 @@ watch(lang, (value, oldValue) => {
 watch(theme, (value, oldValue) => {
   if (value != oldValue) {
     if (config.value.uiConfig !== undefined) {
+      console.log("Change theme to " + value)
       config.value.uiConfig.theme = value;
     } else {
       config.value.uiConfig = UIConfig.fromPartial({theme: value});
@@ -139,8 +142,8 @@ watch(theme, (value, oldValue) => {
 
 const apply_and_save_config = async () => {
   await save_config()
-  i18n.global.locale.value = languageToJSON(config.value.uiConfig?.language || Language.ZH);
-  currentTheme.value = theme_mapping[config.value.uiConfig?.theme || Theme.Light];
+  i18n.global.locale.value = languageToJSON(config.value.uiConfig?.language ?? Language.ZH);
+  currentTheme.value = theme_mapping[config.value.uiConfig?.theme ?? Theme.Light];
 };
 
 
@@ -173,7 +176,7 @@ const selectBackgroundImage = async () => {
 };
 
 const clearBackgroundImage = () => {
-  if (config.value.uiConfig) {
+  if (config.value.uiConfig !== undefined) {
     config.value.uiConfig.backgroundImage = "";
   }
 };
