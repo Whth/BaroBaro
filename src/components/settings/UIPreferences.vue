@@ -1,7 +1,5 @@
 <template>
   <div class="ui-preferences">
-    <n-h1>{{ $t('settings.uiPreferences') }}</n-h1>
-
     <n-form class="settings-form" label-placement="left" label-width="160">
 
       <!-- Language and Theme Settings -->

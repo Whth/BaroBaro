@@ -1,5 +1,4 @@
 <template>
-  <n-h2 v-text="$t('settings.general')"></n-h2>
   <n-card class="settings-card">
     <n-form class="settings-form">
       <n-form-item :label="$t('settings.logLevel')">

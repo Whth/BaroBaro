@@ -1,6 +1,5 @@
 <template>
   <div class="paths-settings">
-    <n-h2>Paths Settings</n-h2>
 
     <n-card segmented title="Game & SteamCMD Paths">
       <n-form :model="settings" label-placement="left" label-width="200">
