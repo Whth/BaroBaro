@@ -1,8 +1,6 @@
 <template>
   <n-layout-sider
       :collapsed="isCollapsed"
-      :collapsed-width="65"
-      :width="180"
       bordered
       collapse-mode="width"
       show-trigger="bar"
@@ -16,8 +14,6 @@
     </div>
     <n-menu
         :collapsed="isCollapsed"
-        :collapsed-icon-size="26"
-        :collapsed-width="64"
         :options="menuOptions"
         :value="activeKey"
         @update:value="handleMenuSelect"
@@ -94,55 +90,5 @@ provide("sidebarState", {
 });
 </script>
 
-<style scoped>
-.sidebar-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--n-border-color);
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 64px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
 
-[data-theme="dark"] .sidebar-header {
-  border-color: rgba(255, 255, 255, 0.08);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-}
-
-:deep(.n-layout-sider) {
-  background: rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-[data-theme="dark"] :deep(.n-layout-sider) {
-  background: rgba(31, 41, 55, 0.4);
-  border-right-color: rgba(255, 255, 255, 0.1);
-}
-
-:deep(.n-menu) {
-  background: var(--n-color-menu-color);
-  color: var(--n-color-menu-text-color);
-}
-
-:deep(.n-menu-item) {
-  color: var(--n-color-menu-item-text-color);
-}
-
-:deep(.n-menu-item:hover) {
-  background: var(--n-color-menu-item-color-hover);
-  color: var(--n-color-menu-item-text-color-hover);
-}
-
-:deep(.n-menu-item--active) {
-  background: var(--n-color-menu-item-color-active);
-  color: var(--n-color-menu-item-text-color-active);
-}
-</style>
 
