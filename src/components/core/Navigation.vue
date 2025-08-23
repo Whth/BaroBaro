@@ -6,12 +6,6 @@
       collapse-mode="width"
       show-trigger="bar"
   >
-    <div class="sidebar-header">
-      <n-text v-show="!isCollapsed" strong style="font-size: 18px;">
-        BaroBaro
-      </n-text>
-    </div>
-
     <n-menu
         v-model:value="activeKey"
         :collapsed="isCollapsed"
@@ -26,6 +20,9 @@ import {computed, h, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {NIcon} from 'naive-ui'
 import {ExtensionPuzzleOutline, HomeOutline, SettingsOutline} from '@vicons/ionicons5'
+import {useI18n} from "vue-i18n";
+
+const {t} = useI18n()
 
 // 路由相关
 const route = useRoute()
@@ -47,37 +44,28 @@ const activeKey = computed(() => {
 // 菜单项配置
 const menuOptions = [
   {
-    label: 'Dashboard',
+    label: t('navigation.dashboard'),
     key: 'dashboard',
     path: '/',
     icon: () => h(NIcon, null, {default: () => h(HomeOutline)})
   },
   {
-    label: 'Mods',
+    label: t('navigation.mods'),
     key: 'mods',
     path: '/mods',
     icon: () => h(NIcon, null, {default: () => h(ExtensionPuzzleOutline)})
   },
   {
-    label: 'Settings',
+    label: t('navigation.settings'),
     key: 'settings',
     path: '/settings',
     icon: () => h(NIcon, null, {default: () => h(SettingsOutline)})
   }
 ]
 
-// 跳转函数
 const goTo = (key: string) => {
   const item = menuOptions.find(opt => opt.key === key)
   if (item?.path) router.push(item.path)
 }
 </script>
 
-<style scoped>
-.sidebar-header {
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>

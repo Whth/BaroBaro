@@ -1,25 +1,21 @@
 <template>
-  <div class="general-settings">
-    <n-h2>General Settings</n-h2>
+  <n-h2 v-text="$t('settings.general')"></n-h2>
+  <n-card class="settings-card">
+    <n-form class="settings-form">
+      <n-form-item :label="$t('settings.logLevel')">
+        <n-select
+            v-model:value="loglevel"
+            :options="logLevelOptions"
+            style="width: 200px"
+        />
+      </n-form-item>
 
-    <n-card class="settings-card">
-      <n-form class="settings-form">
-        <n-form-item label="Log Level" path="logLevel">
-          <n-select
-              v-model:value="loglevel"
-              :options="logLevelOptions"
-              style="width: 200px"
-          />
-        </n-form-item>
-
-        <div class="form-actions">
-          <n-button type="primary" @click="save_config">
-            Save Settings
-          </n-button>
-        </div>
-      </n-form>
-    </n-card>
-  </div>
+      <div class="form-actions">
+        <n-button type="primary" @click="save_config" v-text="$t('settings.save')">
+        </n-button>
+      </div>
+    </n-form>
+  </n-card>
 </template>
 
 <script lang="ts" setup>
@@ -37,7 +33,6 @@ const loglevel = computed({
   }
 })
 
-
 const logLevelOptions = [
   {label: 'Trace', value: Level.Trace},
   {label: 'Debug', value: Level.Debug},
@@ -48,21 +43,3 @@ const logLevelOptions = [
 
 onMounted(refresh_config);
 </script>
-
-<style scoped>
-.general-settings {
-  padding: 20px;
-}
-
-.settings-card {
-  max-width: 600px;
-}
-
-.settings-form {
-  margin-top: 20px;
-}
-
-.form-actions {
-  margin-top: 30px;
-}
-</style>

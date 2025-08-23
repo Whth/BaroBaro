@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="currentTheme">
+  <n-config-provider :theme="currentTheme" autofocus>
     <div class="app-container">
       <Layout>
         <router-view/>
@@ -20,5 +20,5 @@ onMounted(async () => {
   await refresh_config()
   currentTheme.value = theme_mapping[config.value.uiConfig?.theme || Theme.Light];
 });
-
 </script>
+

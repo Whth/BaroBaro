@@ -184,6 +184,7 @@ const apply_and_save_config = async () => {
   await save_config()
   i18n.global.locale.value = languageToJSON(languageModel.value);
   currentTheme.value = theme_mapping[themeModel.value];
+
 };
 
 const selectBackgroundImage = async () => {

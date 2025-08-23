@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "barobaro",
+        "title": "BaroBaro",
         "width": 850,
-        "height": 600
+        "height": 600,
+        "transparent": true
       }
     ],
     "security": {
