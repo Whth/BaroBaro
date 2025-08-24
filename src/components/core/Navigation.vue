@@ -24,14 +24,14 @@ import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()
 
-// 路由相关
+// Router related
 const route = useRoute()
 const router = useRouter()
 
-// 折叠状态
+// Collapsed state
 const isCollapsed = ref(false)
 
-// 当前激活的菜单项
+// Currently active menu item
 const activeKey = computed(() => {
   const map: Record<string, string> = {
     '/': 'dashboard',
@@ -41,8 +41,8 @@ const activeKey = computed(() => {
   return map[route.path] || ''
 })
 
-// 菜单项配置
-const menuOptions = [
+// Menu item configuration
+const menuOptions = computed(() => [
   {
     label: t('navigation.dashboard'),
     key: 'dashboard',
@@ -61,10 +61,10 @@ const menuOptions = [
     path: '/settings',
     icon: () => h(NIcon, null, {default: () => h(SettingsOutline)})
   }
-]
+])
 
 const goTo = (key: string) => {
-  const item = menuOptions.find(opt => opt.key === key)
+  const item = menuOptions.value.find(opt => opt.key === key)
   if (item?.path) router.push(item.path)
 }
 </script>
