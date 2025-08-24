@@ -60,7 +60,6 @@ message UIConfig {
   // The selected language for the user interface (e.g., en, fr, es).
   Language language = 2;
   // The accent color for the user interface.
-  string accentColor = 6;
   string backgroundImage = 3;
   float backgroundOpacity = 4;
   uint64 backgroundBlur = 5;

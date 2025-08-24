@@ -16,7 +16,6 @@ impl Config {
             ui_config: Some(UiConfig {
                 theme: Theme::Light as i32,
                 language: Language::En as i32,
-                accent_color: "#0969da".to_string(),
                 background_image: "".to_string(),
                 background_opacity: 0.2,
                 background_blur: 5,

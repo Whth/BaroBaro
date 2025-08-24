@@ -9,16 +9,18 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted} from "vue";
+import {onBeforeMount} from "vue";
 import Layout from "./components/core/Layout.vue";
-import {Theme} from "./proto/config.ts";
+import {Language, languageToJSON, Theme} from "./proto/config.ts";
 import {config, refresh_config} from "./invokes.ts";
 import {currentTheme, theme_mapping} from "./composables/useTheme.ts";
+import {i18n} from "./i18n.ts";
 
 
-onMounted(async () => {
+onBeforeMount(async () => {
   await refresh_config()
-  currentTheme.value = theme_mapping[config.value.uiConfig?.theme || Theme.Light];
+  currentTheme.value = theme_mapping[config.value.uiConfig?.theme ?? Theme.Light];
+  i18n.global.locale.value = languageToJSON(config.value.uiConfig?.language ?? Language.EN);
 });
 </script>
 

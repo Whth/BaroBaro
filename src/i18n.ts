@@ -14,7 +14,7 @@ const messages = {
 export const i18n = createI18n(
     {
         legacy: false,
-        locale: languageToJSON(config.value.uiConfig?.language || Language.EN),
+        locale: languageToJSON(config.value.uiConfig?.language ?? Language.EN),
         globalInjection: true,
         messages: messages
     }

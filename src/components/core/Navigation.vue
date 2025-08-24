@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, h, ref} from 'vue'
+import {computed, h, ref, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {NIcon} from 'naive-ui'
 import {ExtensionPuzzleOutline, HomeOutline, SettingsOutline} from '@vicons/ionicons5'
@@ -28,8 +28,13 @@ const {t} = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-// Collapsed state
-const isCollapsed = ref(false)
+// Collapsed state - 从 localStorage 读取初始值
+const isCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true')
+
+// 监听 isCollapsed 变化并保存到 localStorage
+watch(isCollapsed, (newVal) => {
+  localStorage.setItem('sidebarCollapsed', String(newVal))
+})
 
 // Currently active menu item
 const activeKey = computed(() => {
@@ -68,4 +73,3 @@ const goTo = (key: string) => {
   if (item?.path) router.push(item.path)
 }
 </script>
-

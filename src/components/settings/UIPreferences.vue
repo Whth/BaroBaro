@@ -26,10 +26,6 @@
               ]"
           />
         </n-form-item>
-
-        <n-form-item :label="$t('settings.accentColorLabel')">
-          <n-color-picker v-model:value="accentColorModel" size="small"/>
-        </n-form-item>
       </n-card>
     </n-gi>
 
