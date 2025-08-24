@@ -80,109 +80,99 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from "vue";
-import { config, refresh_config } from "@/invokes.ts";
-import { open } from "@tauri-apps/plugin-dialog";
-import { Language, Theme, UIConfig } from "@/proto/config.ts";
+import {computed, onMounted} from "vue";
+import {config, refresh_config} from "../../invokes.ts";
+import {open} from "@tauri-apps/plugin-dialog";
+import {Language, Theme, UIConfig} from "../../proto/config.ts";
 
 const lang_show_mapping = {
-	[Language.EN]: "English",
-	[Language.ZH]: "中文",
-	[Language.UNRECOGNIZED]: "Unknown",
+  [Language.EN]: "English",
+  [Language.ZH]: "中文",
+  [Language.UNRECOGNIZED]: "Unknown",
 };
 
 // 计算属性处理所有可能为 undefined 的字段
 const languageModel = computed({
-	get: () => config.value.uiConfig?.language ?? Language.ZH,
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ language: value });
-		} else {
-			config.value.uiConfig.language = value;
-		}
-	},
+  get: () => config.value.uiConfig?.language ?? Language.ZH,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({language: value});
+    } else {
+      config.value.uiConfig.language = value;
+    }
+  },
 });
 
 const themeModel = computed({
-	get: () => config.value.uiConfig?.theme ?? Theme.Light,
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ theme: value });
-		} else {
-			config.value.uiConfig.theme = value;
-		}
-	},
+  get: () => config.value.uiConfig?.theme ?? Theme.Light,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({theme: value});
+    } else {
+      config.value.uiConfig.theme = value;
+    }
+  },
 });
 
-const accentColorModel = computed({
-	get: () => config.value.uiConfig?.accentColor ?? "#18a058",
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ accentColor: value });
-		} else {
-			config.value.uiConfig.accentColor = value;
-		}
-	},
-});
 
 const backgroundImageModel = computed({
-	get: () => config.value.uiConfig?.backgroundImage ?? "",
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ backgroundImage: value });
-		} else {
-			config.value.uiConfig.backgroundImage = value;
-		}
-	},
+  get: () => config.value.uiConfig?.backgroundImage ?? "",
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({backgroundImage: value});
+    } else {
+      config.value.uiConfig.backgroundImage = value;
+    }
+  },
 });
 
 const backgroundOpacityModel = computed({
-	get: () => config.value.uiConfig?.backgroundOpacity ?? 1,
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({
-				backgroundOpacity: value,
-			});
-		} else {
-			config.value.uiConfig.backgroundOpacity = value;
-		}
-	},
+  get: () => config.value.uiConfig?.backgroundOpacity ?? 1,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({
+        backgroundOpacity: value,
+      });
+    } else {
+      config.value.uiConfig.backgroundOpacity = value;
+    }
+  },
 });
 
 const backgroundBlurModel = computed({
-	get: () => config.value.uiConfig?.backgroundBlur ?? 0,
-	set: (value) => {
-		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ backgroundBlur: value });
-		} else {
-			config.value.uiConfig.backgroundBlur = value;
-		}
-	},
+  get: () => config.value.uiConfig?.backgroundBlur ?? 0,
+  set: (value) => {
+    if (!config.value.uiConfig) {
+      config.value.uiConfig = UIConfig.fromPartial({backgroundBlur: value});
+    } else {
+      config.value.uiConfig.backgroundBlur = value;
+    }
+  },
 });
 
 const selectBackgroundImage = async () => {
-	try {
-		const selectedPath = await open({
-			multiple: false,
-			title: "Select Background Image",
-			filters: [
-				{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"] },
-			],
-		});
+  try {
+    const selectedPath = await open({
+      multiple: false,
+      title: "Select Background Image",
+      filters: [
+        {name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp"]},
+      ],
+    });
 
-		if (selectedPath) {
-			backgroundImageModel.value = selectedPath;
-		}
-	} catch (error) {
-		console.error("Failed to select background image:", error);
-	}
+    if (selectedPath) {
+      backgroundImageModel.value = selectedPath;
+    }
+  } catch (error) {
+    console.error("Failed to select background image:", error);
+  }
 };
 
 const clearBackgroundImage = () => {
-	backgroundImageModel.value = "";
+  backgroundImageModel.value = "";
 };
 
 onMounted(async () => {
-	await refresh_config();
+  await refresh_config();
 });
 </script>

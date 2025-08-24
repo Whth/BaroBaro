@@ -17,7 +17,7 @@ use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
-use base64::{Engine as _, engine::general_purpose};
+use base64::{engine::general_purpose, Engine as _};
 use logger::{debug, info};
 use toml::{from_str, to_string_pretty};
 
@@ -47,7 +47,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-    .map_err(|e| format!("{}, failed to write config file.", e))
+        .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -124,6 +124,25 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         .collect::<Vec<_>>())
 }
 
+
+/// Lists all enabled Barotrauma mods found in the configured game directory.
+#[tauri::command]
+pub async fn list_enabled_mods() -> Result<Vec<BarotraumaMod>, String> {
+    let conf: Config = read_config()?;
+    info!("Listing enabled mods for Barotrauma.");
+    BARO_MANAGER
+        .write()
+        .await
+        .set_game_dir(
+            &PathBuf::from_str(conf.game_home.as_str())
+                .map_err(|e| format!("{}, failed to set game directory.", e))?,
+        )?
+        .refresh_mods()?
+        .enabled_mods()
+}
+
+
+/// Downloads the specified mods using SteamCMD.
 #[tauri::command]
 pub async fn download_mods(mods: Vec<usize>) -> Result<(), String> {
     let conf: Config = read_config()?;
@@ -225,13 +244,13 @@ pub fn get_background_image() -> Result<Option<String>, String> {
     }
 }
 
+
 /// Returns the version information of the application.
 #[tauri::command]
-pub fn get_version() -> BuildInfo {
+pub fn get_build_info() -> BuildInfo {
     BuildInfo {
         version: crate::rust_built_info::PKG_VERSION.to_string(),
-        commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7]
-            .into(),
+        commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7].into(),
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
 }

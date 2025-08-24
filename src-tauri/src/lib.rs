@@ -26,7 +26,8 @@ pub fn run() -> Result<(), String> {
             list_mod_lists,
             get_background_image,
             get_default_config,
-            get_version
+            get_build_info,
+            list_enabled_mods
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
