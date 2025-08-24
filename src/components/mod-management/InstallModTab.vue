@@ -56,7 +56,6 @@
 import { computed, ref } from "vue";
 import { ArchiveOutline } from "@vicons/ionicons5";
 import type { UploadFileInfo } from "naive-ui";
-import { refreshInstalledMods } from "../../composables/useModManager";
 
 // 响应式数据
 const fileList = ref<UploadFileInfo[]>([]);

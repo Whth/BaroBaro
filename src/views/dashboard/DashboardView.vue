@@ -12,7 +12,6 @@
     <n-grid cols="12" x-gap="24" y-gap="24">
       <n-grid-item span="8">
         <n-card title="Mods List">
-          <ModList/>
         </n-card>
       </n-grid-item>
 
@@ -28,7 +27,6 @@
 
 <script lang="ts" setup>
 import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
-import ModList from "../../components/dashboard/ModList.vue";
 import TitledPage from "../../components/core/TitledPage.vue";
 import type {BarotraumaMod} from '../../proto/mods'
 import {onMounted, ref} from "vue";

@@ -73,86 +73,85 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { ArrowForward } from "@vicons/ionicons5";
-import { refreshInstalledMods } from "../../composables/useModManager";
+import {ref} from "vue";
+import {ArrowForward} from "@vicons/ionicons5";
 
 // 定义接口
 interface ModUpdate {
-	id: string;
-	name: string;
-	currentVersion: string;
-	newVersion: string;
-	description: string;
-	updating?: boolean;
+  id: string;
+  name: string;
+  currentVersion: string;
+  newVersion: string;
+  description: string;
+  updating?: boolean;
 }
 
 // 响应式数据
 const modsToUpdate = ref<ModUpdate[]>([
-	{
-		id: "1",
-		name: "Better Graphics",
-		currentVersion: "1.2.3",
-		newVersion: "1.3.0",
-		description: "Enhanced textures and lighting improvements",
-	},
-	{
-		id: "2",
-		name: "New Weapons Pack",
-		currentVersion: "2.0.1",
-		newVersion: "2.1.0",
-		description: "Added 10 new weapons and balanced existing ones",
-	},
+  {
+    id: "1",
+    name: "Better Graphics",
+    currentVersion: "1.2.3",
+    newVersion: "1.3.0",
+    description: "Enhanced textures and lighting improvements",
+  },
+  {
+    id: "2",
+    name: "New Weapons Pack",
+    currentVersion: "2.0.1",
+    newVersion: "2.1.0",
+    description: "Added 10 new weapons and balanced existing ones",
+  },
 ]);
 
 const isUpdatingAll = ref(false);
 
 // 更新单个mod
 const updateMod = async (modId: string) => {
-	const mod = modsToUpdate.value.find((m) => m.id === modId);
-	if (!mod) return;
+  const mod = modsToUpdate.value.find((m) => m.id === modId);
+  if (!mod) return;
 
-	mod.updating = true;
-	try {
-		// 模拟更新过程
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+  mod.updating = true;
+  try {
+    // 模拟更新过程
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-		// 更新成功后从列表中移除
-		modsToUpdate.value = modsToUpdate.value.filter((m) => m.id !== modId);
+    // 更新成功后从列表中移除
+    modsToUpdate.value = modsToUpdate.value.filter((m) => m.id !== modId);
 
-		window.$message?.success(`Updated ${mod.name} successfully!`);
-		await refreshInstalledMods();
-	} catch (error) {
-		window.$message?.error(`Failed to update ${mod.name}`);
-	} finally {
-		mod.updating = false;
-	}
+    window.$message?.success(`Updated ${mod.name} successfully!`);
+    await refreshInstalledMods();
+  } catch (error) {
+    window.$message?.error(`Failed to update ${mod.name}`);
+  } finally {
+    mod.updating = false;
+  }
 };
 
 // 更新所有mods
 const updateAllMods = async () => {
-	isUpdatingAll.value = true;
-	try {
-		// 并行更新所有mods
-		const updatePromises = modsToUpdate.value.map((mod) => updateMod(mod.id));
-		await Promise.all(updatePromises);
-		window.$message?.success("All mods updated successfully!");
-	} catch (error) {
-		window.$message?.error("Some updates failed");
-	} finally {
-		isUpdatingAll.value = false;
-	}
+  isUpdatingAll.value = true;
+  try {
+    // 并行更新所有mods
+    const updatePromises = modsToUpdate.value.map((mod) => updateMod(mod.id));
+    await Promise.all(updatePromises);
+    window.$message?.success("All mods updated successfully!");
+  } catch (error) {
+    window.$message?.error("Some updates failed");
+  } finally {
+    isUpdatingAll.value = false;
+  }
 };
 
 // 查看更新日志
 const viewChangelog = (modId: string) => {
-	const mod = modsToUpdate.value.find((m) => m.id === modId);
-	if (mod) {
-		window.$message?.info(`Changelog for ${mod.name}:
+  const mod = modsToUpdate.value.find((m) => m.id === modId);
+  if (mod) {
+    window.$message?.info(`Changelog for ${mod.name}:
 - Improved performance
 - Fixed bugs
 - Added new features`);
-	}
+  }
 };
 </script>
 

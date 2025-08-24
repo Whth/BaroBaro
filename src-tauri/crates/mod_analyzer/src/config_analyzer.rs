@@ -19,9 +19,6 @@ use std::path::Path;
 /// Represents the parsed `config.xml` from Barotrauma.
 #[derive(Debug, Deserialize)]
 pub struct BaroConfig {
-    #[serde(rename = "corepackage")]
-    core_package: CorePackage,
-
     #[serde(rename = "contentpackages")]
     content_packages: ContentPackages,
 }
@@ -36,6 +33,9 @@ struct CorePackage {
 /// Container for content packages.
 #[derive(Debug, Deserialize)]
 struct ContentPackages {
+    #[serde(rename = "corepackage")]
+    core_package: CorePackage,
+
     #[serde(rename = "regularpackages")]
     regular_packages: RegularPackages,
 }
@@ -89,15 +89,6 @@ impl BaroConfig {
         Self::from_str(&data)
     }
 
-    /// Parses XML from a byte slice.
-    ///
-    /// # Arguments
-    ///
-    /// * `xml` - Raw XML bytes.
-    pub fn from_slice(xml: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
-        let text = std::str::from_utf8(xml)?;
-        Self::from_str(text)
-    }
 
     /// Parses XML from a string.
     fn from_str(xml: &str) -> Result<Self, Box<dyn std::error::Error>> {
@@ -111,7 +102,7 @@ impl BaroConfig {
     ///
     /// Path to the core package, e.g., `"Content/ContentPackages/Vanilla.xml"`.
     pub fn core_package(&self) -> &str {
-        &self.core_package.path
+        &self.content_packages.core_package.path
     }
 
     /// Gets the list of enabled mods under `LocalMods/`.
@@ -146,8 +137,8 @@ mod tests {
     const TEST_XML: &str = r#"
 <config language="English">
   <graphicssettings width="1920" height="1080" />
-  <corepackage path="Content/ContentPackages/Vanilla.xml" />
   <contentpackages>
+    <corepackage path="Content/ContentPackages/Vanilla.xml" />
     <regularpackages>
       <!-- EK Dockyard 重製版 -->
       <package path="LocalMods/3012187347/filelist.xml" />
@@ -187,12 +178,5 @@ mod tests {
         for m in &mods {
             assert!(m.path().starts_with("LocalMods/"));
         }
-    }
-
-    #[test]
-    fn test_from_slice() {
-        let config = BaroConfig::from_slice(TEST_XML.as_bytes()).expect("Failed to parse");
-        assert_eq!(config.core_package(), "Content/ContentPackages/Vanilla.xml");
-        assert_eq!(config.mods().len(), 3);
     }
 }

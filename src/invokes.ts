@@ -28,6 +28,7 @@ export async function reset_config() {
 
 export async function list_installed_mods() {
     installed_mod.value = await invoke("list_installed_mods");
+    console.log(`Found ${installed_mod.value.length} installed mods`);
 }
 
 export async function download_mod(mods: number[]) {
@@ -36,6 +37,7 @@ export async function download_mod(mods: number[]) {
 
 export async function list_mod_lists() {
     mod_lists.value = await invoke("list_mod_lists");
+    console.log(`Found ${mod_lists.value.length} mod lists`);
 }
 
 export async function get_build_info(): Promise<BuildInfo> {
@@ -45,4 +47,6 @@ export async function get_build_info(): Promise<BuildInfo> {
 
 export async function list_enabled_mods() {
     enabled_mods.value = await invoke("list_enabled_mods");
+    console.log(`Found ${enabled_mods.value.length} enabled mods`);
 }
+

@@ -22,13 +22,13 @@ impl BarotraumaModManager {
             .collect()
     }
 
-    pub fn set_game_dir(&mut self, game_dir: &PathBuf) -> Result<&mut Self, String> {
+    pub fn set_game_dir(&mut self, game_dir: &PathBuf) -> &mut Self {
         if let Some(ref mut game_home) = self.game_home {
             game_home.set_home_dir(game_dir);
-            Ok(self)
         } else {
-            Err("Game home not set".to_string())
+            self.game_home = Some(BarotraumaHome::new(game_dir.into()))
         }
+        self
     }
     pub fn from_game_dir(game_dir: PathBuf) -> BarotraumaModManager {
         let mods = BarotraumaModManager::discover_mods(&game_dir);
@@ -78,10 +78,16 @@ impl BarotraumaModManager {
 
     pub fn enabled_mods(&self) -> Result<Vec<BarotraumaMod>, String> {
         if let Some(ref game_home) = self.game_home {
-            let conf: BaroConfig = BaroConfig::from_file(game_home.player_config_file()).map_err(|e| format!("{e}, failed to parse config."))?;
+            let conf: BaroConfig = BaroConfig::from_file(game_home.player_config_file()).map_err(|e| format!("{e}, config file {}, failed to parse config.", game_home.player_config_file().display()))?;
 
             Ok(conf.mods().into_iter()
-                .map(|mod_entry| BarotraumaMod::from_path(mod_entry.path()))
+                .map(|mod_entry|
+                    {
+                        let mut p = game_home.home_dir().to_owned();
+                        p.push(mod_entry.path());
+                        BarotraumaMod::from_path(p)
+                    }
+                )
                 .filter_map(Result::ok)
                 .collect::<Vec<_>>()
             )

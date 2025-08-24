@@ -1,102 +1,74 @@
 <template>
-  <n-card
-      :class="[
-      'mod-card',
-      { 'mod-card-disabled': !isEnabled, 'drag-over': isDragOver }
-    ]"
-      :draggable="draggable"
-      :segmented="true"
-      @dragend="$emit('dragend')"
-      @dragenter="$emit('dragenter')"
-      @dragleave="$emit('dragleave')"
-      @dragover="$emit('dragover', $event)"
-      @dragstart="$emit('dragstart', $event)"
-      @drop="$emit('drop', $event)"
-  >
-    <template #header>
-      <n-flex align="center" justify="space-between">
-        <n-flex :size="12" align="center">
-          <n-tag round size="small" type="primary">{{ index + 1 }}</n-tag>
-          <n-ellipsis style="max-width: 200px">
-            <strong>{{ mod.name }}</strong>
-          </n-ellipsis>
-        </n-flex>
-        <n-button
-            :type="isEnabled ? 'success' : 'default'"
-            size="small"
-            @click="toggleMod"
-        >
-          {{ isEnabled ? "Enabled" : "Disabled" }}
-        </n-button>
-      </n-flex>
-    </template>
-
-    <n-space :size="4" vertical>
-      <n-text depth="3">Version: {{ mod.modVersion }}</n-text>
-      <n-text depth="3">Steam ID: {{ mod.steamWorkshopId }}</n-text>
-      <n-text depth="3">Game Version: {{ mod.gameVersion }}</n-text>
+  <n-card :segmented="{ content: true }" :title="mod.name" hoverable>
+    <!-- Mod Version & Game Version -->
+    <n-space justify="space-between" style="margin-bottom: 12px">
+      <n-tag v-if="mod.modVersion" size="small" type="info">
+        v{{ mod.modVersion }}
+      </n-tag>
+      <n-tag v-if="mod.gameVersion" :bordered="false" size="small">
+        Game: {{ mod.gameVersion }}
+      </n-tag>
     </n-space>
 
-    <template #footer>
-      <n-flex align="center" justify="space-between">
-        <n-tag :type="mod.corePackage ? 'success' : 'warning'" size="small">
-          {{ mod.corePackage ? "Core Package" : "Mod" }}
-        </n-tag>
-        <n-button text type="primary" @click="selectMod">
-          View Details
-        </n-button>
-      </n-flex>
-    </template>
+    <!-- Core Package Badge -->
+    <n-tag
+        v-if="mod.corePackage"
+        size="small"
+        style="margin-bottom: 12px"
+        type="success"
+    >
+      Core Package
+    </n-tag>
+
+    <!-- Steam Workshop ID with Link -->
+    <n-space v-if="mod.steamWorkshopId" align="center" style="margin-bottom: 12px">
+      <n-text depth="3">Steam Workshop ID:</n-text>
+      <n-text depth="1" style="font-family: monospace">
+        {{ mod.steamWorkshopId }}
+      </n-text>
+      <n-button
+          :href="`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`"
+          size="tiny"
+          tag="a"
+          target="_blank"
+          text
+          type="primary"
+      >
+        🔗
+      </n-button>
+    </n-space>
+
+    <!-- Expected Hash -->
+    <n-space v-if="mod.expectedHash" align="center" style="margin-bottom: 12px">
+      <n-text depth="3">Expected Hash:</n-text>
+      <n-code :code="mod.expectedHash" language="txt" size="small"/>
+    </n-space>
+
+    <!-- File Groups -->
+    <n-collapse v-if="Object.keys(mod.fileGroups).length > 0" style="margin-top: 12px">
+      <n-collapse-item :arrow-icon-size="16" title="File Groups">
+        <n-list size="small">
+          <n-list-item v-for="(group, tag) in mod.fileGroups" :key="tag">
+            <template #prefix>
+              <n-tag size="small" type="warning">{{ tag }}</n-tag>
+            </template>
+            <n-text depth="1">{{ group.files.length }} files</n-text>
+          </n-list-item>
+        </n-list>
+      </n-collapse-item>
+    </n-collapse>
+
+    <!-- Home Directory -->
+    <n-text v-if="mod.homeDir" depth="3" style="font-size: 0.9em; margin-top: 12px">
+      Home:
+      <n-code :code="mod.homeDir" language="path" size="small"/>
+    </n-text>
   </n-card>
 </template>
 
 <script lang="ts" setup>
-import { defineEmits, defineProps } from "vue";
-import type { BarotraumaMod } from "../../proto/mods";
-
-const props = defineProps<{
-	mod: BarotraumaMod;
-	index: number;
-	draggable?: boolean;
-	isDragOver?: boolean;
-	isEnabled?: boolean;
+import type {BarotraumaMod} from '../../proto/mods.ts'; // 确保路径正确
+defineProps<{
+  mod: BarotraumaMod;
 }>();
-
-const emit = defineEmits<{
-	(e: "toggleMod", id: string): void;
-	(e: "selectMod", id: string): void;
-	(e: "dragstart", event: DragEvent): void;
-	(e: "dragover", event: DragEvent): void;
-	(e: "dragenter"): void;
-	(e: "dragleave"): void;
-	(e: "drop", event: DragEvent): void;
-	(e: "dragend"): void;
-}>();
-
-const toggleMod = () => {
-	emit("toggleMod", props.mod.steamWorkshopId);
-};
-
-const selectMod = () => {
-	emit("selectMod", props.mod.steamWorkshopId);
-};
 </script>
-
-<style scoped>
-.mod-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mod-card:hover {
-  transform: translateY(-2px);
-}
-
-.mod-card-disabled {
-  opacity: 0.6;
-}
-
-.drag-over {
-  border-color: var(--n-border-color);
-  box-shadow: 0 0 0 2px var(--n-color-primary);
-}
-</style>

@@ -116,7 +116,7 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         .set_game_dir(
             &PathBuf::from_str(conf.game_home.as_str())
                 .map_err(|e| format!("{}, failed to set game directory.", e))?,
-        )?
+        )
         .refresh_mods()?
         .get_mods()
         .iter()
@@ -136,7 +136,7 @@ pub async fn list_enabled_mods() -> Result<Vec<BarotraumaMod>, String> {
         .set_game_dir(
             &PathBuf::from_str(conf.game_home.as_str())
                 .map_err(|e| format!("{}, failed to set game directory.", e))?,
-        )?
+        )
         .refresh_mods()?
         .enabled_mods()
 }
@@ -172,7 +172,7 @@ pub async fn list_mod_lists() -> Result<Vec<ModList>, String> {
         .set_game_dir(
             &PathBuf::from_str(conf.game_home.as_str())
                 .map_err(|e| format!("{}, failed to set game directory.", e))?,
-        )?
+        )
         .discover_mod_lists()
 }
 
