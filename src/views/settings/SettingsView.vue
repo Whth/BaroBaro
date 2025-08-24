@@ -1,6 +1,8 @@
 <template>
-  <n-flex :size="24" vertical>
-    <n-h1 v-text="$t('settings.title')"></n-h1>
+  <TitledPage>
+    <template #title>
+      <n-h1 v-text="$t('settings.title')"></n-h1>
+    </template>
     <n-card>
       <n-tabs v-model:value="activeTab" animated type="line">
         <n-tab-pane :tab="$t('settings.general')" name="general">
@@ -27,7 +29,7 @@
         </n-icon>
       </n-float-button>
     </n-float-button-group>
-  </n-flex>
+  </TitledPage>
 </template>
 
 <script lang="ts" setup>
@@ -40,6 +42,7 @@ import {config, reset_config, save_config} from "../../invokes.ts";
 import {i18n} from "../../i18n.ts";
 import {Language, languageToJSON, Theme} from "../../proto/config.ts";
 import {currentTheme, theme_mapping} from "../../composables/useTheme.ts";
+import TitledPage from "../../components/core/TitledPage.vue";
 
 const activeTab = ref("general");
 

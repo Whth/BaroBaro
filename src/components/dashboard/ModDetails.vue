@@ -54,78 +54,37 @@
 </template>
 
 <script lang="ts" setup>
-import type { BarotraumaMod } from "../../proto/mods";
+import type {BarotraumaMod} from "../../proto/mods";
 
 // Props (接收父组件传入的选中mod)
 const props = defineProps<{
-	selectedMod: BarotraumaMod | null;
+  selectedMod: BarotraumaMod | null;
 }>();
 
 // Emits (向父组件发送事件)
 const emit = defineEmits<{
-	(e: "toggle", mod: BarotraumaMod): void;
-	(e: "update", mod: BarotraumaMod): void;
-	(e: "remove", mod: BarotraumaMod): void;
+  (e: "toggle", mod: BarotraumaMod): void;
+  (e: "update", mod: BarotraumaMod): void;
+  (e: "remove", mod: BarotraumaMod): void;
 }>();
 
 // 操作函数
 const toggleMod = () => {
-	if (props.selectedMod) {
-		emit("toggle", props.selectedMod);
-	}
+  if (props.selectedMod) {
+    emit("toggle", props.selectedMod);
+  }
 };
 
 const updateMod = () => {
-	if (props.selectedMod) {
-		emit("update", props.selectedMod);
-	}
+  if (props.selectedMod) {
+    emit("update", props.selectedMod);
+  }
 };
 
 const removeMod = () => {
-	if (props.selectedMod) {
-		emit("remove", props.selectedMod);
-	}
+  if (props.selectedMod) {
+    emit("remove", props.selectedMod);
+  }
 };
 </script>
 
-<style scoped>
-.mod-details-card {
-  height: 100%;
-}
-
-.mod-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.mod-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mod-description {
-  margin: 10px 0;
-}
-
-.mod-description p {
-  color: #666;
-}
-
-.mod-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-}
-
-.core-package {
-  color: #18a058;
-}
-
-.regular-mod {
-  color: #f0a020;
-}
-</style>

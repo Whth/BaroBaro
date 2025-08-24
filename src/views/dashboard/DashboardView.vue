@@ -1,65 +1,59 @@
 <template>
-  <div class="dashboard-view">
-    <n-space vertical :size="24">
-      <div class="dashboard-header">
-        <h1 class="page-title">{{ t('navigation.dashboard') }}</h1>
-      </div>
 
-      <n-card>
-        <SearchAndFilter />
-      </n-card>
 
-      <n-grid x-gap="24" y-gap="24" cols="12">
-        <n-grid-item span="8">
-          <n-card title="Mods List">
-            <ModList />
-          </n-card>
-        </n-grid-item>
+  <TitledPage>
+    <template #title>
+      <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
+    </template>
+    <n-card>
+      <SearchAndFilter/>
+    </n-card>
 
-        <n-grid-item span="4">
-          <n-card title="Mod Details">
-            <ModDetails />
-          </n-card>
-        </n-grid-item>
-      </n-grid>
-    </n-space>
-  </div>
+    <n-grid cols="12" x-gap="24" y-gap="24">
+      <n-grid-item span="8">
+        <n-card title="Mods List">
+          <ModList/>
+        </n-card>
+      </n-grid-item>
+
+      <n-grid-item span="4">
+        <n-card title="Mod Details">
+          <ModDetails :selectedMod="currentMod" @remove="onRemove" @toggle="onToggle" @update="onUpdate"/>
+        </n-card>
+      </n-grid-item>
+    </n-grid>
+  </TitledPage>
+
 </template>
 
-<script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { NCard, NSpace, NGrid, NGridItem } from "naive-ui";
+<script lang="ts" setup>
 import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
 import ModList from "../../components/dashboard/ModList.vue";
+import TitledPage from "../../components/core/TitledPage.vue";
+import type {BarotraumaMod} from '../../proto/mods'
+import {onMounted, ref} from "vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";
+import {list_enabled_mods, list_installed_mods, list_mod_lists} from "../../invokes.ts";
 
-const { t } = useI18n();
+
+onMounted(async () => {
+  await Promise.all([
+    list_installed_mods(),
+    list_enabled_mods(),
+    list_mod_lists()
+  ])
+})
+
+// 假设这是当前选中的 mod
+const currentMod = ref<BarotraumaMod | null>(null)
+
+// 事件处理
+const onToggle = (mod: BarotraumaMod) => { /* ... */
+}
+const onUpdate = (mod: BarotraumaMod) => { /* ... */
+}
+const onRemove = (mod: BarotraumaMod) => { /* ... */
+}
 </script>
 
-<style scoped>
-.dashboard-view {
-  flex: 1;
-  overflow-y: auto;
-}
 
-.dashboard-header {
-  margin-bottom: 24px;
-}
-
-.page-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--n-color-text-primary);
-  margin: 0;
-}
-
-:deep(.n-card) {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-:deep(.n-card-header) {
-  font-weight: 600;
-  font-size: 16px;
-}
-</style>
