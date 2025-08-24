@@ -9,17 +9,17 @@
               <n-icon size="20">
                 <GameController/>
               </n-icon>
-              <n-text>Game Mod Manager</n-text>
+              <n-text>{{ $t('version.title') }}</n-text>
             </n-space>
           </template>
           <n-descriptions :column="1" label-placement="left" size="small">
-            <n-descriptions-item label="Version">
+            <n-descriptions-item :label="$t('version.version')">
               <n-text v-text="build_info.version"></n-text>
             </n-descriptions-item>
-            <n-descriptions-item label="Commit">
+            <n-descriptions-item :label="$t('version.commit')">
               <n-text v-text="build_info.commit"></n-text>
             </n-descriptions-item>
-            <n-descriptions-item label="Release Date">
+            <n-descriptions-item :label="$t('version.release_date')">
               <n-text v-text="build_info.date"></n-text>
             </n-descriptions-item>
           </n-descriptions>
@@ -34,12 +34,12 @@
               <n-icon size="20">
                 <InformationCircle/>
               </n-icon>
-              <n-text>About</n-text>
+              <n-text>{{ $t('version.about') }}</n-text>
             </n-space>
           </template>
           <n-space vertical>
-            <n-text>A modern, user-friendly mod manager for Barotrauma game.</n-text>
-            <n-text>Built with Vue.js and Tauri for cross-platform compatibility.</n-text>
+            <n-text>{{ $t('version.about_text_1') }}</n-text>
+            <n-text>{{ $t('version.about_text_2') }}</n-text>
           </n-space>
         </n-card>
       </n-gi>
@@ -52,18 +52,21 @@
               <n-icon size="20">
                 <Link/>
               </n-icon>
-              <n-text>Links & Support</n-text>
+              <n-text>{{ $t('version.links') }}</n-text>
             </n-space>
           </template>
           <n-space vertical>
+            <n-button href="https://github.com/Whth/BaroBaro" tag="a" text type="primary">
+              {{ $t('version.repository') }}
+            </n-button>
             <n-button href="https://github.com/Whth/BaroBaro/blob/master/README.md" tag="a" text type="primary">
-              Documentation
+              {{ $t('version.documentation') }}
             </n-button>
             <n-button href="https://github.com/Whth/BaroBaro/discussions" tag="a" text type="primary">
-              Support
+              {{ $t('version.support') }}
             </n-button>
             <n-button href="https://github.com/Whth/BaroBaro/issues" tag="a" text type="primary">
-              Report Issues
+              {{ $t('version.report_issues') }}
             </n-button>
           </n-space>
         </n-card>
@@ -77,12 +80,13 @@
               <n-icon size="20">
                 <DocumentText/>
               </n-icon>
-              <n-text>Copyright</n-text>
+              <n-text>{{ $t('version.copyright') }}</n-text>
             </n-space>
           </template>
           <n-space vertical>
-            <n-text>2025 Game Mod Manager. All rights reserved.</n-text>
-            <n-text depth="3">This software is provided as-is without warranty.</n-text>
+            <n-text>{{ $t('version.copyright_text') }}</n-text>
+            <n-text>{{ $t('version.license') }}</n-text>
+            <n-text depth="3">{{ $t('version.disclaimer') }}</n-text>
           </n-space>
         </n-card>
       </n-gi>
@@ -91,20 +95,15 @@
 </template>
 
 <script lang="ts" setup>
-import {
-	DocumentText,
-	GameController,
-	InformationCircle,
-	Link,
-} from "@vicons/ionicons5";
-import { get_version } from "@/invokes.ts";
-import { onMounted, type Ref, ref } from "vue";
-import { BuildInfo } from "../../proto/build_info.ts";
+import {DocumentText, GameController, InformationCircle, Link,} from "@vicons/ionicons5";
+import {get_version} from "@/invokes.ts";
+import {onMounted, type Ref, ref} from "vue";
+import {BuildInfo} from "../../proto/build_info.ts";
 
 const build_info: Ref<BuildInfo> = ref(BuildInfo.create());
 
 onMounted(async () => {
-	build_info.value = await get_version();
+  build_info.value = await get_version();
 });
 </script>
 

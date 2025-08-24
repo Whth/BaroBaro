@@ -1,7 +1,7 @@
 {
   "name": "barobaro",
   "description": "A dedicated Mod Manager for Barotrauma, base on steamcmd.",
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0",
   "author": {
     "name": "Whth",
     "email": "zettainspector@foxmail.com"
