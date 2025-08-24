@@ -61,108 +61,116 @@
 </template>
 
 <script lang="ts" setup>
-import {config, refresh_config, save_config} from "../../invokes.ts";
-import {Level} from "../../proto/config.ts";
-import {computed, onMounted, ref} from "vue";
-import {useModManager} from "../../composables/useModManager";
-import {message, open} from "@tauri-apps/plugin-dialog";
+import { config, refresh_config, save_config } from "../../invokes.ts";
+import { Level } from "../../proto/config.ts";
+import { computed, onMounted, ref } from "vue";
+import { useModManager } from "../../composables/useModManager";
+import { message, open } from "@tauri-apps/plugin-dialog";
 
-const {config: modConfig, updateGameHome, updateSteamCmdHome} = useModManager();
+const {
+	config: modConfig,
+	updateGameHome,
+	updateSteamCmdHome,
+} = useModManager();
 
 const loglevel = computed({
-  get: () => config.value.loglevel,
-  set: (newValue) => {
-    if (newValue === Level.UNRECOGNIZED) {
-      newValue = Level.Info
-    }
-    config.value.loglevel = newValue
-  }
-})
+	get: () => config.value.loglevel,
+	set: (newValue) => {
+		if (newValue === Level.UNRECOGNIZED) {
+			newValue = Level.Info;
+		}
+		config.value.loglevel = newValue;
+	},
+});
 
 const logLevelOptions = [
-  {label: 'Trace', value: Level.Trace},
-  {label: 'Debug', value: Level.Debug},
-  {label: 'Info', value: Level.Info},
-  {label: 'Warning', value: Level.Warn},
-  {label: 'Error', value: Level.Error}
+	{ label: "Trace", value: Level.Trace },
+	{ label: "Debug", value: Level.Debug },
+	{ label: "Info", value: Level.Info },
+	{ label: "Warning", value: Level.Warn },
+	{ label: "Error", value: Level.Error },
 ];
 
 const settings = ref({
-  gamePath: "",
-  steamcmdPath: "",
-  steamcmdUsername: "",
-  steamcmdPassword: "",
-  steamcmdParallel: 1,
+	gamePath: "",
+	steamcmdPath: "",
+	steamcmdUsername: "",
+	steamcmdPassword: "",
+	steamcmdParallel: 1,
 });
 
 const showError = async (title: string, error: any) => {
-  console.error(title, error);
-  await message(`Error: ${error.message || error}`, {title, kind: "error"});
+	console.error(title, error);
+	await message(`Error: ${error.message || error}`, { title, kind: "error" });
 };
 
 const browseGamePath = async () => {
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select Barotrauma Game Installation Path",
-    });
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select Barotrauma Game Installation Path",
+		});
 
-    if (selected) {
-      settings.value.gamePath = selected as string;
-      await updateGameHome(selected as string);
-    }
-  } catch (error) {
-    await showError("Failed to select game path", error);
-  }
+		if (selected) {
+			settings.value.gamePath = selected as string;
+			await updateGameHome(selected as string);
+		}
+	} catch (error) {
+		await showError("Failed to select game path", error);
+	}
 };
 
 const browseSteamCmdPath = async () => {
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select SteamCMD Path",
-    });
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select SteamCMD Path",
+		});
 
-    if (selected) {
-      settings.value.steamcmdPath = selected as string;
-      await updateSteamCmdHome(selected as string);
-    }
-  } catch (error) {
-    await showError("Failed to select SteamCMD path", error);
-  }
+		if (selected) {
+			settings.value.steamcmdPath = selected as string;
+			await updateSteamCmdHome(selected as string);
+		}
+	} catch (error) {
+		await showError("Failed to select SteamCMD path", error);
+	}
 };
 
 const saveAllSettings = async () => {
-  try {
-    // Save general config
-    await save_config();
+	try {
+		// Save general config
+		await save_config();
 
-    // Save paths settings
-    if (settings.value.gamePath) await updateGameHome(settings.value.gamePath);
-    if (settings.value.steamcmdPath) await updateSteamCmdHome(settings.value.steamcmdPath);
+		// Save paths settings
+		if (settings.value.gamePath) await updateGameHome(settings.value.gamePath);
+		if (settings.value.steamcmdPath)
+			await updateSteamCmdHome(settings.value.steamcmdPath);
 
-    // TODO: Save SteamCMD config if needed
-    console.log("All settings to save:", settings.value);
+		// TODO: Save SteamCMD config if needed
+		console.log("All settings to save:", settings.value);
 
-    await message("All settings saved successfully!", {title: "Success", kind: "info"});
-  } catch (error) {
-    await showError("Failed to save settings", error);
-  }
+		await message("All settings saved successfully!", {
+			title: "Success",
+			kind: "info",
+		});
+	} catch (error) {
+		await showError("Failed to save settings", error);
+	}
 };
 
 onMounted(() => {
-  refresh_config();
-  if (modConfig.value) {
-    settings.value.gamePath = modConfig.value.gameHome;
-    settings.value.steamcmdPath = modConfig.value.steamcmdHome;
-    if (modConfig.value.steamcmdConfig) {
-      settings.value.steamcmdUsername = modConfig.value.steamcmdConfig.username;
-      settings.value.steamcmdPassword = modConfig.value.steamcmdConfig.password;
-      settings.value.steamcmdParallel = modConfig.value.steamcmdConfig.parallel;
-    }
-  }
+	refresh_config();
+	if (modConfig.value) {
+		settings.value.gamePath = modConfig.value.gameHome;
+		settings.value.steamcmdPath = modConfig.value.steamcmdHome;
+		if (modConfig.value.steamcmdConfig) {
+			settings.value.steamcmdUsername = modConfig.value.steamcmdConfig.username;
+			settings.value.steamcmdPassword = modConfig.value.steamcmdConfig.password;
+			settings.value.steamcmdParallel = modConfig.value.steamcmdConfig.parallel;
+		}
+	}
 });
 </script>
 

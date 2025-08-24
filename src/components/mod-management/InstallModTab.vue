@@ -53,84 +53,88 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
-import {ArchiveOutline} from '@vicons/ionicons5'
-import type {UploadFileInfo} from 'naive-ui'
-import {refreshInstalledMods} from "../../composables/useModManager"
+import { computed, ref } from "vue";
+import { ArchiveOutline } from "@vicons/ionicons5";
+import type { UploadFileInfo } from "naive-ui";
+import { refreshInstalledMods } from "../../composables/useModManager";
 
 // 响应式数据
-const fileList = ref<UploadFileInfo[]>([])
-const isInstalling = ref(false)
+const fileList = ref<UploadFileInfo[]>([]);
+const isInstalling = ref(false);
 
 // 文件表格数据
 const fileTableData = computed(() => {
-  return fileList.value.map(file => ({
-    name: file.name,
-    size: file.file ? formatFileSize(file.file.size) : 'Unknown',
-    file: file.file
-  }))
-})
+	return fileList.value.map((file) => ({
+		name: file.name,
+		size: file.file ? formatFileSize(file.file.size) : "Unknown",
+		file: file.file,
+	}));
+});
 
 // 表格列配置
 const columns = [
-  {
-    title: 'File Name',
-    key: 'name',
-    width: 200
-  },
-  {
-    title: 'Size',
-    key: 'size',
-    width: 100
-  }
-]
+	{
+		title: "File Name",
+		key: "name",
+		width: 200,
+	},
+	{
+		title: "Size",
+		key: "size",
+		width: 100,
+	},
+];
 
 // 处理文件变化
-const handleFileChange = ({fileList: newFileList}: { fileList: UploadFileInfo[] }) => {
-  fileList.value = newFileList
-}
+const handleFileChange = ({
+	fileList: newFileList,
+}: {
+	fileList: UploadFileInfo[];
+}) => {
+	fileList.value = newFileList;
+};
 
 // 清空选择
 const clearSelection = () => {
-  fileList.value = []
-}
+	fileList.value = [];
+};
 
 // 安装mods
 const installMods = async () => {
-  if (fileList.value.length === 0) return
+	if (fileList.value.length === 0) return;
 
-  isInstalling.value = true
-  try {
-    // 获取实际文件对象
-    const files = fileList.value
-        .map(item => item.file)
-        .filter((file): file is File => file !== undefined)
+	isInstalling.value = true;
+	try {
+		// 获取实际文件对象
+		const files = fileList.value
+			.map((item) => item.file)
+			.filter((file): file is File => file !== undefined);
 
-    window.$message?.info(`Installing ${files.length} mod(s)`)
+		window.$message?.info(`Installing ${files.length} mod(s)`);
 
-    // 模拟安装过程
-    await new Promise(resolve => setTimeout(resolve, 2000))
+		// 模拟安装过程
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    window.$message?.success('Mods installed successfully!')
-    await refreshInstalledMods()
+		window.$message?.success("Mods installed successfully!");
+		await refreshInstalledMods();
 
-    // 清空选择
-    clearSelection()
-  } catch (error) {
-    window.$message?.error('Failed to install mods')
-  } finally {
-    isInstalling.value = false
-  }
-}
+		// 清空选择
+		clearSelection();
+	} catch (error) {
+		window.$message?.error("Failed to install mods");
+	} finally {
+		isInstalling.value = false;
+	}
+};
 
 // 格式化文件大小
 const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return "0 Bytes"
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-}
+	if (bytes === 0) return "0 Bytes";
+	const k = 1024;
+	const sizes = ["Bytes", "KB", "MB", "GB"];
+	const i = Math.floor(Math.log(bytes) / Math.log(k));
+	return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+};
 </script>
 
 <style scoped>

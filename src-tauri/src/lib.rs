@@ -4,7 +4,11 @@ mod once;
 use configuration::{Config, Level};
 
 use commands::*;
+pub(crate) mod rust_built_info {
+    include!(concat!(env!("OUT_DIR"), "/built.rs"));
+}
 
+pub(crate) mod build_info;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() -> Result<(), String> {
     let conf: Config = read_config()?;
@@ -21,7 +25,8 @@ pub fn run() -> Result<(), String> {
             download_mods,
             list_mod_lists,
             get_background_image,
-            get_default_config
+            get_default_config,
+            get_version
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

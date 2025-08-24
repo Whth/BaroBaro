@@ -19,22 +19,22 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import InstallModTab from "./InstallModTab.vue"
-import DownloadModTab from "./DownloadModTab.vue"
-import UpdateModTab from "./UpdateModTab.vue"
-import RemoveModTab from "./RemoveModTab.vue"
+import { ref } from "vue";
+import InstallModTab from "./InstallModTab.vue";
+import DownloadModTab from "./DownloadModTab.vue";
+import UpdateModTab from "./UpdateModTab.vue";
+import RemoveModTab from "./RemoveModTab.vue";
 
 // 定义标签页配置
 const tabs = [
-  {id: "install", name: "Install Mod", component: InstallModTab},
-  {id: "download", name: "Download Mod", component: DownloadModTab},
-  {id: "update", name: "Update Mod", component: UpdateModTab},
-  {id: "remove", name: "Remove Mod", component: RemoveModTab},
-]
+	{ id: "install", name: "Install Mod", component: InstallModTab },
+	{ id: "download", name: "Download Mod", component: DownloadModTab },
+	{ id: "update", name: "Update Mod", component: UpdateModTab },
+	{ id: "remove", name: "Remove Mod", component: RemoveModTab },
+];
 
 // 当前激活的标签页
-const activeTab = ref("install")
+const activeTab = ref("install");
 </script>
 
 <style scoped>

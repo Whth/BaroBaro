@@ -80,80 +80,86 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
-import {SearchOutline} from '@vicons/ionicons5'
-import {installed_mod, refreshInstalledMods,} from "../../composables/useModManager"
+import { computed, ref } from "vue";
+import { SearchOutline } from "@vicons/ionicons5";
+import {
+	installed_mod,
+	refreshInstalledMods,
+} from "../../composables/useModManager";
 
 // 响应式数据
-const searchQuery = ref("")
-const selectedMods = ref<string[]>([])
+const searchQuery = ref("");
+const selectedMods = ref<string[]>([]);
 
 // 过滤后的mods
 const filteredMods = computed(() => {
-  if (!searchQuery.value) return installed_mod.value
+	if (!searchQuery.value) return installed_mod.value;
 
-  const query = searchQuery.value.toLowerCase()
-  return installed_mod.value.filter(mod =>
-      mod.name.toLowerCase().includes(query) ||
-      mod.steamWorkshopId.toLowerCase().includes(query)
-  )
-})
+	const query = searchQuery.value.toLowerCase();
+	return installed_mod.value.filter(
+		(mod) =>
+			mod.name.toLowerCase().includes(query) ||
+			mod.steamWorkshopId.toLowerCase().includes(query),
+	);
+});
 
 // 切换mod选择状态
 const toggleModSelection = (modId: string) => {
-  const index = selectedMods.value.indexOf(modId)
-  if (index > -1) {
-    selectedMods.value.splice(index, 1)
-  } else {
-    selectedMods.value.push(modId)
-  }
-}
+	const index = selectedMods.value.indexOf(modId);
+	if (index > -1) {
+		selectedMods.value.splice(index, 1);
+	} else {
+		selectedMods.value.push(modId);
+	}
+};
 
 // 删除单个mod
 const removeMod = async (modId: string) => {
-  const mod = installed_mod.value.find(m => m.steamWorkshopId === modId)
-  if (!mod) return
+	const mod = installed_mod.value.find((m) => m.steamWorkshopId === modId);
+	if (!mod) return;
 
-  const confirmed = await window.$dialog?.warning({
-    title: 'Confirm Removal',
-    content: `Are you sure you want to remove "${mod.name}"?`,
-    positiveText: 'Remove',
-    negativeText: 'Cancel'
-  })
+	const confirmed = await window.$dialog?.warning({
+		title: "Confirm Removal",
+		content: `Are you sure you want to remove "${mod.name}"?`,
+		positiveText: "Remove",
+		negativeText: "Cancel",
+	});
 
-  if (confirmed) {
-    try {
-      // 模拟删除操作
-      window.$message?.success(`Removed ${mod.name} successfully!`)
-      await refreshInstalledMods()
-    } catch (error) {
-      window.$message?.error(`Failed to remove ${mod.name}`)
-    }
-  }
-}
+	if (confirmed) {
+		try {
+			// 模拟删除操作
+			window.$message?.success(`Removed ${mod.name} successfully!`);
+			await refreshInstalledMods();
+		} catch (error) {
+			window.$message?.error(`Failed to remove ${mod.name}`);
+		}
+	}
+};
 
 // 删除选中的mods
 const removeSelectedMods = async () => {
-  if (selectedMods.value.length === 0) return
+	if (selectedMods.value.length === 0) return;
 
-  const confirmed = await window.$dialog?.warning({
-    title: 'Confirm Bulk Removal',
-    content: `Are you sure you want to remove ${selectedMods.value.length} mod(s)?`,
-    positiveText: 'Remove All',
-    negativeText: 'Cancel'
-  })
+	const confirmed = await window.$dialog?.warning({
+		title: "Confirm Bulk Removal",
+		content: `Are you sure you want to remove ${selectedMods.value.length} mod(s)?`,
+		positiveText: "Remove All",
+		negativeText: "Cancel",
+	});
 
-  if (confirmed) {
-    try {
-      // 模拟批量删除操作
-      window.$message?.success(`Removed ${selectedMods.value.length} mod(s) successfully!`)
-      await refreshInstalledMods()
-      selectedMods.value = [] // 清空选择
-    } catch (error) {
-      window.$message?.error('Failed to remove mods')
-    }
-  }
-}
+	if (confirmed) {
+		try {
+			// 模拟批量删除操作
+			window.$message?.success(
+				`Removed ${selectedMods.value.length} mod(s) successfully!`,
+			);
+			await refreshInstalledMods();
+			selectedMods.value = []; // 清空选择
+		} catch (error) {
+			window.$message?.error("Failed to remove mods");
+		}
+	}
+};
 </script>
 
 <style scoped>

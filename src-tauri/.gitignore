@@ -6,3 +6,4 @@
 # will have schema files for capabilities auto-completion
 /gen/schemas
 proto/*
+src/build_info.rs

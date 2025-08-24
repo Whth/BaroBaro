@@ -1,16 +1,22 @@
 {
   "name": "barobaro",
   "description": "A dedicated Mod Manager for Barotrauma, base on steamcmd.",
+  "license": "LGPL-3.0-or-later",
+  "author": {
+    "name": "Whth",
+    "email": "zettainspector@foxmail.com"
+  },
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "gen": "node scripts/gen_proto.cjs",
-    "dev": "pnpm gen && vite ",
-    "fmt": "biome format src --write  --vcs-use-ignore-file=true && cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "sync": "node scripts/sync_version.cjs",
+    "dev": "pnpm gen && pnpm sync && vite",
+    "fmt": "biome format src --write --vcs-use-ignore-file=true && cargo fmt --manifest-path src-tauri/Cargo.toml",
     "lint": "biome lint src --write --vcs-use-ignore-file=true",
-    "build": "pnpm gen && vue-tsc --noEmit && vite build",
-    "preview": "pnpm gen && vite preview",
+    "build": "pnpm gen && pnpm sync && vue-tsc --noEmit && vite build",
+    "preview": "pnpm gen && pnpm sync && vite preview",
     "tauri": "tauri"
   },
   "dependencies": {

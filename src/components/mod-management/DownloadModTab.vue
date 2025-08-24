@@ -95,108 +95,108 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {SearchOutline} from '@vicons/ionicons5'
-import {downloadMods} from "../../composables/useModManager"
-import type {SelectOption} from 'naive-ui'
+import { ref } from "vue";
+import { SearchOutline } from "@vicons/ionicons5";
+import { downloadMods } from "../../composables/useModManager";
+import type { SelectOption } from "naive-ui";
 
 // 定义接口
 interface Mod {
-  id: string
-  name: string
-  version: string
-  author: string
-  description: string
-  downloadCount: number
-  category: string
-  rating: number
-  downloading?: boolean
+	id: string;
+	name: string;
+	version: string;
+	author: string;
+	description: string;
+	downloadCount: number;
+	category: string;
+	rating: number;
+	downloading?: boolean;
 }
 
 // 响应式数据
-const searchQuery = ref("")
-const categoryFilter = ref("all")
-const sortBy = ref("popular")
-const loading = ref(false)
+const searchQuery = ref("");
+const categoryFilter = ref("all");
+const sortBy = ref("popular");
+const loading = ref(false);
 
 // 下拉选项
 const categoryOptions: SelectOption[] = [
-  {label: 'All Categories', value: 'all'},
-  {label: 'Graphics', value: 'graphics'},
-  {label: 'Audio', value: 'audio'},
-  {label: 'Gameplay', value: 'gameplay'},
-  {label: 'Utility', value: 'utility'}
-]
+	{ label: "All Categories", value: "all" },
+	{ label: "Graphics", value: "graphics" },
+	{ label: "Audio", value: "audio" },
+	{ label: "Gameplay", value: "gameplay" },
+	{ label: "Utility", value: "utility" },
+];
 
 const sortOptions: SelectOption[] = [
-  {label: 'Most Popular', value: 'popular'},
-  {label: 'Newest', value: 'newest'},
-  {label: 'Highest Rated', value: 'rating'}
-]
+	{ label: "Most Popular", value: "popular" },
+	{ label: "Newest", value: "newest" },
+	{ label: "Highest Rated", value: "rating" },
+];
 
 // 模拟数据
 const mods = ref<Mod[]>([
-  {
-    id: "1",
-    name: "Enhanced Graphics Pack",
-    version: "2.1.0",
-    author: "VisualMaster",
-    description: "High resolution textures and improved lighting effects",
-    downloadCount: 125000,
-    category: "graphics",
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    name: "Immersive Soundscapes",
-    version: "1.5.3",
-    author: "AudioWizard",
-    description: "Realistic ambient sounds and improved audio effects",
-    downloadCount: 87500,
-    category: "audio",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    name: "Advanced Crafting System",
-    version: "3.0.1",
-    author: "CraftExpert",
-    description: "Revamped crafting mechanics with new recipes and items",
-    downloadCount: 210000,
-    category: "gameplay",
-    rating: 4.9,
-  },
-])
+	{
+		id: "1",
+		name: "Enhanced Graphics Pack",
+		version: "2.1.0",
+		author: "VisualMaster",
+		description: "High resolution textures and improved lighting effects",
+		downloadCount: 125000,
+		category: "graphics",
+		rating: 4.8,
+	},
+	{
+		id: "2",
+		name: "Immersive Soundscapes",
+		version: "1.5.3",
+		author: "AudioWizard",
+		description: "Realistic ambient sounds and improved audio effects",
+		downloadCount: 87500,
+		category: "audio",
+		rating: 4.6,
+	},
+	{
+		id: "3",
+		name: "Advanced Crafting System",
+		version: "3.0.1",
+		author: "CraftExpert",
+		description: "Revamped crafting mechanics with new recipes and items",
+		downloadCount: 210000,
+		category: "gameplay",
+		rating: 4.9,
+	},
+]);
 
 // 下载mod
 const downloadMod = async (modId: string) => {
-  const mod = mods.value.find(m => m.id === modId)
-  if (!mod) return
+	const mod = mods.value.find((m) => m.id === modId);
+	if (!mod) return;
 
-  mod.downloading = true
-  try {
-    // 调用下载函数
-    await downloadMods([parseInt(modId, 10)])
-    window.$message?.success(`Downloaded ${mod.name} successfully!`)
-  } catch (error) {
-    window.$message?.error(`Failed to download ${mod.name}`)
-  } finally {
-    mod.downloading = false
-  }
-}
+	mod.downloading = true;
+	try {
+		// 调用下载函数
+		await downloadMods([parseInt(modId, 10)]);
+		window.$message?.success(`Downloaded ${mod.name} successfully!`);
+	} catch (error) {
+		window.$message?.error(`Failed to download ${mod.name}`);
+	} finally {
+		mod.downloading = false;
+	}
+};
 
 // 格式化数字显示
 const formatNumber = (num: number) => {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
-  return num.toString()
-}
+	if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+	if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+	return num.toString();
+};
 
 // 模拟加载
-loading.value = true
+loading.value = true;
 setTimeout(() => {
-  loading.value = false
-}, 1000)
+	loading.value = false;
+}, 1000);
 </script>
 
 <style scoped>

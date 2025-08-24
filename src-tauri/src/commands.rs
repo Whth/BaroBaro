@@ -15,8 +15,9 @@ use std::str::FromStr;
 use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
+use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
 use logger::{debug, info};
 use toml::{from_str, to_string_pretty};
 
@@ -46,7 +47,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
         GLOBAL_CONFIG_FILE.clone(),
         to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
-        .map_err(|e| format!("{}, failed to write config file.", e))
+    .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
 /// Reads the configuration from the global config file.
@@ -221,5 +222,16 @@ pub fn get_background_image() -> Result<Option<String>, String> {
     } else {
         info!("No background image configured or image does not exist.");
         Ok(None)
+    }
+}
+
+/// Returns the version information of the application.
+#[tauri::command]
+pub fn get_version() -> BuildInfo {
+    BuildInfo {
+        version: crate::rust_built_info::PKG_VERSION.to_string(),
+        commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7]
+            .into(),
+        date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
 }

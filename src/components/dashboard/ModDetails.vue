@@ -54,38 +54,38 @@
 </template>
 
 <script lang="ts" setup>
-import type {BarotraumaMod} from "../../proto/mods"
+import type { BarotraumaMod } from "../../proto/mods";
 
 // Props (接收父组件传入的选中mod)
 const props = defineProps<{
-  selectedMod: BarotraumaMod | null
-}>()
+	selectedMod: BarotraumaMod | null;
+}>();
 
 // Emits (向父组件发送事件)
 const emit = defineEmits<{
-  (e: 'toggle', mod: BarotraumaMod): void
-  (e: 'update', mod: BarotraumaMod): void
-  (e: 'remove', mod: BarotraumaMod): void
-}>()
+	(e: "toggle", mod: BarotraumaMod): void;
+	(e: "update", mod: BarotraumaMod): void;
+	(e: "remove", mod: BarotraumaMod): void;
+}>();
 
 // 操作函数
 const toggleMod = () => {
-  if (props.selectedMod) {
-    emit('toggle', props.selectedMod)
-  }
-}
+	if (props.selectedMod) {
+		emit("toggle", props.selectedMod);
+	}
+};
 
 const updateMod = () => {
-  if (props.selectedMod) {
-    emit('update', props.selectedMod)
-  }
-}
+	if (props.selectedMod) {
+		emit("update", props.selectedMod);
+	}
+};
 
 const removeMod = () => {
-  if (props.selectedMod) {
-    emit('remove', props.selectedMod)
-  }
-}
+	if (props.selectedMod) {
+		emit("remove", props.selectedMod);
+	}
+};
 </script>
 
 <style scoped>

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+
+package build_info;
+
+
+message BuildInfo {
+  string version = 1;
+  string commit = 2;
+  string date = 3;
+}
