@@ -8,7 +8,7 @@ export const config: Ref<Config> = ref(Config.create());
 export const installed_mod: Ref<BarotraumaMod[]> = ref([]);
 export const mod_lists: Ref<ModList[]> = ref([]);
 
-export const enabled_mods: Ref<ModList[]> = ref([]);
+export const enabled_mods: Ref<BarotraumaMod[]> = ref([]);
 
 export async function refresh_config() {
     config.value = await invoke("read_config").then((data) =>
