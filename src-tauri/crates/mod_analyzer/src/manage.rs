@@ -1,4 +1,5 @@
-use crate::{BarotraumaMod, ModList, hash_directory};
+use crate::config_analyzer::BaroConfig;
+use crate::{hash_directory, BarotraumaMod, ModList};
 use constants::BarotraumaHome;
 use std::path::PathBuf;
 use walkdir::WalkDir;
@@ -69,6 +70,21 @@ impl BarotraumaModManager {
         if let Some(ref game_home) = self.game_home {
             self.mods = BarotraumaModManager::discover_mods(&game_home.mod_dir());
             Ok(self)
+        } else {
+            Err("Game home not set".to_string())
+        }
+    }
+
+
+    pub fn enabled_mods(&self) -> Result<Vec<BarotraumaMod>, String> {
+        if let Some(ref game_home) = self.game_home {
+            let conf: BaroConfig = BaroConfig::from_file(game_home.player_config_file()).map_err(|e| format!("{e}, failed to parse config."))?;
+
+            Ok(conf.mods().into_iter()
+                .map(|mod_entry| BarotraumaMod::from_path(mod_entry.path()))
+                .filter_map(Result::ok)
+                .collect::<Vec<_>>()
+            )
         } else {
             Err("Game home not set".to_string())
         }

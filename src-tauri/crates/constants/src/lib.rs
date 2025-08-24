@@ -14,6 +14,7 @@ pub const APP_NAME: &str = "BaroBaro";
 /// The default configuration file name used by the application.
 pub const CONFIG_FILE: &str = "BaroBaro.toml";
 
+
 /// Returns the path to the user's config directory based on the operating system.
 ///
 /// |Platform | Value                                 | Example                          |
@@ -54,6 +55,8 @@ impl BarotraumaHome {
 
     pub const MOD_LIST_DIR: &'static str = "ModLists";
 
+    pub const PLAYER_CONFIG: &'static str = "config_player.xml";
+
     pub fn new(home_dir: PathBuf) -> BarotraumaHome {
         BarotraumaHome {
             home_dir: home_dir.clone(),
@@ -78,5 +81,11 @@ impl BarotraumaHome {
 
     pub fn home_dir(&self) -> &PathBuf {
         &self.home_dir
+    }
+
+
+    /// Returns the path to the player configuration file.
+    pub fn player_config_file(&self) -> PathBuf {
+        self.home_dir.join(Self::PLAYER_CONFIG)
     }
 }
