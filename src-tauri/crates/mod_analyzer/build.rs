@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "mods.ModList",
                 "#[derive(serde::Serialize, serde::Deserialize)]",
             ),
-            ("mods.BarotraumaMod", "#[derive(serde::Serialize)]"),
+            ("mods.BarotraumaMod", "#[derive(serde::Serialize)]\n#[serde(rename_all = \"camelCase\")]"),
         ],
         &vec![("mods.FileElement.file", "#[serde(rename = \"@file\")]")],
     )
