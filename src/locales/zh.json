@@ -170,5 +170,12 @@
     "copyright_text": "© 2025 BaroBaro",
     "license": "源代码基于 LGPL-3.0 开源",
     "disclaimer": "本软件按“原样”提供，不提供任何担保。"
+  },
+  "modCard": {
+    "version": "版本",
+    "gameVersion": "游戏版本",
+    "steamWorkshopId": "Steam 创意工坊 ID",
+    "expectedHash": "预期哈希值",
+    "homeDir": "本地目录"
   }
 }

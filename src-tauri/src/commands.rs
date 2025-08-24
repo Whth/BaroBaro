@@ -254,3 +254,4 @@ pub fn get_build_info() -> BuildInfo {
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
 }
+

@@ -297,6 +297,7 @@ dependencies = [
  "logger",
  "mod_analyzer",
  "once_cell",
+ "open",
  "prost",
  "serde",
  "serde_json",
