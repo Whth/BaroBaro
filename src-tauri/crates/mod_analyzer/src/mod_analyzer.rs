@@ -1,7 +1,7 @@
 use crate::mods::{BarotraumaMod, FileElement, FileGroup};
 use constants::MOD_FILELIST_FILE;
 use quick_xml::de::from_str;
-use serde::{Deserialize, Deserializer, de::MapAccess};
+use serde::{de::MapAccess, Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -92,7 +92,7 @@ impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
             expected_hash: expected_hash
                 .ok_or_else(|| serde::de::Error::missing_field("expectedhash"))?,
             file_groups,
-            home_dir: None,
+            ..BarotraumaMod::default()
         })
     }
 }
@@ -224,7 +224,7 @@ mod tests {
         assert_eq!(mod_obj.name, "BaroTraumatic");
         assert_eq!(mod_obj.mod_version, "1.2.81");
         assert_eq!(mod_obj.core_package, false);
-        assert_eq!(mod_obj.steam_workshop_id, "2518816103");
+        assert_eq!(mod_obj.steam_workshop_id, 2518816103);
         assert_eq!(mod_obj.game_version, "1.9.8.0");
         assert_eq!(mod_obj.expected_hash, "9A54ACF2E7EBC95726A72AE966EF5F8D");
 
@@ -300,9 +300,9 @@ mod tests {
             "Other",
             "Sounds",
         ]
-        .iter()
-        .map(|s| s.to_string())
-        .collect();
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
 
         assert_eq!(tags, expected_tags);
     }

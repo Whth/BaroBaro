@@ -11,3 +11,5 @@ pub use hash::hash_directory;
 pub use mods::*;
 
 pub use manage::BarotraumaModManager;
+
+pub use config_analyzer::{BaroConfig, ModEntry};

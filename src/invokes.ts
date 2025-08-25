@@ -50,3 +50,26 @@ export async function list_enabled_mods() {
     console.log(`Found ${enabled_mods.value.length} enabled mods`);
 }
 
+
+// Retrieve metadata for enabled mods
+export async function retrieve_mod_metadata() {
+    installed_mod.value = await invoke("retrieve_mod_metadata", {mods: installed_mod.value});
+
+    const mapping = new Map(enabled_mods.value.map(
+        (mod) => [mod.steamWorkshopId, mod]
+    ));
+    installed_mod.value.forEach(
+        (mod) => {
+            const enabledMod = mapping.get(mod.steamWorkshopId);
+            if (enabledMod !== undefined) {
+                enabledMod.creator = mod.creator;
+                enabledMod.description = mod.description;
+                enabledMod.size = mod.size;
+                enabledMod.lastModified = mod.lastModified;
+                enabledMod.likes = mod.likes;
+                enabledMod.previewImage = mod.previewImage;
+                enabledMod.subscribers = mod.subscribers;
+            }
+        }
+    )
+}

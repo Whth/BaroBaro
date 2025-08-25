@@ -8,6 +8,7 @@
 //! typically in the OS-specific roaming/app data directory.
 
 use configuration::Config;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -16,9 +17,10 @@ use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::build_info::BuildInfo;
-use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER};
+use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER, STEAM_WORKSHOP_CLIENT};
 use base64::{engine::general_purpose, Engine as _};
 use logger::{debug, info};
+use steam_api::WorkshopItem;
 use toml::{from_str, to_string_pretty};
 
 /// Writes the given configuration to disk in TOML format.
@@ -122,6 +124,38 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         .iter()
         .map(|baro_mod| baro_mod.clone())
         .collect::<Vec<_>>())
+}
+
+
+#[tauri::command]
+pub async fn retrieve_mod_metadata(mods: Vec<BarotraumaMod>) -> Result<Vec<BarotraumaMod>, String> {
+    let retrieved: Vec<WorkshopItem> = STEAM_WORKSHOP_CLIENT.read()
+        .await.get_items(&mods.iter().map(|baro_mod| baro_mod.steam_workshop_id).collect::<Vec<u64>>())
+        .await.map_err(|e| format!("{}, failed to retrieve mod metadata.", e))?;
+
+    let mut mapping = mods.into_iter()
+        .map(
+            |baro_mod|
+                (baro_mod.steam_workshop_id, baro_mod)
+        )
+        .collect::<HashMap<u64, BarotraumaMod>>();
+    retrieved.into_iter()
+        .for_each(
+            |item|
+                if let Some(baro_mod) = mapping.get_mut(&item.published_file_id) {
+                    baro_mod.size = item.file_size.into();
+                    baro_mod.last_modified = item.time_updated.into();
+                    baro_mod.description = item.description.clone().into();
+                    baro_mod.preview_image = item.preview_url().to_string().into();
+                    baro_mod.subscribers = item.subscriptions.into();
+                    baro_mod.likes = item.favorited.into();
+                    baro_mod.creator = item.creator.into();
+                }
+        );
+
+    Ok(
+        mapping.into_values().collect()
+    )
 }
 
 
@@ -254,4 +288,7 @@ pub fn get_build_info() -> BuildInfo {
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
 }
+
+
+
 

@@ -25,7 +25,7 @@ message BarotraumaMod {
   bool corePackage = 3;
 
   // The Steam Workshop ID of the mod.
-  string steamWorkshopId = 4;
+  uint64 steamWorkshopId = 4;
 
   // The game version this mod is compatible with.
   string gameVersion = 5;
@@ -38,6 +38,13 @@ message BarotraumaMod {
 
   // The home directory of the mod.
   optional string homeDir = 8;
+  optional uint64 size = 9;
+  optional uint64 lastModified = 10;
+  optional uint64 likes = 11;
+  optional string previewImage = 12;
+  optional uint64 subscribers = 13;
+  optional uint64 creator = 14;
+  optional string description = 15;
 }
 
 // ModList represents a saved mod profile with ordered local mods.

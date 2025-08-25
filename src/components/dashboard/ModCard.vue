@@ -5,7 +5,6 @@
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
 
           <n-text strong style="font-size: 16px; ">{{ `${index}. ` }}</n-text>
-
           <n-text strong style="font-size: 16px;">{{ mod.name }}</n-text>
           <n-tag v-if="mod.corePackage" size="small" type="info">Core Package</n-tag>
           <n-tag v-if="mod.homeDir" size="small" type="success">Local Mod</n-tag>
