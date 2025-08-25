@@ -25,7 +25,7 @@
 //!     println!("Title: {}", item.title);
 //!
 //!     // Multiple items
-//!     let items = client.get_items(&vec![3354525188, 1234567890]).await?;
+//!     let items = client.get_items(vec![3354525188, 1234567890]).await?;
 //!     for item in items {
 //!         println!("{}: {} views", item.title, item.views);
 //!     }
@@ -34,6 +34,7 @@
 //! }
 //! ```
 
+use futures::future::try_join_all;
 use reqwest;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value};
@@ -93,7 +94,7 @@ impl SteamWorkShopClient {
     /// # Ok(()) }
     /// ```
     pub async fn get_item(&self, item_id: u64) -> Result<WorkshopItem, Error> {
-        self.get_items(&vec![item_id])
+        self.get_items(vec![item_id])
             .await?
             .into_iter()
             .next()
@@ -121,10 +122,10 @@ impl SteamWorkShopClient {
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let client = SteamWorkShopClient::new();
-    /// let items = client.get_items(&vec![3354525188, 1234567890]).await?;
+    /// let items = client.get_items(vec![3354525188, 1234567890]).await?;
     /// # Ok(()) }
     /// ```
-    pub async fn get_items(&self, item_ids: &Vec<u64>) -> Result<Vec<WorkshopItem>, Error> {
+    pub async fn get_items(&self, item_ids: Vec<u64>) -> Result<Vec<WorkshopItem>, Error> {
         if item_ids.is_empty() {
             return Ok(vec![]);
         }
@@ -163,6 +164,68 @@ impl SteamWorkShopClient {
             .collect();
 
         Ok(items)
+    }
+    /// Fetch multiple Workshop items by their IDs (as `u64`) in batches.
+    ///
+    /// This method splits the provided item IDs into batches of the specified size
+    /// and executes the requests concurrently. This is useful when you have more
+    /// than 100 items to fetch, as the Steam API limits each request to 100 items.
+    ///
+    /// # Arguments
+    ///
+    /// * `item_ids` - A vector of `u64` Workshop item IDs
+    /// * `batch_size` - The maximum number of items per batch (0 means unlimited)
+    ///
+    /// # Returns
+    ///
+    /// Returns a `Vec<WorkshopItem>` containing all successfully fetched items.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if:
+    /// - `batch_size` is zero
+    /// - Any individual batch request fails
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// # use steam_api::SteamWorkShopClient;
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let client = SteamWorkShopClient::new();
+    /// let items = client.get_items_batched(vec![3354525188, 1234567890], 50).await?;
+    /// # Ok(()) }
+    /// ```
+    pub async fn get_items_batched(
+        &self,
+        item_ids: Vec<u64>,
+        batch_size: usize,
+    ) -> Result<Vec<WorkshopItem>, Error> {
+        if batch_size == 0 {
+            return self.get_items(item_ids).await;
+        }
+
+        if item_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        // Split item_ids into multiple batches
+        let batches = item_ids
+            .chunks(batch_size)
+            .map(|chunk| chunk.to_vec())
+            .map(|batch| self.get_items(batch))
+            .collect::<Vec<_>>();
+
+        // Execute all batches concurrently
+        let results = try_join_all(batches).await?;
+
+        // Merge results from all batches
+        let mut all_items = Vec::new();
+        for items in results {
+            all_items.extend(items);
+        }
+
+        Ok(all_items)
     }
 }
 
@@ -325,6 +388,7 @@ pub enum Error {
 
     #[error("no items returned in response")]
     EmptyResponse,
+
 }
 
 // ===================================
@@ -533,7 +597,7 @@ mod tests {
 
         // Act
         let client = SteamWorkShopClient::from_endpoint(url);
-        let items = client.get_items(&vec![3354525188, 1234567890]).await;
+        let items = client.get_items(vec![3354525188, 1234567890]).await;
 
         // Assert
         let items = items.expect("Expected successful items fetch");
@@ -549,7 +613,7 @@ mod tests {
         let client = SteamWorkShopClient::new();
 
         // Act
-        let items = client.get_items(&vec![]).await;
+        let items = client.get_items(vec![]).await;
 
         // Assert
         let items = items.expect("Expected OK with empty vec");
@@ -572,7 +636,7 @@ mod tests {
 
         let url = setup_mock_response(&mut server, response_json).await;
         let client = SteamWorkShopClient::from_endpoint(url);
-        let result = client.get_items(&vec![123]).await;
+        let result = client.get_items(vec![123]).await;
 
         // Assert
         assert!(result.is_err());
@@ -603,7 +667,7 @@ mod tests {
 
         // Assert
         assert!(result.is_err());
-        assert!(matches!(result, Err(Error::EmptyResponse)));
+        assert!(matches!(result, Err(Error::ApiFailure(1))));
     }
 
     #[tokio::test]
@@ -677,7 +741,7 @@ mod tests {
             .create();
 
         let client = SteamWorkShopClient::from_endpoint(mount_path(server.url()));
-        let _ = client.get_items(&vec![123, 456]).await;
+        let _ = client.get_items(vec![123, 456]).await;
 
         form_captured.assert();
     }

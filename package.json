@@ -25,6 +25,7 @@
     "@tauri-apps/plugin-dialog": "^2.3.3",
     "@tauri-apps/plugin-opener": "^2",
     "@vicons/ionicons5": "^0.13.0",
+    "bytes": "^3.1.2",
     "naive-ui": "^2.42.0",
     "vue": "^3.5.13",
     "vue-clipboard3": "^2.0.0",

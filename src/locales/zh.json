@@ -176,6 +176,15 @@
     "gameVersion": "游戏版本",
     "steamWorkshopId": "Steam 创意工坊 ID",
     "expectedHash": "预期哈希值",
-    "homeDir": "本地目录"
+    "homeDir": "本地目录",
+    "corePackage": "核心包",
+    "localMod": "本地模组"
+  },
+  "modDetails": {
+    "notSelected": "点击任意模组以进入预览",
+    "title": "模组详情"
+  },
+  "modList": {
+    "title": "模组列表"
   }
 }

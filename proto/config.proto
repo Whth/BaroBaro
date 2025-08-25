@@ -30,10 +30,12 @@ message Config {
   string gameHome = 2;
   // The home directory for SteamCMD files.
   string steamcmdHome = 3;
+  // Metadata retrieve batch size
+  uint64 metadataRetrieveBatchsize = 5;
   // Configuration settings specific to SteamCMD.
-  SteamCmdConfig steamcmdConfig = 4;
+  SteamCmdConfig steamcmdConfig = 6;
   // The configuration for the user interface.
-  UIConfig uiConfig = 5;
+  UIConfig uiConfig = 7;
 }
 
 

@@ -11,14 +11,14 @@
 
     <n-grid cols="12" x-gap="24" y-gap="24">
       <n-grid-item span="8">
-        <n-card title="Mods List">
-          <ModList></ModList>
+        <n-card :title="$t('modList.title')">
+          <ModList @clickMod="handleModClick"></ModList>
         </n-card>
       </n-grid-item>
 
       <n-grid-item span="4">
-        <n-card title="Mod Details">
-          <ModDetails></ModDetails>
+        <n-card :title="$t('modDetails.title')">
+          <ModDetails :mod="curMod"></ModDetails>
         </n-card>
       </n-grid-item>
     </n-grid>
@@ -29,30 +29,27 @@
 <script lang="ts" setup>
 import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
 import TitledPage from "../../components/core/TitledPage.vue";
-import type {BarotraumaMod} from '../../proto/mods'
 import {onMounted, ref} from "vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";
-import {list_enabled_mods, list_installed_mods, list_mod_lists} from "../../invokes.ts";
+import {list_enabled_mods, list_installed_mods, list_mod_lists, retrieve_mod_metadata} from "../../invokes.ts";
 import ModList from "../../components/dashboard/ModList.vue";
+import {BarotraumaMod} from "../../proto/mods.ts";
+
+const curMod = ref<BarotraumaMod | null>(null)
 
 
 onMounted(async () => {
   await Promise.all([
     list_installed_mods(),
     list_enabled_mods(),
-    list_mod_lists()
+    list_mod_lists(),
   ])
+  await retrieve_mod_metadata()
 })
 
-// 假设这是当前选中的 mod
-const currentMod = ref<BarotraumaMod | null>(null)
-
-// 事件处理
-const onToggle = (mod: BarotraumaMod) => { /* ... */
-}
-const onUpdate = (mod: BarotraumaMod) => { /* ... */
-}
-const onRemove = (mod: BarotraumaMod) => { /* ... */
+function handleModClick(mod: BarotraumaMod) {
+  console.log('Clicked mod:', mod)
+  curMod.value = mod
 }
 </script>
 

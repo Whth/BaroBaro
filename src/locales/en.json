@@ -176,6 +176,15 @@
     "gameVersion": "Game Version",
     "steamWorkshopId": "Steam Workshop ID",
     "expectedHash": "Expected Hash",
-    "homeDir": "Home Directory"
+    "homeDir": "Home Directory",
+    "corePackage": "Core Package",
+    "localMod": "Local Mod"
+  },
+  "modDetails": {
+    "notSelected": "Click any mod to preview",
+    "title": "Mod Details"
+  },
+  "modList": {
+    "title": "Mod List"
   }
 }

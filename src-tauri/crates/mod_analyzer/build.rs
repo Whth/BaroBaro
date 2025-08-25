@@ -3,19 +3,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "mods",
         &vec![
             (
-                "mods.FileElement",
-                "#[derive(serde::Serialize, serde::Deserialize)]",
-            ),
-            (
-                "mods.FileGroup",
-                "#[derive(serde::Serialize, serde::Deserialize)]",
-            ),
-            (
                 "mods.ModList",
                 "#[derive(serde::Serialize, serde::Deserialize)]",
             ),
-            ("mods.BarotraumaMod", "#[derive(serde::Serialize)]\n#[serde(rename_all = \"camelCase\")]"),
+            ("mods.BarotraumaMod", "#[derive(serde::Serialize, serde::Deserialize)]\n#[serde(rename_all = \"camelCase\", default)]"),
         ],
-        &vec![("mods.FileElement.file", "#[serde(rename = \"@file\")]")],
+        &vec![
+            ("mods.BarotraumaMod.name", "#[serde(alias = \"@name\")]"),
+            ("mods.BarotraumaMod.modVersion", "#[serde(alias = \"@modversion\", alias = \"modVersion\")]"),
+            ("mods.BarotraumaMod.corePackage",
+             "#[serde(alias = \"@corepackage\", alias = \"corePackage\", deserialize_with=\"crate::deserialize_bool\")]"),
+            ("mods.BarotraumaMod.steamWorkshopId",
+             "#[serde(alias = \"@steamworkshopid\", alias = \"steamWorkshopId\", deserialize_with=\"crate::deserialize_u64\")]"),
+            ("mods.BarotraumaMod.gameVersion", "#[serde(alias = \"@gameversion\", alias = \"gameVersion\")]"),
+            ("mods.BarotraumaMod.expectedHash", "#[serde(alias = \"@expectedhash\", alias = \"expectedHash\")]")
+        ],
     )
 }
+
+

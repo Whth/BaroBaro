@@ -2,16 +2,6 @@ syntax = "proto3";
 
 package mods;
 
-// Represents a single file entry in the mod, with a file path.
-message FileElement {
-  // The file path as specified in the XML attribute.
-  string file = 1;
-}
-
-// A group of files under a specific tag (e.g., "Content", "Sounds", etc.)
-message FileGroup {
-  repeated FileElement files = 1;
-}
 
 // Represents a Barotrauma mod parsed from its content package XML file.
 message BarotraumaMod {
@@ -33,17 +23,22 @@ message BarotraumaMod {
   // The expected hash of the mod.
   string expectedHash = 6;
 
-  // All file entries grouped by their tag names (e.g., "Entity", "Sound", etc.)
-  map<string, FileGroup> fileGroups = 7;
 
   // The home directory of the mod.
   optional string homeDir = 8;
+  // The size of the mod in bytes.
   optional uint64 size = 9;
+  // The last modified timestamp of the mod.
   optional uint64 lastModified = 10;
+  // The number of likes the mod has received.
   optional uint64 likes = 11;
+  // The preview image URL or path for the mod.
   optional string previewImage = 12;
+  // The number of subscribers to the mod.
   optional uint64 subscribers = 13;
+  // The Steam ID of the mod's creator.
   optional uint64 creator = 14;
+  // A description of the mod.
   optional string description = 15;
 }
 

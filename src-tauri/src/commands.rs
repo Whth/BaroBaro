@@ -21,7 +21,6 @@ use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER, STEAM_WORKSHOP_CLIENT};
 use base64::{engine::general_purpose, Engine as _};
 use logger::{debug, info};
 use steam_api::WorkshopItem;
-use toml::{from_str, to_string_pretty};
 
 /// Writes the given configuration to disk in TOML format.
 ///
@@ -45,9 +44,8 @@ use toml::{from_str, to_string_pretty};
 pub fn write_config(config: Config) -> Result<(), String> {
     fs::create_dir_all(ROAMING.clone())
         .map_err(|e| format!("{}, failed to create config directory.", e))?;
-    fs::write(
+    config.to_file(
         GLOBAL_CONFIG_FILE.clone(),
-        to_string_pretty(&config).map_err(|e| format!("{}, failed to write config file.", e))?,
     )
         .map_err(|e| format!("{}, failed to write config file.", e))
 }
@@ -71,11 +69,7 @@ pub fn write_config(config: Config) -> Result<(), String> {
 pub fn read_config() -> Result<Config, String> {
     if GLOBAL_CONFIG_FILE.exists() {
         debug!("Reading config file.");
-        let config_file = fs::read_to_string(GLOBAL_CONFIG_FILE.clone())
-            .map_err(|e| format!("{}, failed to read config file.", e))?;
-        let config: Config =
-            from_str(&config_file).map_err(|e| format!("{}, failed to parse config file.", e))?;
-        Ok(config)
+        Ok(Config::from_file(GLOBAL_CONFIG_FILE.as_path()).map_err(|e| format!("{}, failed to parse config file.", e))?)
     } else {
         Ok(Config::default_settings())
     }
@@ -128,9 +122,10 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
 
 
 #[tauri::command]
-pub async fn retrieve_mod_metadata(mods: Vec<BarotraumaMod>) -> Result<Vec<BarotraumaMod>, String> {
+pub async fn retrieve_mod_metadata(mods: Vec<BarotraumaMod>, batch_size: usize) -> Result<Vec<BarotraumaMod>, String> {
+    info!("Retrieving mod metadata for {} mods", mods.len());
     let retrieved: Vec<WorkshopItem> = STEAM_WORKSHOP_CLIENT.read()
-        .await.get_items(&mods.iter().map(|baro_mod| baro_mod.steam_workshop_id).collect::<Vec<u64>>())
+        .await.get_items_batched(mods.iter().map(|baro_mod| baro_mod.steam_workshop_id).collect::<Vec<u64>>(), batch_size)
         .await.map_err(|e| format!("{}, failed to retrieve mod metadata.", e))?;
 
     let mut mapping = mods.into_iter()

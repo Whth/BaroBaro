@@ -307,10 +307,8 @@ dependencies = [
  "logger",
  "mod_analyzer",
  "once_cell",
- "open",
  "prost",
  "serde",
- "serde_json",
  "steam-api",
  "steamcmd-rs",
  "tauri",
@@ -318,7 +316,6 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-opener",
  "tokio",
- "toml 0.9.5",
  "transmission",
 ]
 
@@ -623,8 +620,11 @@ dependencies = [
 name = "configuration"
 version = "0.1.0"
 dependencies = [
+ "figment",
+ "logger",
  "prost",
  "serde",
+ "toml 0.9.5",
  "transmission",
 ]
 
@@ -2453,6 +2453,7 @@ dependencies = [
  "quick-xml 0.38.1",
  "rayon",
  "serde",
+ "serde_json",
  "tempfile",
  "transmission",
  "walkdir",
@@ -4228,6 +4229,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 name = "steam-api"
 version = "0.1.0"
 dependencies = [
+ "futures",
  "mockito",
  "reqwest",
  "serde",

@@ -1,13 +1,13 @@
 <template>
-  <n-card hoverable>
+  <n-card hoverable style="cursor: pointer;" @click="$emit('clickMod', mod)">
     <n-thing>
       <template #header>
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
 
           <n-text strong style="font-size: 16px; ">{{ `${index}. ` }}</n-text>
           <n-text strong style="font-size: 16px;">{{ mod.name }}</n-text>
-          <n-tag v-if="mod.corePackage" size="small" type="info">Core Package</n-tag>
-          <n-tag v-if="mod.homeDir" size="small" type="success">Local Mod</n-tag>
+          <n-tag v-if="mod.corePackage" size="small" type="info" v-text="$t('modCard.corePackage')"></n-tag>
+          <n-tag v-if="mod.homeDir" size="small" type="success" v-text="$t('modCard.localMod')"></n-tag>
         </div>
       </template>
 
@@ -33,12 +33,13 @@
               </n-button>
             </n-descriptions-item>
 
+
             <!-- Steam Workshop ID -->
             <n-descriptions-item :label="$t('modCard.steamWorkshopId')">
               <n-text code>{{ mod.steamWorkshopId }}</n-text>
 
               <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em" @click="toClipboard(mod.steamWorkshopId)">
+                <n-icon size="1.2em" @click="toClipboard(mod.steamWorkshopId.toString())">
                   <copy-outline/>
                 </n-icon>
               </n-button>
@@ -89,4 +90,6 @@ interface Props {
 }
 
 defineProps<Props>()
+
+
 </script>

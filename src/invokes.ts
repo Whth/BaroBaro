@@ -1,7 +1,7 @@
 import {invoke} from "@tauri-apps/api/core";
 import {Config} from "./proto/config";
 import {type Ref, ref} from "vue";
-import type {BarotraumaMod, ModList} from "./proto/mods";
+import {BarotraumaMod, ModList} from "./proto/mods";
 import {BuildInfo} from "./proto/build_info.ts";
 
 export const config: Ref<Config> = ref(Config.create());
@@ -53,7 +53,15 @@ export async function list_enabled_mods() {
 
 // Retrieve metadata for enabled mods
 export async function retrieve_mod_metadata() {
-    installed_mod.value = await invoke("retrieve_mod_metadata", {mods: installed_mod.value});
+    await refresh_config();
+    console.log(`Retrieving metadata for ${installed_mod.value.length} mods`);
+
+    installed_mod.value = await invoke<BarotraumaMod[]>("retrieve_mod_metadata", {
+        mods: installed_mod.value.slice(0, 40),
+        batchSize: config.value.metadataRetrieveBatchsize
+    });
+    console.log(`Retrieved metadata for ${installed_mod.value.length} mods`);
+
 
     const mapping = new Map(enabled_mods.value.map(
         (mod) => [mod.steamWorkshopId, mod]
@@ -61,6 +69,7 @@ export async function retrieve_mod_metadata() {
     installed_mod.value.forEach(
         (mod) => {
             const enabledMod = mapping.get(mod.steamWorkshopId);
+            console.log(`Updating metadata for ${mod.name}`)
             if (enabledMod !== undefined) {
                 enabledMod.creator = mod.creator;
                 enabledMod.description = mod.description;

@@ -5,7 +5,10 @@ mod mod_list;
 
 mod mods;
 mod config_analyzer;
+mod de;
 
+#[allow(unused)]
+pub(crate) use de::{deserialize_bool, deserialize_u64};
 pub use hash::hash_directory;
 
 pub use mods::*;

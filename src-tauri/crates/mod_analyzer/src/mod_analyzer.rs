@@ -1,101 +1,9 @@
-use crate::mods::{BarotraumaMod, FileElement, FileGroup};
+use crate::mods::BarotraumaMod;
 use constants::MOD_FILELIST_FILE;
 use quick_xml::de::from_str;
-use serde::{de::MapAccess, Deserialize, Deserializer};
-use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-/// Custom deserializer for boolean values that supports "True"/"False" and "1"/"0" strings.
-fn deserialize_bool_from_string<'de, D>(deserializer: D) -> Result<bool, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let s = String::deserialize(deserializer)?;
-    match s.to_lowercase().as_str() {
-        "true" | "1" => Ok(true),
-        "false" | "0" => Ok(false),
-        other => Err(serde::de::Error::custom(format!(
-            "Expected 'true', 'false', '1', or '0', got '{}'",
-            other
-        ))),
-    }
-}
-
-/// Custom deserializer implementation for BarotraumaMod to handle dynamic XML tags.
-impl<'de> Deserialize<'de> for BarotraumaMod {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        // Use a visitor to deserialize the XML structure
-        let map = deserializer.deserialize_map(BarotraumaModVisitor)?;
-        Ok(map)
-    }
-}
-/// Visitor struct for deserializing BarotraumaMod.
-struct BarotraumaModVisitor;
-
-impl<'de> serde::de::Visitor<'de> for BarotraumaModVisitor {
-    type Value = BarotraumaMod;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("a Barotrauma contentpackage XML")
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: MapAccess<'de>,
-    {
-        // Extract attributes first
-        let mut name = None;
-        let mut mod_version = None;
-        let mut core_package = None;
-        let mut steam_workshop_id = None;
-        let mut game_version = None;
-        let mut expected_hash = None;
-
-        // Collect all file entries grouped by their tag names
-        let mut file_groups: HashMap<String, FileGroup> = HashMap::new();
-
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "@name" => name = Some(map.next_value()?),
-                "@modversion" => mod_version = Some(map.next_value()?),
-                "@corepackage" => {
-                    // Use our custom deserializer for boolean values
-                    let value: String = map.next_value()?;
-                    let de = serde::de::value::StrDeserializer::new(&value);
-                    core_package = Some(deserialize_bool_from_string(de)?);
-                }
-                "@steamworkshopid" => steam_workshop_id = Some(map.next_value()?),
-                "@gameversion" => game_version = Some(map.next_value()?),
-                "@expectedhash" => expected_hash = Some(map.next_value()?),
-                _ => {
-                    // All other fields are treated as tags
-                    let values: Vec<FileElement> = map.next_value()?;
-                    file_groups.entry(key).or_default().files.extend(values)
-                }
-            }
-        }
-
-        Ok(BarotraumaMod {
-            name: name.ok_or_else(|| serde::de::Error::missing_field("name"))?,
-            mod_version: mod_version
-                .ok_or_else(|| serde::de::Error::missing_field("modversion"))?,
-            core_package: core_package
-                .ok_or_else(|| serde::de::Error::missing_field("corepackage"))?,
-            steam_workshop_id: steam_workshop_id
-                .ok_or_else(|| serde::de::Error::missing_field("steamworkshopid"))?,
-            game_version: game_version
-                .ok_or_else(|| serde::de::Error::missing_field("gameversion"))?,
-            expected_hash: expected_hash
-                .ok_or_else(|| serde::de::Error::missing_field("expectedhash"))?,
-            file_groups,
-            ..BarotraumaMod::default()
-        })
-    }
-}
 
 impl BarotraumaMod {
     pub fn set_home_dir(&mut self, home_dir: String) -> &mut Self {
@@ -142,41 +50,39 @@ impl BarotraumaMod {
         let content_package_path = mod_dir.as_ref().join(MOD_FILELIST_FILE);
         Self::from_path(content_package_path)
     }
-
-    /// Gets files associated with a specific tag.
-    ///
-    /// # Arguments
-    /// * `tag` - The tag name to look up.
-    ///
-    /// # Returns
-    /// An Option containing a reference to the vector of FileElements or None if the tag doesn't exist.
-    pub fn get_files(&self, tag: &str) -> Option<&FileGroup> {
-        self.file_groups.get(tag)
-    }
-
-    /// Checks if a specific tag exists in the mod.
-    ///
-    /// # Arguments
-    /// * `tag` - The tag name to check.
-    ///
-    /// # Returns
-    /// True if the tag exists, false otherwise.
-    pub fn has_tag(&self, tag: &str) -> bool {
-        self.file_groups.contains_key(tag)
-    }
-
-    /// Gets all tag names in the mod.
-    ///
-    /// # Returns
-    /// A vector of all tag names.
-    pub fn tag_names(&self) -> Vec<String> {
-        self.file_groups.keys().cloned().collect()
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
+
+
+    #[test]
+    fn test_de_from_json() {
+        let json = json!({
+    "name": "Shipwrecks Extended",
+    "modVersion": "1.0.17",
+    "corePackage": false,
+    "steamWorkshopId": 2095211492,
+    "gameVersion": "1.0.8.0",
+    "expectedHash": "D368F1974A26DBC851B0D53B9A66779A",
+    "homeDir": "path\\mods\\Shipwrecks Extended",
+    "size": null,
+    "lastModified": null,
+    "likes": null,
+    "previewImage": "a image url",
+    "subscribers": null,
+    "creator": null,
+    "description": null
+});
+
+        let mod_obj: BarotraumaMod = serde_json::from_value(json).expect("Failed to parse JSON");
+
+        assert_eq!(mod_obj.name, "Shipwrecks Extended");
+        assert_eq!(mod_obj.mod_version, "1.0.17");
+        assert_eq!(mod_obj.preview_image, Some("a image url".to_string()))
+    }
 
     fn get_test_xml() -> String {
         r#"<?xml version="1.0" encoding="utf-8"?>
@@ -227,83 +133,5 @@ mod tests {
         assert_eq!(mod_obj.steam_workshop_id, 2518816103);
         assert_eq!(mod_obj.game_version, "1.9.8.0");
         assert_eq!(mod_obj.expected_hash, "9A54ACF2E7EBC95726A72AE966EF5F8D");
-
-        // File group lengths
-        assert_eq!(mod_obj.get_files("Item").unwrap().files.len(), 2);
-        assert_eq!(mod_obj.get_files("Text").unwrap().files.len(), 4);
-        assert_eq!(mod_obj.get_files("RandomEvents").unwrap().files.len(), 2);
-        assert_eq!(mod_obj.get_files("Sounds").unwrap().files.len(), 1);
-        assert_eq!(mod_obj.get_files("Other").unwrap().files.len(), 1);
-    }
-
-    #[test]
-    fn test_item_files() {
-        let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
-        let items = mod_obj.get_files("Item").expect("No Item tag found");
-
-        assert_eq!(items.files[0].file, "%ModDir%/Items/misc.xml");
-        assert_eq!(items.files[1].file, "%ModDir%/Items/disposable_battery.xml");
-    }
-
-    #[test]
-    fn test_text_files() {
-        let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
-        let texts = mod_obj.get_files("Text").expect("No Text tag found");
-
-        let expected = vec![
-            "%ModDir%/Text/English.xml",
-            "%ModDir%/Text/Russian.xml",
-            "%ModDir%/Text/LatinamericanSpanish.xml",
-            "%ModDir%/Text/SimplifiedChinese.xml",
-        ];
-
-        for (i, text) in texts.files.iter().enumerate() {
-            assert_eq!(text.file, expected[i]);
-        }
-    }
-
-    #[test]
-    fn test_random_events_files() {
-        let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
-        let events = mod_obj
-            .get_files("RandomEvents")
-            .expect("No RandomEvents tag found");
-
-        assert_eq!(
-            events.files[0].file,
-            "%ModDir%/Events/randomcampaignevents.xml"
-        );
-        assert_eq!(
-            events.files[1].file,
-            "%ModDir%/Events/randommissionevents.xml"
-        );
-    }
-
-    #[test]
-    fn test_tag_names() {
-        let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
-
-        let tags: std::collections::HashSet<_> = mod_obj.tag_names().into_iter().collect();
-        let expected_tags: std::collections::HashSet<String> = [
-            "EventManagerSettings",
-            "UIStyle",
-            "Missions",
-            "Afflictions",
-            "Item",
-            "NPCSets",
-            "RandomEvents",
-            "Text",
-            "Other",
-            "Sounds",
-        ]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
-
-        assert_eq!(tags, expected_tags);
     }
 }
