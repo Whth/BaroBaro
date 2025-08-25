@@ -1,5 +1,5 @@
 <template>
-  <n-card hoverable style="cursor: pointer;" @click="$emit('clickMod', mod)">
+  <n-card hoverable style="cursor: pointer;" @click="onClick">
     <n-thing>
       <template #header>
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -89,7 +89,13 @@ interface Props {
   index: number
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+
+const emits = defineEmits(['clickMod']);
+const onClick = () => {
+  emits("clickMod", props.mod);
+}
 
 
 </script>
