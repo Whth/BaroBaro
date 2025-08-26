@@ -31,6 +31,7 @@
         </n-input-group>
       </n-form-item>
 
+
       <n-form-item :label="$t('settings.steamUsername')">
         <n-input
             v-model:value="steamcmd_uname"
@@ -55,28 +56,63 @@
             :placeholder="$t('settings.parallelDownloads')"
         />
       </n-form-item>
-
+      <n-form-item :label="$t('settings.metadataRetrieveBatchsize')">
+        <n-input-number
+            v-model:value="config.metadataRetrieveBatchsize"
+            :min="0"
+            :placeholder="$t('settings.metadataRetrieveBatchsizePlaceholder')"
+        />
+      </n-form-item>
     </n-form>
   </n-card>
 </template>
 
 <script lang="ts" setup>
 import {config, refresh_config} from "../../invokes.ts";
-import {Level} from "../../proto/config.ts";
+import {Level, SteamCmdConfig} from "../../proto/config.ts";
 import {computed, onMounted} from "vue";
 import {message, open} from "@tauri-apps/plugin-dialog";
 
 
-const steamcmd_uname = computed(() => {
-  return config.value.steamcmdConfig?.username ?? "";
+const steamcmd_uname = computed({
+      get: () => config.value.steamcmdConfig?.username ?? "",
+      set: (newValue) => {
+        if (config.value.steamcmdConfig) {
+          config.value.steamcmdConfig.username = newValue;
+
+        } else {
+          config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
+              {username: newValue,}
+          )
+        }
+      }
+    }
+);
+
+const steamcmd_pwd = computed({
+  get: () => config.value.steamcmdConfig?.password ?? "",
+  set: (newValue) => {
+    if (config.value.steamcmdConfig) {
+      config.value.steamcmdConfig.password = newValue;
+    } else {
+      config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
+          {password: newValue,}
+      )
+    }
+  }
 });
 
-const steamcmd_pwd = computed(() => {
-  return config.value.steamcmdConfig?.password ?? "";
-});
-
-const parallel = computed(() => {
-  return config.value.steamcmdConfig?.parallel ?? 0;
+const parallel = computed({
+  get: () => config.value.steamcmdConfig?.parallel ?? 0,
+  set: (newValue) => {
+    if (config.value.steamcmdConfig) {
+      config.value.steamcmdConfig.parallel = newValue;
+    } else {
+      config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
+          {parallel: newValue,}
+      )
+    }
+  }
 });
 
 

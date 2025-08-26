@@ -66,7 +66,7 @@
       <!-- 批量操作 -->
       <div v-if="selectedMods.length > 0" class="bulk-actions">
         <n-space align="center" justify="space-between">
-          <n-text>{{ selectedMods.length }} mod(s) selected</n-text>
+          <n-text>{{ selectedMods.length }} mod(s) selectAnMod</n-text>
           <n-button
               type="error"
               @click="removeSelectedMods"

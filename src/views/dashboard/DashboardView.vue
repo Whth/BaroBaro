@@ -12,7 +12,7 @@
     <n-grid cols="12" x-gap="24" y-gap="24">
       <n-grid-item span="8">
         <n-card :title="$t('modList.title')">
-          <ModList @clickMod="handleModClick"></ModList>
+          <ModList @viewing-mod="handleModClick"></ModList>
         </n-card>
       </n-grid-item>
 

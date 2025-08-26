@@ -57,7 +57,7 @@ export async function retrieve_mod_metadata() {
     console.log(`Retrieving metadata for ${installed_mod.value.length} mods`);
 
     installed_mod.value = await invoke<BarotraumaMod[]>("retrieve_mod_metadata", {
-        mods: installed_mod.value.slice(0, 40),
+        mods: installed_mod.value,
         batchSize: config.value.metadataRetrieveBatchsize
     });
     console.log(`Retrieved metadata for ${installed_mod.value.length} mods`);

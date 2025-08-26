@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@bbob/parser':
+        specifier: ^4.2.0
+        version: 4.2.0
+      '@bbob/preset-vue':
+        specifier: ^4.2.0
+        version: 4.2.0
+      '@bbob/vue3':
+        specifier: ^4.2.0
+        version: 4.2.0(vue@3.5.18(typescript@5.6.3))
       '@bufbuild/protobuf':
         specifier: ^2.7.0
         version: 2.7.0
@@ -48,6 +57,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2
         version: 2.7.1
+      '@types/bytes':
+        specifier: ^3.1.5
+        version: 3.1.5
       '@vitejs/plugin-vue':
         specifier: ^5.2.1
         version: 5.2.4(vite@6.3.5(@types/node@24.3.0))(vue@3.5.18(typescript@5.6.3))
@@ -82,6 +94,35 @@ packages:
   '@babel/types@7.28.2':
     resolution: {integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==}
     engines: {node: '>=6.9.0'}
+
+  '@bbob/core@4.2.0':
+    resolution: {integrity: sha512-i5VUIO6xx+TCrBE8plQF9KpW1z+0QcCh9GawCCWYG9KcZrEsyRy57my5/kem0a2lFxXjh0o+tgjQY9sCP5b3bw==}
+
+  '@bbob/html@4.2.0':
+    resolution: {integrity: sha512-mZG7MmE/YluH1/FNCr2Jv/Vz3Mq5stZ5tFAjBmYpVVN6Ndus4+FA84vKoHFdUHDiuU1p/e2/o/VUrwsWwLdoIA==}
+
+  '@bbob/parser@4.2.0':
+    resolution: {integrity: sha512-l8BppXjdQClrUiv+qIN0Oe6aS/vlH7CEduMreDaxYDadUPC0RMzxj9lXVjO0xTbFEVEIUJCGc53qnpiApLbx2g==}
+
+  '@bbob/plugin-helper@4.2.0':
+    resolution: {integrity: sha512-Uxs/UJROnkpcq5EJfz/8NCEYAcme8l6oAgMeWLX1nxWeieUhRgpY8BWQ9eQwUOXEKa0tsKVPnlmbUAjFhppVPw==}
+
+  '@bbob/preset-html5@4.2.0':
+    resolution: {integrity: sha512-X2EIeb2vqTz/n34KWQXEL5IC0SuB6i2/ltRpEaMTyK7IoDEs0XGIWcqVpenb7Z2d4eNA3gTWhkoUUkKlZmfQRQ==}
+
+  '@bbob/preset-vue@4.2.0':
+    resolution: {integrity: sha512-0JiYC+g+Sp/FbL6qVDppomc3Td3LCVHrgGE8EUj8xL1O613rwPrPhCKzmu2ktYUbWRWSljuL/DzUzy1bVIkViw==}
+
+  '@bbob/preset@4.2.0':
+    resolution: {integrity: sha512-IA+kxlrRcYBXE634B8W6uU2DO7VvrxeOqWUzIDKV2CgzTMpmCG875ihGp+Q3T+QxGwzG5S0L4GdmCIULTbzC4A==}
+
+  '@bbob/types@4.2.0':
+    resolution: {integrity: sha512-bSCZnNg0VrPosBBUVkjBDYVKNEqwT0jTNuzvAuNrZkuILgUKtLYI9GHuT8rY4lZecCb7UqGDsHsYt0YJO36eJg==}
+
+  '@bbob/vue3@4.2.0':
+    resolution: {integrity: sha512-SjkqgLdfDsa7Tt1gH3LOYrxWyocAyDYo8CN40JYqybG+0GrI7wwETPBX2Vx0exZyaRz+bdSHZFs4MTTszSGTpg==}
+    peerDependencies:
+      vue: 3.x
 
   '@biomejs/biome@2.2.0':
     resolution: {integrity: sha512-3On3RSYLsX+n9KnoSgfoYlckYBoU6VRM22cw1gB4Y0OuUVSYd/O/2saOJMrA4HFfA1Ff0eacOvMN1yAAvHtzIw==}
@@ -529,6 +570,9 @@ packages:
   '@tauri-apps/plugin-opener@2.4.0':
     resolution: {integrity: sha512-43VyN8JJtvKWJY72WI/KNZszTpDpzHULFxQs0CJBIYUdCRowQ6Q1feWTDb979N7nldqSuDOaBupZ6wz2nvuWwQ==}
 
+  '@types/bytes@3.1.5':
+    resolution: {integrity: sha512-VgZkrJckypj85YxEsEavcMmmSOIzkUHqWmM4CCyia5dc54YwsXzJ5uT4fYxBQNEXx+oF1krlhgCbvfubXqZYsQ==}
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -884,6 +928,53 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
+  '@bbob/core@4.2.0':
+    dependencies:
+      '@bbob/parser': 4.2.0
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/html@4.2.0':
+    dependencies:
+      '@bbob/core': 4.2.0
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/parser@4.2.0':
+    dependencies:
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/plugin-helper@4.2.0':
+    dependencies:
+      '@bbob/types': 4.2.0
+
+  '@bbob/preset-html5@4.2.0':
+    dependencies:
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/preset': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/preset-vue@4.2.0':
+    dependencies:
+      '@bbob/preset-html5': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/preset@4.2.0':
+    dependencies:
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/types': 4.2.0
+
+  '@bbob/types@4.2.0': {}
+
+  '@bbob/vue3@4.2.0(vue@3.5.18(typescript@5.6.3))':
+    dependencies:
+      '@bbob/core': 4.2.0
+      '@bbob/html': 4.2.0
+      '@bbob/plugin-helper': 4.2.0
+      '@bbob/types': 4.2.0
+      vue: 3.5.18(typescript@5.6.3)
+
   '@biomejs/biome@2.2.0':
     optionalDependencies:
       '@biomejs/cli-darwin-arm64': 2.2.0
@@ -1143,6 +1234,8 @@ snapshots:
   '@tauri-apps/plugin-opener@2.4.0':
     dependencies:
       '@tauri-apps/api': 2.7.0
+
+  '@types/bytes@3.1.5': {}
 
   '@types/estree@1.0.8': {}
 

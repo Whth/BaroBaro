@@ -117,7 +117,9 @@
     "backgroundOpacity": "背景透明度",
     "backgroundBlur": "背景模糊",
     "clear": "清除",
-    "savePreferences": "保存偏好设置"
+    "savePreferences": "保存偏好设置",
+    "metadataRetrieveBatchsize": "元数据检索批处理大小",
+    "metadataRetrieveBatchsizePlaceholder": "请输入元数据检索的批处理大小，0 表示无限制。"
   },
   "tabs": {
     "installMod": "安装模组",
@@ -182,7 +184,13 @@
   },
   "modDetails": {
     "notSelected": "点击任意模组以进入预览",
-    "title": "模组详情"
+    "title": "模组详情",
+    "name": "名称",
+    "author": "作者ID",
+    "lastModified": "最后修改",
+    "size": "大小",
+    "subscribers": "订阅数",
+    "likes": "点赞数"
   },
   "modList": {
     "title": "模组列表"

@@ -35,6 +35,7 @@
 //! ```
 
 use futures::future::try_join_all;
+use logger::info;
 use reqwest;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value};
@@ -217,15 +218,14 @@ impl SteamWorkShopClient {
             .collect::<Vec<_>>();
 
         // Execute all batches concurrently
-        let results = try_join_all(batches).await?;
+        let results: Vec<Vec<WorkshopItem>> = try_join_all(batches).await?;
 
-        // Merge results from all batches
-        let mut all_items = Vec::new();
-        for items in results {
-            all_items.extend(items);
-        }
 
-        Ok(all_items)
+        let fi: Vec<WorkshopItem> = results.into_iter().flatten().collect();
+
+        info!("[{}/{}] items fetched", fi.len(), item_ids.len());
+
+        Ok(fi)
     }
 }
 

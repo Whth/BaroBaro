@@ -1,5 +1,5 @@
 <template>
-  <n-card hoverable style="cursor: pointer;" @click="onClick">
+  <n-card hoverable style="cursor: pointer;" @click="onClick()">
     <n-thing>
       <template #header>
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -12,7 +12,7 @@
       </template>
 
       <template #description>
-        <n-space :size="6" style="margin-top: 8px;" vertical>
+        <n-flex :size="6" style="margin-top: 8px;" vertical>
           <n-descriptions :column="4" size="small">
             <!-- Mod Version -->
             <n-descriptions-item :label="$t('modCard.version')">
@@ -70,7 +70,7 @@
               </n-button>
             </n-descriptions-item>
           </n-descriptions>
-        </n-space>
+        </n-flex>
       </template>
     </n-thing>
   </n-card>
@@ -92,9 +92,15 @@ interface Props {
 const props = defineProps<Props>()
 
 
-const emits = defineEmits(['clickMod']);
+interface Emits {
+  (e: 'modSelected', data: BarotraumaMod): void
+}
+
+const emit = defineEmits<Emits>();
+
 const onClick = () => {
-  emits("clickMod", props.mod);
+  console.log(`Selected mod: ${props.mod.name}`)
+  emit("modSelected", props.mod);
 }
 
 

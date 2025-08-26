@@ -117,7 +117,9 @@
     "backgroundOpacity": "Background Opacity",
     "backgroundBlur": "Background Blur",
     "clear": "Clear",
-    "savePreferences": "Save Preferences"
+    "savePreferences": "Save Preferences",
+    "metadataRetrieveBatchsize": "Metadata Retrieve Batch Size",
+    "metadataRetrieveBatchsizePlaceholder": "Enter the batch size for metadata retrieval, 0 means unlimited."
   },
   "tabs": {
     "installMod": "Install Mod",
@@ -182,7 +184,13 @@
   },
   "modDetails": {
     "notSelected": "Click any mod to preview",
-    "title": "Mod Details"
+    "title": "Mod Details",
+    "name": "Name",
+    "author": "Author ID",
+    "lastModified": "Last Modified",
+    "size": "Size",
+    "subscribers": "Subscribers",
+    "likes": "Likes"
   },
   "modList": {
     "title": "Mod List"

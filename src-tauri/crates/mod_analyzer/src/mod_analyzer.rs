@@ -33,10 +33,21 @@ impl BarotraumaMod {
         let xml_content = fs::read_to_string(path.as_ref())?;
 
         let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
+
         Self::from_str(&xml_content).map(|mut mod_obj| {
             mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
             mod_obj
         })
+            .map(
+                |mut mod_obj| {
+                    if mod_obj.steam_workshop_id == 0 && let
+                        Some(id_raw) = parent_dir.file_name() &&
+                        let Ok(id_num) = id_raw.to_string_lossy().parse::<u64>() {
+                        mod_obj.steam_workshop_id = id_num;
+                    }
+                    mod_obj
+                }
+            )
     }
 
     /// Creates a BarotraumaMod from a mod directory.
