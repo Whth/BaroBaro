@@ -1,8 +1,10 @@
 use crate::config_analyzer::BaroConfig;
+use crate::retrieve::retrieve_mod_metadata;
 use crate::{BarotraumaMod, ModList};
 use constants::BarotraumaHome;
 use fs_utils::hash_directory;
 use std::path::PathBuf;
+use steam_api::SteamWorkShopClient;
 use walkdir::WalkDir;
 
 #[derive(Default, Debug)]
@@ -21,6 +23,18 @@ impl BarotraumaModManager {
             .map(|entry| BarotraumaMod::from_mod_dir(entry.path()))
             .filter_map(|result| result.ok())
             .collect()
+    }
+
+    pub async fn retrieve_metadata(
+        &mut self,
+        client: &SteamWorkShopClient,
+        batch_size: usize,
+    ) -> Result<&mut Self, String> {
+        let mods = self.mods.clone();
+        self.mods = retrieve_mod_metadata(mods, batch_size, &client)
+            .await
+            .map_err(|e| format!("{e}, failed to retrieve mod metadata."))?;
+        Ok(self)
     }
 
     pub fn set_game_dir(&mut self, game_dir: &PathBuf) -> &mut Self {

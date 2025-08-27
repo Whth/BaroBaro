@@ -60,19 +60,16 @@ impl Default for SteamWorkShopClient {
 }
 
 impl SteamWorkShopClient {
-    const DEFAULT_ENDPOINT: &'static str = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/";
+    const DEFAULT_ENDPOINT: &'static str =
+        "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/";
     pub fn new() -> Self {
         Self::default()
     }
     /// Creates a new `WorkshopClient`.
     pub fn from_endpoint(endpoint: String) -> Self {
         let client = reqwest::Client::new();
-        SteamWorkShopClient {
-            client,
-            endpoint,
-        }
+        SteamWorkShopClient { client, endpoint }
     }
-
 
     /// Fetch a single Workshop item by its published file ID (u64).
     ///
@@ -131,18 +128,14 @@ impl SteamWorkShopClient {
             return Ok(vec![]);
         }
 
-        let form_data =
-
-            once(("itemcount".to_string(), Value::from(item_ids.len())))
-                .chain(
-                    item_ids.iter()
-                        .enumerate()
-                        .map(|(idx, &id)| {
-                            (format!("publishedfileids[{}]", idx), Value::from(id))
-                        })
-                )
-                .collect::<Map<String, Value>>();
-
+        let form_data = once(("itemcount".to_string(), Value::from(item_ids.len())))
+            .chain(
+                item_ids
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, &id)| (format!("publishedfileids[{}]", idx), Value::from(id))),
+            )
+            .collect::<Map<String, Value>>();
 
         let response: ApiResponse = self
             .client
@@ -220,7 +213,6 @@ impl SteamWorkShopClient {
         // Execute all batches concurrently
         let results: Vec<Vec<WorkshopItem>> = try_join_all(batches).await?;
 
-
         let fi: Vec<WorkshopItem> = results.into_iter().flatten().collect();
 
         info!("[{}/{}] items fetched", fi.len(), item_ids.len());
@@ -292,7 +284,10 @@ where
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WorkshopItem {
     /// The unique 64-bit ID of the published file (now u64)
-    #[serde(rename = "publishedfileid", deserialize_with = "flexible_u64_deserializer")]
+    #[serde(
+        rename = "publishedfileid",
+        deserialize_with = "flexible_u64_deserializer"
+    )]
     pub published_file_id: u64,
 
     /// Result code for this item (1 = success)
@@ -388,7 +383,6 @@ pub enum Error {
 
     #[error("no items returned in response")]
     EmptyResponse,
-
 }
 
 // ===================================
@@ -463,7 +457,8 @@ mod tests {
     /// Helper to create a mock Steam API response for one or more items
     #[inline]
     async fn setup_mock_response(server: &mut ServerGuard, body: Value) -> String {
-        server.mock("POST", PATH)
+        server
+            .mock("POST", PATH)
             .with_status(200)
             .with_header("Content-Type", "application/json")
             .with_body(body.to_string())
@@ -633,7 +628,6 @@ mod tests {
 
         let mut server = Server::new_async().await;
 
-
         let url = setup_mock_response(&mut server, response_json).await;
         let client = SteamWorkShopClient::from_endpoint(url);
         let result = client.get_items(vec![123]).await;
@@ -661,7 +655,6 @@ mod tests {
         let mut server = Server::new_async().await;
         let url = setup_mock_response(&mut server, response_json).await;
         let client = SteamWorkShopClient::from_endpoint(url);
-
 
         let result = client.get_item(123).await;
 
@@ -701,7 +694,7 @@ mod tests {
                     "lifetime_subscriptions": 0,
                     "lifetime_favorited": 0,
                     "views": 0,
-                    "tags": []
+                    "tags": [{ "tag": "sub"}]
                 }]
             }
         });
@@ -716,6 +709,7 @@ mod tests {
         assert!(item.is_banned());
         assert_eq!(item.ban_reason, "Inappropriate content");
         assert_eq!(item.preview_url(), "https://img.com/preview.jpg");
+        assert!(!item.tags.is_empty())
     }
 
     #[tokio::test]
@@ -723,7 +717,8 @@ mod tests {
         // This test ensures we send correct form data to Steam API
 
         let mut server = Server::new_async().await;
-        let form_captured = server.mock("POST", PATH)
+        let form_captured = server
+            .mock("POST", PATH)
             .match_body("itemcount=2&publishedfileids%5B0%5D=123&publishedfileids%5B1%5D=456")
             .with_status(200)
             .with_header("Content-Type", "application/json")
@@ -735,7 +730,7 @@ mod tests {
                         "publishedfiledetails": []
                     }
                 })
-                    .to_string(),
+                .to_string(),
             )
             .expect_at_least(1)
             .create();

@@ -10,64 +10,32 @@
           <n-tag v-if="mod.homeDir" size="small" type="success" v-text="$t('modCard.localMod')"></n-tag>
         </div>
       </template>
-
       <template #description>
         <n-flex :size="6" style="margin-top: 8px;" vertical>
           <n-descriptions :column="4" size="small">
             <!-- Mod Version -->
             <n-descriptions-item :label="$t('modCard.version')">
-              <n-text code>{{ mod.modVersion }}</n-text>
+              <inlineCode :src="mod.modVersion"></inlineCode>
             </n-descriptions-item>
 
             <!-- Game Version -->
             <n-descriptions-item :label="$t('modCard.gameVersion')">
-              <n-text code>{{ mod.gameVersion }}</n-text>
+              <inlineCode :src="mod.gameVersion"></inlineCode>
             </n-descriptions-item>
-            <!-- Expected Hash -->
-            <n-descriptions-item :label="$t('modCard.expectedHash')">
-              <n-text code style="word-break: break-all;">{{ mod.expectedHash.slice(0, 7) }}</n-text>
-              <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em" @click="toClipboard(mod.expectedHash)">
-                  <copy-outline/>
-                </n-icon>
-              </n-button>
-            </n-descriptions-item>
-
 
             <!-- Steam Workshop ID -->
             <n-descriptions-item :label="$t('modCard.steamWorkshopId')">
-              <n-text code>{{ mod.steamWorkshopId }}</n-text>
-
-              <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em" @click="toClipboard(mod.steamWorkshopId.toString())">
-                  <copy-outline/>
-                </n-icon>
-              </n-button>
-
-              <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em"
-                        @click="openUrl(`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`)">
-                  <open-outline/>
-                </n-icon>
-              </n-button>
+              <inline-code :src="mod.steamWorkshopId.toString()"></inline-code>
+              <JumpTo :url="`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`"></JumpTo>
             </n-descriptions-item>
-
-
+            <!-- Expected Hash -->
+            <n-descriptions-item :label="$t('modCard.expectedHash')">
+              <inline-code :src="mod.expectedHash"></inline-code>
+            </n-descriptions-item>
             <!-- Home Directory -->
             <n-descriptions-item v-if="mod.homeDir" :label="$t('modCard.homeDir')">
-              <n-text code style="word-break: break-all;">{{ mod.homeDir }}</n-text>
-
-              <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em" @click="toClipboard(mod.homeDir)">
-                  <copy-outline/>
-                </n-icon>
-              </n-button>
-
-              <n-button size="small" style="margin-left: 0.5em; vertical-align: text-bottom" text>
-                <n-icon size="1.2em" @click="revealItemInDir(mod.homeDir)">
-                  <open-outline/>
-                </n-icon>
-              </n-button>
+              <inline-code :src="mod.homeDir"></inline-code>
+              <reveal :path="mod.homeDir"></reveal>
             </n-descriptions-item>
           </n-descriptions>
         </n-flex>
@@ -78,11 +46,9 @@
 
 <script lang="ts" setup>
 import type { BarotraumaMod } from "../../proto/mods.ts";
-import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
-import { CopyOutline, OpenOutline } from "@vicons/ionicons5";
-import useClipboard from "vue-clipboard3";
-
-const { toClipboard } = useClipboard();
+import InlineCode from "../utils/inlineCode.vue";
+import JumpTo from "../utils/jumpTo.vue";
+import Reveal from "../utils/Reveal.vue";
 
 interface Props {
 	mod: BarotraumaMod;

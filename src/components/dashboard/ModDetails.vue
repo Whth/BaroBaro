@@ -1,10 +1,31 @@
 <template>
-  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 61vh" x-gap="20" y-gap="2vh">
+  <n-grid v-if="mod!=null && mod.previewImage===undefined" cols="7" style="height: 61vh" x-gap="20" y-gap="2vh">
+    <!-- Image skeleton -->
+    <n-gi span="4">
+      <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
+    </n-gi>
+
+    <!-- Description skeleton -->
+    <n-gi span="3">
+      <n-skeleton :height="24" :repeat="6" text/>
+    </n-gi>
+
+    <!-- Tags skeleton -->
+    <n-gi span="7">
+      <n-space>
+        <n-skeleton v-for="i in 4" :key="i" height="1.7em" round width="60px"/>
+      </n-space>
+    </n-gi>
+  </n-grid>
+
+
+  <n-grid v-else-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 61vh" x-gap="20" y-gap="2vh">
+
     <n-gi span="4">
 
       <n-image :lazy="true" :src="mod.previewImage" width="100%">
         <template #error>
-          <n-icon :size="100" color="lightGrey">
+          <n-icon color="lightGrey" size="10vw" style="align-content: center">
             <ImageOutline/>
           </n-icon>
         </template>
@@ -14,29 +35,37 @@
     <n-gi span="3">
       <n-descriptions :column="2">
         <n-descriptions-item :label="$t('modDetails.name')" span="2">
-          <n-text code>{{ mod.name }}</n-text>
+          <inline-code :src="mod.name"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.author')" span="2">
-          <n-text code>{{ mod.creator }}</n-text>
+          <inline-code :src="(mod.creator ?? 0).toString()"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.lastModified')">
-          <n-text code>{{ formatTimestampToDate(mod.lastModified ?? 0) }}</n-text>
+          <inline-code :src="formatTimestampToDate(mod.lastModified ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.subscribers')">
-          <n-text code>{{ mod.subscribers }}</n-text>
+          <inline-code :src="(mod.subscribers ?? 0).toString()"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.size')">
-          <n-text code>{{ bytes(mod.size ?? 0) }}</n-text>
+          <inline-code :src="bytes(mod.size ?? 0) ?? 'null'"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.likes')">
-          <n-text code>{{ mod.likes }}</n-text>
+          <inline-code :src="(mod.likes ?? 0).toString()"/>
         </n-descriptions-item>
       </n-descriptions>
 
     </n-gi>
-
+    <n-gi span="7">
+      <n-flex>
+        <n-tag v-for="tag in mod.tags" :key="tag" :color="getTagColorConfig(tag)"
+               round
+               size="medium">{{ tag }}
+        </n-tag>
+      </n-flex>
+    </n-gi>
   </n-grid>
-  <n-h4 v-else>
+
+  <n-h4 v-else class="animate-bounce">
     {{ $t('modDetails.notSelected') }}
   </n-h4>
 </template>
@@ -48,6 +77,8 @@ import { ImageOutline } from "@vicons/ionicons5";
 import bytes from "bytes";
 import { Language, languageToJSON } from "../../proto/config.ts";
 import { onErrorCaptured } from "vue";
+import getTagColorConfig from "../../composables/coloredTag.ts";
+import InlineCode from "../utils/inlineCode.vue";
 
 onErrorCaptured((err, info) => {
 	console.warn("[BBob Error]", err, info);
@@ -75,5 +106,5 @@ interface Props {
 	mod: BarotraumaMod | null;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 </script>

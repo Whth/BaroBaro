@@ -11,6 +11,7 @@ use configuration::Config;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::soft_link;
+use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
@@ -20,9 +21,11 @@ use mod_analyzer::{BarotraumaMod, ModList};
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
 use base64::{Engine as _, engine::general_purpose};
+use futures::TryFutureExt;
 use logger::{debug, info};
 use steam_api::WorkshopItem;
 
+use mod_analyzer::retrieve_mod_metadata as get_mod_metadata;
 /// Writes the given configuration to disk in TOML format.
 ///
 /// This function ensures the configuration directory exists (creating it if necessary),
@@ -126,36 +129,9 @@ pub async fn retrieve_mod_metadata(
     mods: Vec<BarotraumaMod>,
     batch_size: usize,
 ) -> Result<Vec<BarotraumaMod>, String> {
-    info!("Retrieving mod metadata for {} mods", mods.len());
-    let retrieved: Vec<WorkshopItem> = STEAM_WORKSHOP_CLIENT
-        .read()
+    get_mod_metadata(mods, batch_size, STEAM_WORKSHOP_CLIENT.read().await.deref())
+        .map_err(|e| format!("{}, failed to retrieve mod metadata.", e))
         .await
-        .get_items_batched(
-            mods.iter()
-                .map(|baro_mod| baro_mod.steam_workshop_id)
-                .collect::<Vec<u64>>(),
-            batch_size,
-        )
-        .await
-        .map_err(|e| format!("{}, failed to retrieve mod metadata.", e))?;
-
-    let mut mapping = mods
-        .into_iter()
-        .map(|baro_mod| (baro_mod.steam_workshop_id, baro_mod))
-        .collect::<HashMap<u64, BarotraumaMod>>();
-    retrieved.into_iter().for_each(|item| {
-        if let Some(baro_mod) = mapping.get_mut(&item.published_file_id) {
-            baro_mod.size = item.file_size.into();
-            baro_mod.last_modified = item.time_updated.into();
-            baro_mod.description = item.description.clone().into();
-            baro_mod.preview_image = item.preview_url().to_string().into();
-            baro_mod.subscribers = item.subscriptions.into();
-            baro_mod.likes = item.favorited.into();
-            baro_mod.creator = item.creator.into();
-        }
-    });
-
-    Ok(mapping.into_values().collect())
 }
 
 /// Lists all enabled Barotrauma mods found in the configured game directory.

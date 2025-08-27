@@ -69,13 +69,7 @@ export async function retrieve_mod_metadata() {
 		const enabledMod = mapping.get(mod.steamWorkshopId);
 		console.log(`Updating metadata for ${mod.name}`);
 		if (enabledMod !== undefined) {
-			enabledMod.creator = mod.creator;
-			enabledMod.description = mod.description;
-			enabledMod.size = mod.size;
-			enabledMod.lastModified = mod.lastModified;
-			enabledMod.likes = mod.likes;
-			enabledMod.previewImage = mod.previewImage;
-			enabledMod.subscribers = mod.subscribers;
+			Object.assign(enabledMod, mod);
 		}
 	});
 }

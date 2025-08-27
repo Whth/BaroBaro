@@ -2460,11 +2460,13 @@ version = "0.1.0"
 dependencies = [
  "constants",
  "fs-utils",
+ "logger",
  "prost",
  "quick-xml 0.38.1",
  "rayon",
  "serde",
  "serde_json",
+ "steam-api",
  "transmission",
  "walkdir",
 ]

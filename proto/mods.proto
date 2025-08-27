@@ -40,6 +40,9 @@ message BarotraumaMod {
   optional uint64 creator = 14;
   // A description of the mod.
   optional string description = 15;
+
+  repeated string tags = 16;
+
 }
 
 // ModList represents a saved mod profile with ordered local mods.
