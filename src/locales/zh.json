@@ -101,6 +101,7 @@
 		"enableNotifications": "启用通知",
 		"browse": "浏览",
 		"save": "保存设置",
+		"saved": "设置已保存！",
 		"reset": "重置设置",
 		"resetPreferences": "恢复默认设置",
 		"resetConfirm": "确定要将所有界面偏好恢复为默认值吗？",

@@ -101,6 +101,7 @@
 		"enableNotifications": "Enable notifications",
 		"browse": "Browse",
 		"save": "Save Settings",
+		"saved": "Settings saved successfully!",
 		"reset": "Save Settings",
 		"resetPreferences": "Reset to Defaults",
 		"resetConfirm": "Are you sure you want to reset all UI preferences to defaults?",

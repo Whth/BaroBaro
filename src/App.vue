@@ -1,10 +1,13 @@
 <template>
   <n-config-provider :theme="currentTheme" autofocus>
-    <div class="app-container">
-      <Layout>
-        <router-view/>
-      </Layout>
-    </div>
+    <n-message-provider>
+
+      <div class="app-container">
+        <Layout>
+          <router-view/>
+        </Layout>
+      </div>
+    </n-message-provider>
   </n-config-provider>
 </template>
 

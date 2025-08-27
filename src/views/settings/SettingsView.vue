@@ -43,8 +43,13 @@ import TitledPage from "../../components/core/TitledPage.vue";
 import VersionInfo from "../../components/settings/VersionInfo.vue";
 import UIPreferences from "../../components/settings/UIPreferences.vue";
 import GeneralSettings from "../../components/settings/GeneralSettings.vue";
+import { useMessage } from "naive-ui";
+import { useI18n } from "vue-i18n";
 
 const activeTab = ref("general");
+const { t } = useI18n();
+
+const message = useMessage();
 
 const apply_and_save_config = async () => {
 	await save_config();
@@ -53,5 +58,6 @@ const apply_and_save_config = async () => {
 	);
 	currentTheme.value =
 		theme_mapping[config.value.uiConfig?.theme ?? Theme.Light];
+	message.success(t("settings.saved"));
 };
 </script>
