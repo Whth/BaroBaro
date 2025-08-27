@@ -39,18 +39,19 @@
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.author')" span="2">
           <inline-code :src="(mod.creator ?? 0).toString()"/>
+          <JumpTo :url="`https://steamcommunity.com/profiles/${mod.creator}`"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.lastModified')">
           <inline-code :src="formatTimestampToDate(mod.lastModified ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.subscribers')">
-          <inline-code :src="(mod.subscribers ?? 0).toString()"/>
+          <inline-code :src="abbreviate(mod.subscribers ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.size')">
           <inline-code :src="bytes(mod.size ?? 0) ?? 'null'"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.likes')">
-          <inline-code :src="(mod.likes ?? 0).toString()"/>
+          <inline-code :src="abbreviate(mod.likes ?? 0)"/>
         </n-descriptions-item>
       </n-descriptions>
 
@@ -72,6 +73,7 @@
 
 
 <script lang="ts" setup>
+import abbreviate from "number-abbreviate";
 import type { BarotraumaMod } from "../../proto/mods.ts";
 import { ImageOutline } from "@vicons/ionicons5";
 import bytes from "bytes";
@@ -79,6 +81,7 @@ import { Language, languageToJSON } from "../../proto/config.ts";
 import { onErrorCaptured } from "vue";
 import getTagColorConfig from "../../composables/coloredTag.ts";
 import InlineCode from "../utils/inlineCode.vue";
+import JumpTo from "../utils/jumpTo.vue";
 
 onErrorCaptured((err, info) => {
 	console.warn("[BBob Error]", err, info);

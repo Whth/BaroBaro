@@ -8,21 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@bbob/html':
-        specifier: ^4.2.0
-        version: 4.2.0
-      '@bbob/parser':
-        specifier: ^4.2.0
-        version: 4.2.0
-      '@bbob/preset-html5':
-        specifier: ^4.2.0
-        version: 4.2.0
-      '@bbob/preset-vue':
-        specifier: ^4.2.0
-        version: 4.2.0
-      '@bbob/vue3':
-        specifier: ^4.2.0
-        version: 4.2.0(vue@3.5.18(typescript@5.6.3))
       '@bufbuild/protobuf':
         specifier: ^2.7.0
         version: 2.7.0
@@ -44,6 +29,9 @@ importers:
       naive-ui:
         specifier: ^2.42.0
         version: 2.42.0(vue@3.5.18(typescript@5.6.3))
+      number-abbreviate:
+        specifier: ^2.0.0
+        version: 2.0.0
       vue:
         specifier: ^3.5.13
         version: 3.5.18(typescript@5.6.3)
@@ -57,9 +45,6 @@ importers:
         specifier: ^4.5.1
         version: 4.5.1(vue@3.5.18(typescript@5.6.3))
     devDependencies:
-      '@bbob/types':
-        specifier: ^4.2.0
-        version: 4.2.0
       '@biomejs/biome':
         specifier: ^2.2.0
         version: 2.2.0
@@ -69,6 +54,9 @@ importers:
       '@types/bytes':
         specifier: ^3.1.5
         version: 3.1.5
+      '@types/number-abbreviate':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@vitejs/plugin-vue':
         specifier: ^5.2.1
         version: 5.2.4(vite@6.3.5(@types/node@24.3.0))(vue@3.5.18(typescript@5.6.3))
@@ -103,35 +91,6 @@ packages:
   '@babel/types@7.28.2':
     resolution: {integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==}
     engines: {node: '>=6.9.0'}
-
-  '@bbob/core@4.2.0':
-    resolution: {integrity: sha512-i5VUIO6xx+TCrBE8plQF9KpW1z+0QcCh9GawCCWYG9KcZrEsyRy57my5/kem0a2lFxXjh0o+tgjQY9sCP5b3bw==}
-
-  '@bbob/html@4.2.0':
-    resolution: {integrity: sha512-mZG7MmE/YluH1/FNCr2Jv/Vz3Mq5stZ5tFAjBmYpVVN6Ndus4+FA84vKoHFdUHDiuU1p/e2/o/VUrwsWwLdoIA==}
-
-  '@bbob/parser@4.2.0':
-    resolution: {integrity: sha512-l8BppXjdQClrUiv+qIN0Oe6aS/vlH7CEduMreDaxYDadUPC0RMzxj9lXVjO0xTbFEVEIUJCGc53qnpiApLbx2g==}
-
-  '@bbob/plugin-helper@4.2.0':
-    resolution: {integrity: sha512-Uxs/UJROnkpcq5EJfz/8NCEYAcme8l6oAgMeWLX1nxWeieUhRgpY8BWQ9eQwUOXEKa0tsKVPnlmbUAjFhppVPw==}
-
-  '@bbob/preset-html5@4.2.0':
-    resolution: {integrity: sha512-X2EIeb2vqTz/n34KWQXEL5IC0SuB6i2/ltRpEaMTyK7IoDEs0XGIWcqVpenb7Z2d4eNA3gTWhkoUUkKlZmfQRQ==}
-
-  '@bbob/preset-vue@4.2.0':
-    resolution: {integrity: sha512-0JiYC+g+Sp/FbL6qVDppomc3Td3LCVHrgGE8EUj8xL1O613rwPrPhCKzmu2ktYUbWRWSljuL/DzUzy1bVIkViw==}
-
-  '@bbob/preset@4.2.0':
-    resolution: {integrity: sha512-IA+kxlrRcYBXE634B8W6uU2DO7VvrxeOqWUzIDKV2CgzTMpmCG875ihGp+Q3T+QxGwzG5S0L4GdmCIULTbzC4A==}
-
-  '@bbob/types@4.2.0':
-    resolution: {integrity: sha512-bSCZnNg0VrPosBBUVkjBDYVKNEqwT0jTNuzvAuNrZkuILgUKtLYI9GHuT8rY4lZecCb7UqGDsHsYt0YJO36eJg==}
-
-  '@bbob/vue3@4.2.0':
-    resolution: {integrity: sha512-SjkqgLdfDsa7Tt1gH3LOYrxWyocAyDYo8CN40JYqybG+0GrI7wwETPBX2Vx0exZyaRz+bdSHZFs4MTTszSGTpg==}
-    peerDependencies:
-      vue: 3.x
 
   '@biomejs/biome@2.2.0':
     resolution: {integrity: sha512-3On3RSYLsX+n9KnoSgfoYlckYBoU6VRM22cw1gB4Y0OuUVSYd/O/2saOJMrA4HFfA1Ff0eacOvMN1yAAvHtzIw==}
@@ -597,6 +556,9 @@ packages:
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
 
+  '@types/number-abbreviate@2.0.0':
+    resolution: {integrity: sha512-1PGyOdpS/IUhXy0qsZXvMUOOdvChm2HtwRjQ/PPscmnOtdclD/Zg8G/lfcdyudVRxMbJx7VyXTcsf9Mz+pUqKw==}
+
   '@vicons/ionicons5@0.13.0':
     resolution: {integrity: sha512-zvZKBPjEXKN7AXNo2Na2uy+nvuv6SP4KAMQxpKL2vfHMj0fSvuw7JZcOPCjQC3e7ayssKnaoFVAhbYcW6v41qQ==}
 
@@ -779,6 +741,9 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  number-abbreviate@2.0.0:
+    resolution: {integrity: sha512-A28RCggQAd0GPafgnijus1IV48TD8lbVt/J6xzkhcfk7jvXbWbh5aTaQsMjZjWAJ6LK6EoGf306RzJsdu12OqQ==}
+
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
 
@@ -936,53 +901,6 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-
-  '@bbob/core@4.2.0':
-    dependencies:
-      '@bbob/parser': 4.2.0
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/html@4.2.0':
-    dependencies:
-      '@bbob/core': 4.2.0
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/parser@4.2.0':
-    dependencies:
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/plugin-helper@4.2.0':
-    dependencies:
-      '@bbob/types': 4.2.0
-
-  '@bbob/preset-html5@4.2.0':
-    dependencies:
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/preset': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/preset-vue@4.2.0':
-    dependencies:
-      '@bbob/preset-html5': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/preset@4.2.0':
-    dependencies:
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/types': 4.2.0
-
-  '@bbob/types@4.2.0': {}
-
-  '@bbob/vue3@4.2.0(vue@3.5.18(typescript@5.6.3))':
-    dependencies:
-      '@bbob/core': 4.2.0
-      '@bbob/html': 4.2.0
-      '@bbob/plugin-helper': 4.2.0
-      '@bbob/types': 4.2.0
-      vue: 3.5.18(typescript@5.6.3)
 
   '@biomejs/biome@2.2.0':
     optionalDependencies:
@@ -1261,6 +1179,8 @@ snapshots:
       undici-types: 7.10.0
     optional: true
 
+  '@types/number-abbreviate@2.0.0': {}
+
   '@vicons/ionicons5@0.13.0': {}
 
   '@vitejs/plugin-vue@5.2.4(vite@6.3.5(@types/node@24.3.0))(vue@3.5.18(typescript@5.6.3))':
@@ -1487,6 +1407,8 @@ snapshots:
       vueuc: 0.4.64(vue@3.5.18(typescript@5.6.3))
 
   nanoid@3.3.11: {}
+
+  number-abbreviate@2.0.0: {}
 
   path-browserify@1.0.1: {}
 
