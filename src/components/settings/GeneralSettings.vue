@@ -68,111 +68,104 @@
 </template>
 
 <script lang="ts" setup>
-import {config, refresh_config} from "../../invokes.ts";
-import {Level, SteamCmdConfig} from "../../proto/config.ts";
-import {computed, onMounted} from "vue";
-import {message, open} from "@tauri-apps/plugin-dialog";
-
+import { config, refresh_config } from "../../invokes.ts";
+import { Level, SteamCmdConfig } from "../../proto/config.ts";
+import { computed, onMounted } from "vue";
+import { message, open } from "@tauri-apps/plugin-dialog";
 
 const steamcmd_uname = computed({
-      get: () => config.value.steamcmdConfig?.username ?? "",
-      set: (newValue) => {
-        if (config.value.steamcmdConfig) {
-          config.value.steamcmdConfig.username = newValue;
-
-        } else {
-          config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
-              {username: newValue,}
-          )
-        }
-      }
-    }
-);
+	get: () => config.value.steamcmdConfig?.username ?? "",
+	set: (newValue) => {
+		if (config.value.steamcmdConfig) {
+			config.value.steamcmdConfig.username = newValue;
+		} else {
+			config.value.steamcmdConfig = SteamCmdConfig.fromPartial({
+				username: newValue,
+			});
+		}
+	},
+});
 
 const steamcmd_pwd = computed({
-  get: () => config.value.steamcmdConfig?.password ?? "",
-  set: (newValue) => {
-    if (config.value.steamcmdConfig) {
-      config.value.steamcmdConfig.password = newValue;
-    } else {
-      config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
-          {password: newValue,}
-      )
-    }
-  }
+	get: () => config.value.steamcmdConfig?.password ?? "",
+	set: (newValue) => {
+		if (config.value.steamcmdConfig) {
+			config.value.steamcmdConfig.password = newValue;
+		} else {
+			config.value.steamcmdConfig = SteamCmdConfig.fromPartial({
+				password: newValue,
+			});
+		}
+	},
 });
 
 const parallel = computed({
-  get: () => config.value.steamcmdConfig?.parallel ?? 0,
-  set: (newValue) => {
-    if (config.value.steamcmdConfig) {
-      config.value.steamcmdConfig.parallel = newValue;
-    } else {
-      config.value.steamcmdConfig = SteamCmdConfig.fromPartial(
-          {parallel: newValue,}
-      )
-    }
-  }
+	get: () => config.value.steamcmdConfig?.parallel ?? 0,
+	set: (newValue) => {
+		if (config.value.steamcmdConfig) {
+			config.value.steamcmdConfig.parallel = newValue;
+		} else {
+			config.value.steamcmdConfig = SteamCmdConfig.fromPartial({
+				parallel: newValue,
+			});
+		}
+	},
 });
 
-
 const logLevelOptions = [
-  {label: "Trace", value: Level.Trace},
-  {label: "Debug", value: Level.Debug},
-  {label: "Info", value: Level.Info},
-  {label: "Warning", value: Level.Warn},
-  {label: "Error", value: Level.Error},
+	{ label: "Trace", value: Level.Trace },
+	{ label: "Debug", value: Level.Debug },
+	{ label: "Info", value: Level.Info },
+	{ label: "Warning", value: Level.Warn },
+	{ label: "Error", value: Level.Error },
 ];
-
 
 onMounted(refresh_config);
 const loglevel = computed({
-  get: () => config.value.loglevel,
-  set: (newValue) => {
-    if (newValue === Level.UNRECOGNIZED) {
-      newValue = Level.Info;
-    }
-    config.value.loglevel = newValue;
-  },
+	get: () => config.value.loglevel,
+	set: (newValue) => {
+		if (newValue === Level.UNRECOGNIZED) {
+			newValue = Level.Info;
+		}
+		config.value.loglevel = newValue;
+	},
 });
 
 const showError = async (title: string, error: any) => {
-  console.error(title, error);
-  await message(`Error: ${error.message || error}`, {title, kind: "error"});
+	console.error(title, error);
+	await message(`Error: ${error.message || error}`, { title, kind: "error" });
 };
 
 const browseGamePath = async () => {
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select Barotrauma Game Installation Path",
-    });
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select Barotrauma Game Installation Path",
+		});
 
-    if (selected) {
-      config.value.gameHome = selected as string;
-    }
-  } catch (error) {
-    await showError("Failed to select game path", error);
-  }
+		if (selected) {
+			config.value.gameHome = selected as string;
+		}
+	} catch (error) {
+		await showError("Failed to select game path", error);
+	}
 };
 
 const browseSteamCmdPath = async () => {
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Select SteamCMD Path",
-    });
+	try {
+		const selected = await open({
+			directory: true,
+			multiple: false,
+			title: "Select SteamCMD Path",
+		});
 
-    if (selected) {
-      config.value.steamcmdHome = selected as string;
-    }
-  } catch (error) {
-    await showError("Failed to select SteamCMD path", error);
-  }
+		if (selected) {
+			config.value.steamcmdHome = selected as string;
+		}
+	} catch (error) {
+		await showError("Failed to select SteamCMD path", error);
+	}
 };
-
-
 </script>
 

@@ -10,15 +10,16 @@
 use configuration::Config;
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
+use std::fs::soft_link;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use mod_analyzer::{BarotraumaMod, ModList};
 
 use crate::build_info::BuildInfo;
-use crate::once::{BARO_MANAGER, STEAMCMD_MANAGER, STEAM_WORKSHOP_CLIENT};
-use base64::{engine::general_purpose, Engine as _};
+use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
+use base64::{Engine as _, engine::general_purpose};
 use logger::{debug, info};
 use steam_api::WorkshopItem;
 
@@ -44,9 +45,8 @@ use steam_api::WorkshopItem;
 pub fn write_config(config: Config) -> Result<(), String> {
     fs::create_dir_all(ROAMING.clone())
         .map_err(|e| format!("{}, failed to create config directory.", e))?;
-    config.to_file(
-        GLOBAL_CONFIG_FILE.clone(),
-    )
+    config
+        .to_file(GLOBAL_CONFIG_FILE.clone())
         .map_err(|e| format!("{}, failed to write config file.", e))
 }
 
@@ -69,7 +69,8 @@ pub fn write_config(config: Config) -> Result<(), String> {
 pub fn read_config() -> Result<Config, String> {
     if GLOBAL_CONFIG_FILE.exists() {
         debug!("Reading config file.");
-        Ok(Config::from_file(GLOBAL_CONFIG_FILE.as_path()).map_err(|e| format!("{}, failed to parse config file.", e))?)
+        Ok(Config::from_file(GLOBAL_CONFIG_FILE.as_path())
+            .map_err(|e| format!("{}, failed to parse config file.", e))?)
     } else {
         Ok(Config::default_settings())
     }
@@ -120,39 +121,42 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         .collect::<Vec<_>>())
 }
 
-
 #[tauri::command]
-pub async fn retrieve_mod_metadata(mods: Vec<BarotraumaMod>, batch_size: usize) -> Result<Vec<BarotraumaMod>, String> {
+pub async fn retrieve_mod_metadata(
+    mods: Vec<BarotraumaMod>,
+    batch_size: usize,
+) -> Result<Vec<BarotraumaMod>, String> {
     info!("Retrieving mod metadata for {} mods", mods.len());
-    let retrieved: Vec<WorkshopItem> = STEAM_WORKSHOP_CLIENT.read()
-        .await.get_items_batched(mods.iter().map(|baro_mod| baro_mod.steam_workshop_id).collect::<Vec<u64>>(), batch_size)
-        .await.map_err(|e| format!("{}, failed to retrieve mod metadata.", e))?;
-
-    let mut mapping = mods.into_iter()
-        .map(
-            |baro_mod|
-                (baro_mod.steam_workshop_id, baro_mod)
+    let retrieved: Vec<WorkshopItem> = STEAM_WORKSHOP_CLIENT
+        .read()
+        .await
+        .get_items_batched(
+            mods.iter()
+                .map(|baro_mod| baro_mod.steam_workshop_id)
+                .collect::<Vec<u64>>(),
+            batch_size,
         )
+        .await
+        .map_err(|e| format!("{}, failed to retrieve mod metadata.", e))?;
+
+    let mut mapping = mods
+        .into_iter()
+        .map(|baro_mod| (baro_mod.steam_workshop_id, baro_mod))
         .collect::<HashMap<u64, BarotraumaMod>>();
-    retrieved.into_iter()
-        .for_each(
-            |item|
-                if let Some(baro_mod) = mapping.get_mut(&item.published_file_id) {
-                    baro_mod.size = item.file_size.into();
-                    baro_mod.last_modified = item.time_updated.into();
-                    baro_mod.description = item.description.clone().into();
-                    baro_mod.preview_image = item.preview_url().to_string().into();
-                    baro_mod.subscribers = item.subscriptions.into();
-                    baro_mod.likes = item.favorited.into();
-                    baro_mod.creator = item.creator.into();
-                }
-        );
+    retrieved.into_iter().for_each(|item| {
+        if let Some(baro_mod) = mapping.get_mut(&item.published_file_id) {
+            baro_mod.size = item.file_size.into();
+            baro_mod.last_modified = item.time_updated.into();
+            baro_mod.description = item.description.clone().into();
+            baro_mod.preview_image = item.preview_url().to_string().into();
+            baro_mod.subscribers = item.subscriptions.into();
+            baro_mod.likes = item.favorited.into();
+            baro_mod.creator = item.creator.into();
+        }
+    });
 
-    Ok(
-        mapping.into_values().collect()
-    )
+    Ok(mapping.into_values().collect())
 }
-
 
 /// Lists all enabled Barotrauma mods found in the configured game directory.
 #[tauri::command]
@@ -169,7 +173,6 @@ pub async fn list_enabled_mods() -> Result<Vec<BarotraumaMod>, String> {
         .refresh_mods()?
         .enabled_mods()
 }
-
 
 /// Downloads the specified mods using SteamCMD.
 #[tauri::command]
@@ -273,17 +276,37 @@ pub fn get_background_image() -> Result<Option<String>, String> {
     }
 }
 
-
 /// Returns the version information of the application.
 #[tauri::command]
 pub fn get_build_info() -> BuildInfo {
     BuildInfo {
         version: crate::rust_built_info::PKG_VERSION.to_string(),
-        commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7].into(),
+        commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7]
+            .into(),
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
 }
 
+#[tauri::command]
+pub fn link_directory(src: String, dst: String) -> Result<(), String> {
+    info!("Creating soft link from {} to {}", src, dst);
+    let src = Path::new(src.as_str());
+    let dst = Path::new(dst.as_str());
 
+    #[cfg(windows)]
+    std::os::windows::fs::symlink_dir(src, dst).map_err(|e| {
+        format!(
+            "Failed to create symbolic link: {} -> {}.\n\
+             Error: {}. \n\
+             Note: You may need admin rights or to enable Developer Mode on Windows.",
+            src.display(),
+            dst.display(),
+            e
+        )
+    })?;
+    #[cfg(unix)]
+    std::os::unix::fs::symlink(src, dst)
+        .map_err(|e| format!("{}, failed to create soft link.", e))?;
 
-
+    Ok(())
+}

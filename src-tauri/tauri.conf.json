@@ -15,7 +15,9 @@
         "title": "BaroBaro",
         "width": 850,
         "height": 600,
-        "transparent": true
+        "transparent": true,
+        "minWidth": 850,
+        "minHeight": 600
       }
     ],
     "security": {

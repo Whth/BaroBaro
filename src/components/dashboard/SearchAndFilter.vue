@@ -33,9 +33,9 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue";
-import {SearchOutline} from "@vicons/ionicons5";
-import type {SelectOption} from "naive-ui";
+import { ref, watch } from "vue";
+import { SearchOutline } from "@vicons/ionicons5";
+import type { SelectOption } from "naive-ui";
 
 // 响应式数据
 const searchQuery = ref("");
@@ -44,36 +44,36 @@ const typeFilter = ref("all");
 
 // 下拉选项
 const statusOptions: SelectOption[] = [
-  {label: "All Status", value: "all"},
-  {label: "Enabled", value: "enabled"},
-  {label: "Disabled", value: "disabled"},
+	{ label: "All Status", value: "all" },
+	{ label: "Enabled", value: "enabled" },
+	{ label: "Disabled", value: "disabled" },
 ];
 
 const typeOptions: SelectOption[] = [
-  {label: "All Types", value: "all"},
-  {label: "Local", value: "local"},
-  {label: "Remote", value: "remote"},
+	{ label: "All Types", value: "all" },
+	{ label: "Local", value: "local" },
+	{ label: "Remote", value: "remote" },
 ];
 
 // 监听变化并发出事件
 const emit =
-    defineEmits<
-        (
-            e: "filter-change",
-            filters: {
-              searchQuery: string;
-              statusFilter: string;
-              typeFilter: string;
-            },
-        ) => void
-    >();
+	defineEmits<
+		(
+			e: "filter-change",
+			filters: {
+				searchQuery: string;
+				statusFilter: string;
+				typeFilter: string;
+			},
+		) => void
+	>();
 
 watch([searchQuery, statusFilter, typeFilter], () => {
-  emit("filter-change", {
-    searchQuery: searchQuery.value,
-    statusFilter: statusFilter.value,
-    typeFilter: typeFilter.value,
-  });
+	emit("filter-change", {
+		searchQuery: searchQuery.value,
+		statusFilter: statusFilter.value,
+		typeFilter: typeFilter.value,
+	});
 });
 </script>
 

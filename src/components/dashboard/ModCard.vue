@@ -77,31 +77,26 @@
 </template>
 
 <script lang="ts" setup>
-import type {BarotraumaMod} from '../../proto/mods.ts'
-import {openUrl, revealItemInDir} from '@tauri-apps/plugin-opener'
-import {CopyOutline, OpenOutline} from '@vicons/ionicons5'
-import useClipboard from 'vue-clipboard3'
+import type { BarotraumaMod } from "../../proto/mods.ts";
+import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
+import { CopyOutline, OpenOutline } from "@vicons/ionicons5";
+import useClipboard from "vue-clipboard3";
 
-const {toClipboard} = useClipboard()
+const { toClipboard } = useClipboard();
 
 interface Props {
-  mod: BarotraumaMod,
-  index: number
+	mod: BarotraumaMod;
+	index: number;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-
-interface Emits {
-  (e: 'modSelected', data: BarotraumaMod): void
-}
+type Emits = (e: "modSelected", data: BarotraumaMod) => void;
 
 const emit = defineEmits<Emits>();
 
 const onClick = () => {
-  console.log(`Selected mod: ${props.mod.name}`)
-  emit("modSelected", props.mod);
-}
-
-
+	console.log(`Selected mod: ${props.mod.name}`);
+	emit("modSelected", props.mod);
+};
 </script>

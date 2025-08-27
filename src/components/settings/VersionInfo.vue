@@ -95,15 +95,20 @@
 </template>
 
 <script lang="ts" setup>
-import {DocumentText, GameController, InformationCircle, Link,} from "@vicons/ionicons5";
-import {get_build_info} from "../../invokes.ts";
-import {onMounted, type Ref, ref} from "vue";
-import {BuildInfo} from "../../proto/build_info.ts";
+import {
+	DocumentText,
+	GameController,
+	InformationCircle,
+	Link,
+} from "@vicons/ionicons5";
+import { get_build_info } from "../../invokes.ts";
+import { onMounted, type Ref, ref } from "vue";
+import { BuildInfo } from "../../proto/build_info.ts";
 
 const build_info: Ref<BuildInfo> = ref(BuildInfo.create());
 
 onMounted(async () => {
-  build_info.value = await get_build_info();
+	build_info.value = await get_build_info();
 });
 </script>
 

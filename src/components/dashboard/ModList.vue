@@ -10,15 +10,14 @@
 
 
 <script lang="ts" setup>
-import {enabled_mods,} from "../../invokes.ts";
+import { enabled_mods } from "../../invokes.ts";
 import ModCard from "./ModCard.vue";
-import {BarotraumaMod} from "../../proto/mods.ts";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 
 const emit = defineEmits(["viewingMod"]);
 
 function viewMod(mod: BarotraumaMod) {
-  emit("viewingMod", mod);
+	emit("viewingMod", mod);
 }
-
 </script>
 
