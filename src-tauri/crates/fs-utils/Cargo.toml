@@ -1,0 +1,19 @@
+[package]
+name = "fs-utils"
+edition.workspace = true
+license-file.workspace = true
+authors.workspace = true
+version.workspace = true
+
+[dependencies]
+logger = { path = "../logger" }
+walkdir = "2.5.0"
+rayon = "1.11.0"
+
+blake3 = { version = "1.8.2", features = ["rayon"] }
+
+
+
+[dev-dependencies]
+
+tempfile = "3.20.0"

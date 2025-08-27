@@ -11,10 +11,24 @@ pub struct SteamCMD {
 }
 
 impl SteamCMD {
+    const WORKSHOP_DIR_BASE: &'static str = r"steamapps\workshop\content";
+
     pub fn new(home_dir: PathBuf) -> SteamCMD {
         SteamCMD {
             home_dir: Some(home_dir),
         }
+    }
+
+    pub fn workshop_item_dir(&self, app_id: usize, mod_id: usize) -> Result<PathBuf, String> {
+        self.home_dir
+            .clone()
+            .map(|home_dir: PathBuf| {
+                home_dir
+                    .join(SteamCMD::WORKSHOP_DIR_BASE)
+                    .join(app_id.to_string())
+                    .join(mod_id.to_string())
+            })
+            .ok_or_else(|| "SteamCMD home directory not set".to_string())
     }
 
     pub fn set_steamcmd_home(&mut self, path: PathBuf) -> &mut Self {

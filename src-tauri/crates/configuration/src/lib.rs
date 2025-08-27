@@ -14,6 +14,7 @@ impl Config {
             game_home: "".to_string(),
             steamcmd_home: "".to_string(),
             metadata_retrieve_batchsize: 20,
+            install_strategy: InstallStrategy::Copy as i32,
             steamcmd_config: Some(SteamCmdConfig {
                 username: "".to_string(),
                 password: "".to_string(),
@@ -28,7 +29,6 @@ impl Config {
             }),
         }
     }
-
 
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
         info!("Loading config from {:?}", path.as_ref());
@@ -55,5 +55,3 @@ impl Provider for Config {
         figment::providers::Serialized::defaults(Config::default()).data()
     }
 }
-
-

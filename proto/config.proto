@@ -22,6 +22,15 @@ message SteamCmdConfig {
   uint64 parallel = 5;
 }
 
+
+// InstallStrategy represents the strategies for installing mods.
+enum InstallStrategy {
+  // Copy the mod files to the game directory.
+  Copy = 0;
+  // Create symbolic links to the mod files.
+  Link = 1;
+}
+
 // Config contains general configuration settings for the application.
 message Config {
   // The logging level for the application (e.g., debug, info, warn, error).
@@ -31,7 +40,9 @@ message Config {
   // The home directory for SteamCMD files.
   string steamcmdHome = 3;
   // Metadata retrieve batch size
-  uint64 metadataRetrieveBatchsize = 5;
+  uint64 metadataRetrieveBatchsize = 4;
+  // Install strategy of the mod
+  InstallStrategy installStrategy = 5;
   // Configuration settings specific to SteamCMD.
   SteamCmdConfig steamcmdConfig = 6;
   // The configuration for the user interface.
