@@ -194,6 +194,7 @@
 		"likes": "Likes"
 	},
 	"modList": {
-		"title": "Mod List"
+		"title": "Mod List",
+		"empty": "No mods found"
 	}
 }

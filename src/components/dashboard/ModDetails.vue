@@ -45,13 +45,13 @@
           <inline-code :displayText="formatTimestampToDate(mod.lastModified ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.subscribers')">
-          <inline-code :displayText="abbreviate(mod.subscribers ?? 0)"/>
+          <inline-code :displayText="abbreviate(mod.subscribers ?? 0).toString()"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.size')">
           <inline-code :displayText="bytes(mod.size ?? 0) ?? 'null'"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.likes')">
-          <inline-code :displayText="abbreviate(mod.likes ?? 0)"/>
+          <inline-code :displayText="abbreviate(mod.likes ?? 0).toString()"/>
         </n-descriptions-item>
       </n-descriptions>
 

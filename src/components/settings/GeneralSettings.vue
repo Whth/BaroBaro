@@ -1,9 +1,9 @@
 <template>
   <n-grid :cols="1" :x-gap="16" :y-gap="16">
 
-    <!-- Group 3: 游戏与 Steam 配置 -->
+
     <n-gi>
-      <n-card class="form-section animate-fade-in">
+      <n-card class="animate-fade-in">
         <template #header>
           <n-h3>{{ $t('settings.gameAndSteam') }}</n-h3>
         </template>
@@ -55,11 +55,19 @@
                 :placeholder="$t('settings.parallelDownloadsPlaceholder')"
             />
           </n-form-item>
+
+
+          <n-form-item :label="$t('settings.installStrategy')">
+            <n-select
+                v-model:value="installStrategy"
+                :options="installStrategyOptions"
+                style="width: 200px"
+            />
+          </n-form-item>
         </n-form>
       </n-card>
     </n-gi>
 
-    <!-- Group 4: 日志与高级设置 -->
     <n-gi>
       <n-card class="form-section animate-fade-in">
         <template #header>
@@ -92,7 +100,13 @@
 import { computed, onMounted } from "vue";
 import { config, refresh_config } from "../../invokes.ts";
 import { message, open } from "@tauri-apps/plugin-dialog";
-import { Level, levelToJSON, SteamCmdConfig } from "../../proto/config.ts";
+import {
+	InstallStrategy,
+	installStrategyToJSON,
+	Level,
+	levelToJSON,
+	SteamCmdConfig,
+} from "../../proto/config.ts";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -106,9 +120,17 @@ const loglevel = computed({
 		config.value.loglevel = newValue;
 	},
 });
-// ========================
-// Steam 配置计算属性
-// ========================
+
+const installStrategy = computed({
+	get: () => config.value.installStrategy,
+	set: (newValue) => {
+		if (newValue === InstallStrategy.UNRECOGNIZED) {
+			newValue = InstallStrategy.Copy;
+		}
+		config.value.installStrategy = newValue;
+	},
+});
+
 const steamcmd_uname = computed({
 	get: () => config.value.steamcmdConfig?.username ?? "",
 	set: (newValue) => {
@@ -148,9 +170,6 @@ const parallel = computed({
 	},
 });
 
-// ========================
-// 下拉选项
-// ========================
 const logLevelOptions = [
 	{ label: levelToJSON(Level.Trace), value: Level.Trace },
 	{ label: levelToJSON(Level.Debug), value: Level.Debug },
@@ -159,9 +178,16 @@ const logLevelOptions = [
 	{ label: levelToJSON(Level.Error), value: Level.Error },
 ];
 
-// ========================
-// 方法
-// ========================
+const installStrategyOptions = [
+	{
+		label: installStrategyToJSON(InstallStrategy.Copy),
+		value: InstallStrategy.Copy,
+	},
+	{
+		label: installStrategyToJSON(InstallStrategy.Link),
+		value: InstallStrategy.Link,
+	},
+];
 
 const showError = async (title: string, error: any) => {
 	console.error(title, error);
@@ -200,8 +226,5 @@ const browseSteamCmdPath = async () => {
 	}
 };
 
-// ========================
-// 生命周期
-// ========================
 onMounted(refresh_config);
 </script>

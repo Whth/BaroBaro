@@ -21,7 +21,7 @@ use mod_analyzer::{BarotraumaMod, ModList};
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
 use base64::{Engine as _, engine::general_purpose};
-use futures::TryFutureExt;
+use futures::{FutureExt, TryFutureExt};
 use logger::{debug, info};
 use steam_api::WorkshopItem;
 
@@ -261,4 +261,15 @@ pub fn get_build_info() -> BuildInfo {
             .into(),
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }
+}
+
+#[tauri::command]
+pub async fn is_barotrauma_mod(item_id: usize) -> Result<bool, String> {
+    STEAM_WORKSHOP_CLIENT
+        .read()
+        .await
+        .get_item(item_id as u64)
+        .map_err(|e| format!("{}, failed to retrieve mod metadata.", e))
+        .await
+        .map(|item: WorkshopItem| item.consumer_app_id as usize == BAROTRAUMA_GAME_ID)
 }

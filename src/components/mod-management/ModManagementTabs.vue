@@ -20,20 +20,17 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import InstallModTab from "./InstallModTab.vue";
 import DownloadModTab from "./DownloadModTab.vue";
 import UpdateModTab from "./UpdateModTab.vue";
 import RemoveModTab from "./RemoveModTab.vue";
+import { useI18n } from "vue-i18n";
 
-// 定义标签页配置
+const { t } = useI18n();
 const tabs = [
-	{ id: "install", name: "Install Mod", component: InstallModTab },
-	{ id: "download", name: "Download Mod", component: DownloadModTab },
-	{ id: "update", name: "Update Mod", component: UpdateModTab },
-	{ id: "remove", name: "Remove Mod", component: RemoveModTab },
+	{ id: "download", name: t("tabs.downloadMod"), component: DownloadModTab },
+	{ id: "update", name: t("tabs.updateMod"), component: UpdateModTab },
+	{ id: "remove", name: t("tabs.removeMod"), component: RemoveModTab },
 ];
-
-// 当前激活的标签页
-const activeTab = ref("install");
+const activeTab = ref("download");
 </script>
 
