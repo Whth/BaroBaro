@@ -21,6 +21,7 @@ use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
 use base64::{Engine as _, engine::general_purpose};
 use fs_extra::dir::CopyOptions;
 use futures::TryFutureExt;
+use futures::future::try_join_all;
 use logger::{debug, info};
 use steam_api::WorkshopItem;
 use tokio::fs::symlink_dir;
@@ -275,40 +276,45 @@ pub async fn is_barotrauma_mod(item_id: u64) -> Result<bool, String> {
 }
 
 #[tauri::command]
-pub async fn install_mod(item_id: u64) -> Result<(), String> {
+pub async fn install_mods(mod_ids: Vec<u64>) -> Result<(), String> {
     let conf: Config = read_config()?;
 
-    match conf.install_strategy {
-        s if InstallStrategy::Copy as i32 == s => {
-            let mod_dir: PathBuf = STEAMCMD_MANAGER
-                .read()
+    let fut: Vec<_> = mod_ids
+        .into_iter()
+        .map(|item_id| async move {
+            match conf.install_strategy {
+                s if InstallStrategy::Copy as i32 == s => {
+                    let mod_dir: PathBuf = STEAMCMD_MANAGER
+                        .read()
+                        .await
+                        .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?;
+                    fs_extra::copy_items(
+                        &[mod_dir],
+                        BARO_MANAGER.read().await.mod_dir()?,
+                        &CopyOptions::new().overwrite(true),
+                    )
+                    .map(|_| ())
+                    .map_err(|e| format!("{}, failed to copy mod.", e))
+                }
+                s if InstallStrategy::Link as i32 == s => symlink_dir(
+                    STEAMCMD_MANAGER
+                        .read()
+                        .await
+                        .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?,
+                    BARO_MANAGER
+                        .read()
+                        .await
+                        .mod_dir()?
+                        .join(item_id.to_string()),
+                )
                 .await
-                .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?;
-            fs_extra::copy_items(
-                &[mod_dir],
-                BARO_MANAGER.read().await.mod_dir()?,
-                &CopyOptions::new().overwrite(true),
-            )
-            .map(|_| ())
-            .map_err(|e| format!("{}, failed to copy mod.", e))?;
-        }
-        s if InstallStrategy::Link as i32 == s => {
-            symlink_dir(
-                STEAMCMD_MANAGER
-                    .read()
-                    .await
-                    .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?,
-                BARO_MANAGER
-                    .read()
-                    .await
-                    .mod_dir()?
-                    .join(item_id.to_string()),
-            )
-            .await
-            .map_err(|e| format!("{}, failed to symlink mod.", e))?;
-        }
-        _ => {}
-    }
+                .map_err(|e| format!("{}, failed to symlink mod.", e)),
+                _ => Err("Invalid install strategy".to_string()),
+            }
+        })
+        .collect();
+
+    try_join_all(fut).await?;
 
     Ok(())
 }

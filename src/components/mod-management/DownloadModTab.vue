@@ -58,170 +58,270 @@
 import { ref } from "vue";
 import { getSteamWorkshopId } from "../../composables/network.ts";
 import { CloseOutline } from "@vicons/ionicons5";
-import { download_mods, is_barotrauma_mod } from "../../invokes.ts";
+import {
+	download_mods,
+	install_mods,
+	is_barotrauma_mod,
+} from "../../invokes.ts";
 import { useMessage } from "naive-ui";
 
+// Initialize Naive UI message instance for user feedback
 const message = useMessage();
 
+// Interface defining the structure of a mod item in the queue
 interface ModItem {
-	id?: number;
-	url?: string;
-	status: "pending" | "downloading" | "completed" | "error";
-	verified?: boolean;
+	id?: number; // Steam Workshop ID (if available)
+	url?: string; // Original URL input (if provided)
+	status: "pending" | "downloading" | "completed" | "error"; // Current download status
+	verified?: boolean; // Whether the mod has passed validation
 }
 
-const modInput = ref("");
-const modQueue = ref<ModItem[]>([]);
-// Add loading state
-const isAddingMods = ref(false);
-const isProcessing = ref(false);
+// Reactive reference for user input (mod IDs or URLs)
+const modInput = ref<string>("");
 
-// Parse a single input line into a mod item
-const parseModInput = (input: string): ModItem => {
+// Reactive list representing the current download queue
+const modQueue = ref<ModItem[]>([]);
+
+// Loading states for UI feedback
+const isAddingMods = ref<boolean>(false); // True while parsing and adding mods
+const isProcessing = ref<boolean>(false); // True while downloading mods
+
+/**
+ * Parses a single line of user input into a ModItem object.
+ * Supports both direct IDs (e.g. 123456789) and URLs (e.g. https://steamcommunity.com/sharedfiles/filedetails/?id=123456789)
+ *
+ * @param line - The input string to parse
+ * @returns Parsed ModItem or null if input is invalid/empty
+ */
+const parseInputLine = (line: string): ModItem | null => {
+	const trimmed = line.trim();
+	if (!trimmed) return null;
+
 	const mod: ModItem = { status: "pending" };
 
-	if (input.startsWith("http")) {
-		mod.url = input;
-		const extractedId = getSteamWorkshopId(input);
-		if (extractedId !== null) {
-			mod.id = extractedId;
-		}
+	if (trimmed.startsWith("http")) {
+		mod.url = trimmed;
+		const id = getSteamWorkshopId(trimmed);
+		if (id !== null) mod.id = id;
 	} else {
-		const parsedId = Number(input.trim());
-		if (!isNaN(parsedId) && Number.isInteger(parsedId) && parsedId > 0) {
-			mod.id = parsedId;
+		const num = Number(trimmed);
+		if (!isNaN(num) && Number.isInteger(num) && num > 0) {
+			mod.id = num;
 		}
 	}
 
 	return mod;
 };
 
-// Validate if a mod is a valid Barotrauma mod
-const validateMod = async (mod: ModItem): Promise<boolean> => {
+/**
+ * Checks if a given mod is already present in the queue.
+ * Uses ID comparison first, falls back to URL if available.
+ *
+ * @param mod - The mod to check for duplication
+ * @returns True if the mod already exists in the queue
+ */
+const isDuplicateMod = (mod: ModItem): boolean => {
+	return modQueue.value.some((existing) => {
+		if (mod.id && existing.id) return mod.id === existing.id;
+		if (mod.url && existing.url) return mod.url === existing.url;
+		return false;
+	});
+};
+
+/**
+ * Validates whether the given mod is a valid Barotrauma workshop mod.
+ * Sets `verified` flag if valid.
+ *
+ * @param mod - The mod item to validate
+ * @returns Promise resolving to true if valid, false otherwise
+ */
+const verifyMod = async (mod: ModItem): Promise<boolean> => {
 	if (!mod.id) return false;
 
 	try {
-		return await is_barotrauma_mod(mod.id);
+		const isValid = await is_barotrauma_mod(mod.id);
+		if (isValid) {
+			mod.verified = true;
+		}
+		return isValid;
 	} catch (error) {
-		console.error("Error validating mod:", error);
+		console.error(`Failed to validate mod ${mod.id}:`, error);
 		return false;
 	}
 };
 
+/**
+ * Shows a warning message when a duplicate mod is added.
+ *
+ * @param mod - The duplicate mod to display in the message
+ */
+const showDuplicateWarning = (mod: ModItem) => {
+	message.warning(
+		`Mod "${mod.id ? `ID: ${mod.id}` : mod.url}" is already in the queue`,
+	);
+};
+
+/**
+ * Shows an error message when a mod fails validation.
+ *
+ * @param mod - The invalid mod to display in the message
+ */
+const showInvalidModWarning = (mod: ModItem) => {
+	message.error(
+		`Mod "${mod.id ? `ID: ${mod.id}` : mod.url}" is not a valid Barotrauma mod`,
+	);
+};
+
+/**
+ * Attempts to add a single mod (from one input line) to the queue.
+ * Handles parsing, deduplication, and validation.
+ *
+ * @param input - A single line of user input
+ */
+const addSingleModToQueue = async (input: string): Promise<void> => {
+	const mod = parseInputLine(input);
+	if (!mod) return;
+
+	if (isDuplicateMod(mod)) {
+		showDuplicateWarning(mod);
+		return;
+	}
+
+	// Only verify mods that have an ID
+	if (mod.id) {
+		const isValid = await verifyMod(mod);
+		if (!isValid) {
+			mod.status = "error";
+			showInvalidModWarning(mod);
+		}
+	}
+
+	modQueue.value.push(mod);
+};
+
+/**
+ * Adds all non-empty lines from the input field to the download queue.
+ * Processes each line individually, validates, and provides user feedback.
+ */
 const addMods = async () => {
-	// Set loading state
 	isAddingMods.value = true;
+	const lines = modInput.value.split("\n").filter((line) => line.trim() !== "");
 
-	const inputs = modInput.value
-		.split("\n")
-		.filter((item) => item.trim() !== "");
+	if (lines.length === 0) {
+		message.info("No input provided.");
+		isAddingMods.value = false;
+		return;
+	}
 
-	for (const input of inputs) {
-		const mod = parseModInput(input);
-
-		// Check if mod is already in queue
-		const isDuplicate = modQueue.value.some((existingMod) => {
-			// Compare by ID if available
-			if (mod.id && existingMod.id) {
-				return mod.id === existingMod.id;
-			}
-			// Otherwise compare by URL if available
-			if (mod.url && existingMod.url) {
-				return mod.url === existingMod.url;
-			}
-			// If neither ID nor URL match, not a duplicate
-			return false;
-		});
-
-		// Skip if duplicate
-		if (isDuplicate) {
-			// Show message to user about duplication
-			message.warning(
-				`Mod "${mod.id ? mod.id : mod.url}" is already in the queue`,
-			);
-			continue;
-		}
-
-		// Only validate mods with IDs
-		if (mod.id) {
-			const isValid = await validateMod(mod);
-			if (!isValid) {
-				mod.status = "error";
-			} else {
-				// Add verification flag
-				mod.verified = true;
-			}
-		}
-
-		modQueue.value.push(mod);
+	for (const line of lines) {
+		await addSingleModToQueue(line);
 	}
 
 	modInput.value = "";
-	// Reset loading state
+	const validCount = modQueue.value.filter((m) => m.status !== "error").length;
+	message.success(`Added ${validCount} mods to queue.`);
 	isAddingMods.value = false;
 };
 
+/**
+ * Clears the input textarea.
+ */
 const clearInput = () => {
 	modInput.value = "";
 };
 
+/**
+ * Removes a mod from the queue by index.
+ *
+ * @param index - Index of the mod in the queue array
+ */
 const removeFromQueue = (index: number) => {
 	modQueue.value.splice(index, 1);
 };
 
+/**
+ * Clears the entire download queue.
+ */
 const clearQueue = () => {
 	modQueue.value = [];
 };
 
-const processQueue = async () => {
-	// Set processing state
-	isProcessing.value = true;
-
-	// Get all valid mod IDs from the queue
-	const modIds = modQueue.value
+/**
+ * Extracts all valid mod IDs from the queue (those with ID and not in error state).
+ *
+ * @returns Array of mod IDs ready for download
+ */
+const getValidModIds = (): number[] => {
+	return modQueue.value
 		.filter((mod) => mod.id && mod.status !== "error")
 		.map((mod) => mod.id as number);
+};
+
+/**
+ * Updates the status of multiple mods that match a condition.
+ *
+ * @param predicate - Function to test each mod
+ * @param status - New status to set
+ */
+const updateModStatus = (
+	predicate: (mod: ModItem) => boolean,
+	status: ModItem["status"],
+) => {
+	modQueue.value.forEach((mod) => {
+		if (predicate(mod)) {
+			mod.status = status;
+		}
+	});
+};
+
+/**
+ * Starts processing the entire download queue.
+ * Downloads all valid mods in one batch and updates their status accordingly.
+ */
+const processQueue = async () => {
+	const modIds = getValidModIds();
 
 	if (modIds.length === 0) {
-		isProcessing.value = false;
+		message.warning("No valid mods to download.");
 		return;
 	}
 
+	isProcessing.value = true;
+
 	try {
-		// Update status for all mods that will be downloaded
-		modQueue.value
-			.filter((mod) => mod.id && mod.status !== "error")
-			.forEach((mod) => {
-				mod.status = "downloading";
-			});
+		// Mark all valid mods as downloading
+		updateModStatus((mod) => !!mod.id && mod.status !== "error", "downloading");
 
-		// Call the download_mods function with all mod IDs
+		// Call backend to download all mods
 		await download_mods(modIds);
+		await install_mods(modIds);
+		// Mark successfully downloading mods as completed
+		updateModStatus(
+			(mod) => !!mod.id && mod.status === "downloading",
+			"completed",
+		);
 
-		// Update status for all mods to completed
-		modQueue.value
-			.filter((mod) => mod.id && mod.status === "downloading")
-			.forEach((mod) => {
-				mod.status = "completed";
-			});
-
-		message.success(`Successfully downloaded ${modIds.length} mods`);
+		message.success(`Successfully downloaded ${modIds.length} mods.`);
 	} catch (error) {
-		console.error("Error downloading mods:", error);
-		message.error("Failed to download mods");
+		console.error("Download failed:", error);
+		message.error("Failed to download mods.");
 
-		// Update status for all mods to error
-		modQueue.value
-			.filter((mod) => mod.id && mod.status === "downloading")
-			.forEach((mod) => {
-				mod.status = "error";
-			});
+		// Mark any downloading mods as failed
+		updateModStatus((mod) => !!mod.id && mod.status === "downloading", "error");
 	} finally {
 		isProcessing.value = false;
 	}
 };
 
-const getStatusType = (status: ModItem["status"]) => {
+/**
+ * Maps a mod's status string to a Naive UI tag type for visual styling.
+ *
+ * @param status - The current status of the mod
+ * @returns Corresponding tag type
+ */
+const getStatusType = (
+	status: ModItem["status"],
+): "default" | "warning" | "success" | "error" => {
 	switch (status) {
 		case "pending":
 			return "default";

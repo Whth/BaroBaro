@@ -86,3 +86,7 @@ export async function retrieve_mod_metadata() {
 export async function is_barotrauma_mod(itemId: number): Promise<boolean> {
 	return await invoke("is_barotrauma_mod", { itemId });
 }
+
+export async function install_mods(modIds: number[]): Promise<null> {
+	return await invoke("install_mods", { modIds });
+}
