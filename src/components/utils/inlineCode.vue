@@ -1,5 +1,5 @@
 <template>
-  <n-text code @click="copySrc(src)">{{ src }}</n-text>
+  <n-text code @click="copySrc(src ?? displayText)">{{ displayText }}</n-text>
 </template>
 
 <script lang="ts" setup>
@@ -8,7 +8,8 @@ import { useMessage } from "naive-ui";
 import { useI18n } from "vue-i18n";
 
 interface Props {
-	src: string;
+	displayText: string;
+	src?: string | null;
 }
 
 defineProps<Props>();

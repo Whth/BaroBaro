@@ -177,7 +177,7 @@
 	"modCard": {
 		"version": "版本",
 		"gameVersion": "游戏版本",
-		"steamWorkshopId": "Steam 创意工坊 ID",
+		"steamWorkshopId": "创意工坊ID",
 		"expectedHash": "预期哈希值",
 		"homeDir": "本地目录",
 		"corePackage": "核心包",

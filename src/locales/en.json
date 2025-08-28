@@ -177,7 +177,7 @@
 	"modCard": {
 		"version": "Version",
 		"gameVersion": "Game Version",
-		"steamWorkshopId": "Steam Workshop ID",
+		"steamWorkshopId": "Workshop ID",
 		"expectedHash": "Expected Hash",
 		"homeDir": "Home Directory",
 		"corePackage": "Core Package",

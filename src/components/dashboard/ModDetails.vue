@@ -1,5 +1,5 @@
 <template>
-  <n-grid v-if="mod!=null && mod.previewImage===undefined" cols="7" style="height: 61vh" x-gap="20" y-gap="2vh">
+  <n-grid v-if="mod!=null && mod.previewImage===undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
     <!-- Image skeleton -->
     <n-gi span="4">
       <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
@@ -19,7 +19,7 @@
   </n-grid>
 
 
-  <n-grid v-else-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 61vh" x-gap="20" y-gap="2vh">
+  <n-grid v-else-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
 
     <n-gi span="4">
 
@@ -35,23 +35,23 @@
     <n-gi span="3">
       <n-descriptions :column="2">
         <n-descriptions-item :label="$t('modDetails.name')" span="2">
-          <inline-code :src="mod.name"/>
+          <inline-code :displayText="mod.name"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.author')" span="2">
-          <inline-code :src="(mod.creator ?? 0).toString()"/>
+          <inline-code :displayText="(mod.creator ?? 0).toString()"/>
           <JumpTo :url="`https://steamcommunity.com/profiles/${mod.creator}`"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.lastModified')">
-          <inline-code :src="formatTimestampToDate(mod.lastModified ?? 0)"/>
+          <inline-code :displayText="formatTimestampToDate(mod.lastModified ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.subscribers')">
-          <inline-code :src="abbreviate(mod.subscribers ?? 0)"/>
+          <inline-code :displayText="abbreviate(mod.subscribers ?? 0)"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.size')">
-          <inline-code :src="bytes(mod.size ?? 0) ?? 'null'"/>
+          <inline-code :displayText="bytes(mod.size ?? 0) ?? 'null'"/>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('modDetails.likes')">
-          <inline-code :src="abbreviate(mod.likes ?? 0)"/>
+          <inline-code :displayText="abbreviate(mod.likes ?? 0)"/>
         </n-descriptions-item>
       </n-descriptions>
 
@@ -60,12 +60,14 @@
       <n-flex>
         <n-tag v-for="tag in mod.tags" :key="tag" :color="getTagColorConfig(tag)"
                round
-               size="medium">{{ tag }}
+               size="medium"
+               @click="openUrl(`https://steamcommunity.com/workshop/browse/?appid=602960&requiredtags[]=${tag}`)">{{
+            tag
+          }}
         </n-tag>
       </n-flex>
     </n-gi>
   </n-grid>
-
   <n-h4 v-else class="animate-bounce">
     {{ $t('modDetails.notSelected') }}
   </n-h4>
@@ -78,15 +80,10 @@ import type { BarotraumaMod } from "../../proto/mods.ts";
 import { ImageOutline } from "@vicons/ionicons5";
 import bytes from "bytes";
 import { Language, languageToJSON } from "../../proto/config.ts";
-import { onErrorCaptured } from "vue";
 import getTagColorConfig from "../../composables/coloredTag.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
-
-onErrorCaptured((err, info) => {
-	console.warn("[BBob Error]", err, info);
-	return false; // 阻止错误继续冒泡
-});
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 /**
  * Convert a timestamp in seconds to a date string in YYYY-MM-DD format

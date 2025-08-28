@@ -15,26 +15,26 @@
           <n-descriptions :column="4" size="small">
             <!-- Mod Version -->
             <n-descriptions-item :label="$t('modCard.version')">
-              <inlineCode :src="mod.modVersion"></inlineCode>
+              <inlineCode :displayText="mod.modVersion"></inlineCode>
             </n-descriptions-item>
 
             <!-- Game Version -->
             <n-descriptions-item :label="$t('modCard.gameVersion')">
-              <inlineCode :src="mod.gameVersion"></inlineCode>
+              <inlineCode :displayText="mod.gameVersion"></inlineCode>
             </n-descriptions-item>
 
             <!-- Steam Workshop ID -->
             <n-descriptions-item :label="$t('modCard.steamWorkshopId')">
-              <inline-code :src="mod.steamWorkshopId.toString()"></inline-code>
+              <inline-code :displayText="mod.steamWorkshopId.toString()"></inline-code>
               <JumpTo :url="`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`"></JumpTo>
             </n-descriptions-item>
             <!-- Expected Hash -->
             <n-descriptions-item :label="$t('modCard.expectedHash')">
-              <inline-code :src="mod.expectedHash"></inline-code>
+              <inline-code :displayText="`${mod.expectedHash.slice(0,7)}...`" :src="mod.expectedHash"></inline-code>
             </n-descriptions-item>
             <!-- Home Directory -->
             <n-descriptions-item v-if="mod.homeDir" :label="$t('modCard.homeDir')">
-              <inline-code :src="mod.homeDir"></inline-code>
+              <inline-code :displayText="mod.homeDir"></inline-code>
               <reveal :path="mod.homeDir"></reveal>
             </n-descriptions-item>
           </n-descriptions>

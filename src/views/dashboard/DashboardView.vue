@@ -5,9 +5,6 @@
     <template #title>
       <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
     </template>
-    <n-card>
-      <SearchAndFilter/>
-    </n-card>
 
     <n-grid cols="12" x-gap="24" y-gap="24">
       <n-grid-item span="7">
@@ -27,7 +24,6 @@
 </template>
 
 <script lang="ts" setup>
-import SearchAndFilter from "../../components/dashboard/SearchAndFilter.vue";
 import TitledPage from "../../components/core/TitledPage.vue";
 import { onMounted, ref } from "vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";

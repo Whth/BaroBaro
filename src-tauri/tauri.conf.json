@@ -13,11 +13,11 @@
     "windows": [
       {
         "title": "BaroBaro",
-        "width": 850,
-        "height": 600,
+        "width": 870,
+        "height": 660,
         "transparent": true,
-        "minWidth": 850,
-        "minHeight": 600
+        "minWidth": 870,
+        "minHeight": 660
       }
     ],
     "security": {
