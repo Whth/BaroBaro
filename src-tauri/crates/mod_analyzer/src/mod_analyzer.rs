@@ -1,9 +1,10 @@
 use crate::mods::BarotraumaMod;
 use constants::MOD_FILELIST_FILE;
+use fs_utils::hash_directory;
 use quick_xml::de::from_str;
 use std::fs;
 use std::path::Path;
-
+use walkdir::WalkDir;
 
 impl BarotraumaMod {
     pub fn set_home_dir(&mut self, home_dir: String) -> &mut Self {
@@ -34,22 +35,42 @@ impl BarotraumaMod {
 
         let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
 
-        Self::from_str(&xml_content).map(|mut mod_obj| {
-            mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
-            mod_obj
-        })
-            .map(
-                |mut mod_obj| {
-                    if mod_obj.steam_workshop_id == 0 && let
-                        Some(id_raw) = parent_dir.file_name() &&
-                        let Ok(id_num) = id_raw.to_string_lossy().parse::<u64>() {
-                        mod_obj.steam_workshop_id = id_num;
-                    }
-                    mod_obj
+        Self::from_str(&xml_content)
+            .map(|mut mod_obj| {
+                mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
+                mod_obj
+            })
+            .map(|mut mod_obj| {
+                if mod_obj.steam_workshop_id == 0
+                    && let Some(id_raw) = parent_dir.file_name()
+                    && let Ok(id_num) = id_raw.to_string_lossy().parse::<u64>()
+                {
+                    mod_obj.steam_workshop_id = id_num;
                 }
-            )
+                mod_obj
+            })
+    }
+    pub fn mod_hash(&self) -> Result<String, String> {
+        if let Some(ref game_home) = self.home_dir {
+            hash_directory(game_home).map_err(|e| format!("{e}, failed to hash directory."))
+        } else {
+            Err("Game home not set".to_string())
+        }
     }
 
+    pub fn mod_occupation(&self) -> Result<u64, String> {
+        if let Some(ref game_home) = self.home_dir {
+            Ok(WalkDir::new(game_home)
+                .min_depth(1)
+                .into_iter()
+                .filter_map(Result::ok)
+                .filter_map(|entry| entry.metadata().ok())
+                .filter(|metadata| metadata.is_file())
+                .fold(0, |acc, m| acc + m.len()))
+        } else {
+            Err("Game home not set".to_string())
+        }
+    }
     /// Creates a BarotraumaMod from a mod directory.
     ///
     /// # Arguments
@@ -68,25 +89,24 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-
     #[test]
     fn test_de_from_json() {
         let json = json!({
-    "name": "Shipwrecks Extended",
-    "modVersion": "1.0.17",
-    "corePackage": false,
-    "steamWorkshopId": 2095211492,
-    "gameVersion": "1.0.8.0",
-    "expectedHash": "D368F1974A26DBC851B0D53B9A66779A",
-    "homeDir": "path\\mods\\Shipwrecks Extended",
-    "size": null,
-    "lastModified": null,
-    "likes": null,
-    "previewImage": "a image url",
-    "subscribers": null,
-    "creator": null,
-    "description": null
-});
+            "name": "Shipwrecks Extended",
+            "modVersion": "1.0.17",
+            "corePackage": false,
+            "steamWorkshopId": 2095211492,
+            "gameVersion": "1.0.8.0",
+            "expectedHash": "D368F1974A26DBC851B0D53B9A66779A",
+            "homeDir": "path\\mods\\Shipwrecks Extended",
+            "size": null,
+            "lastModified": null,
+            "likes": null,
+            "previewImage": "a image url",
+            "subscribers": null,
+            "creator": null,
+            "description": null
+        });
 
         let mod_obj: BarotraumaMod = serde_json::from_value(json).expect("Failed to parse JSON");
 

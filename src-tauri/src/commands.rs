@@ -318,3 +318,16 @@ pub async fn install_mods(mod_ids: Vec<u64>) -> Result<(), String> {
 
     Ok(())
 }
+#[tauri::command]
+pub async fn uninstall_mods(mod_ids: Vec<u64>) -> Result<(), String> {
+    let targets = BARO_MANAGER
+        .read()
+        .await
+        .get_mods()
+        .iter()
+        .filter(|mod_obj| mod_ids.contains(&mod_obj.steam_workshop_id))
+        .filter_map(|mod_obj| mod_obj.home_dir.clone())
+        .collect::<Vec<_>>();
+
+    fs_extra::remove_items(&targets).map_err(|e| format!("{}, failed to uninstall mod.", e))
+}

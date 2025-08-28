@@ -2,7 +2,6 @@ use crate::config_analyzer::BaroConfig;
 use crate::retrieve::retrieve_mod_metadata;
 use crate::{BarotraumaMod, ModList};
 use constants::BarotraumaHome;
-use fs_utils::hash_directory;
 use rayon::prelude::*;
 use std::path::PathBuf;
 use steam_api::SteamWorkShopClient;
@@ -60,16 +59,6 @@ impl BarotraumaModManager {
         BarotraumaModManager {
             game_home: Some(BarotraumaHome::new(game_dir)),
             mods,
-        }
-    }
-
-    pub fn calc_mod_hash(&self, name: &str) -> Result<String, String> {
-        if let Some(baro_mod) = self.mods.iter().find(|mod_obj| mod_obj.name == name)
-            && let Some(ref game_home) = baro_mod.home_dir
-        {
-            hash_directory(game_home).map_err(|e| format!("{e}, failed to hash directory."))
-        } else {
-            Err("Game home not set".to_string())
         }
     }
 

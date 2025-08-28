@@ -8,13 +8,7 @@
       <n-grid-item span="7">
         <n-card :title="$t('modList.title')">
           <template #header-extra>
-            <n-button circle quaternary @click="refreshMods">
-              <template #icon>
-                <n-icon>
-                  <RefreshIcon/>
-                </n-icon>
-              </template>
-            </n-button>
+            <RefreshMods/>
           </template>
           <ModList @viewing-mod="handleModClick"></ModList>
         </n-card>
@@ -35,24 +29,9 @@ import { ref } from "vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";
 import ModList from "../../components/dashboard/ModList.vue";
 import type { BarotraumaMod } from "../../proto/mods.ts";
-import {
-	list_enabled_mods,
-	list_installed_mods,
-	list_mod_lists,
-	retrieve_mod_metadata,
-} from "../../invokes.ts";
-import { RefreshOutline as RefreshIcon } from "@vicons/ionicons5";
+import RefreshMods from "../../components/utils/refreshMods.vue";
 
 const curMod = ref<BarotraumaMod | null>(null);
-
-async function refreshMods() {
-	await Promise.all([
-		list_installed_mods(),
-		list_enabled_mods(),
-		list_mod_lists(),
-	]);
-	await retrieve_mod_metadata();
-}
 
 function handleModClick(mod: BarotraumaMod) {
 	console.log("Clicked mod:", mod);
