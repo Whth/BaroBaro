@@ -1,171 +1,118 @@
 <template>
-  <n-card :bordered="false" class="update-mod-card">
+  <div class="update-mod-tab">
     <n-h2>Update Mods</n-h2>
-
-    <n-result
-        v-if="modsToUpdate.length === 0"
-        description="No updates available at this time."
-        status="success"
-        title="All mods are up to date!"
-    />
-
-    <div v-else>
-      <!-- 头部信息 -->
-      <div class="update-header">
-        <n-text>{{ modsToUpdate.length }} mod(s) have available updates</n-text>
-        <n-button
-            :loading="isUpdatingAll"
-            secondary
-            type="primary"
-            @click="updateAllMods"
+    <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
+    <n-grid v-else :x-gap="12" :y-gap="12" cols="1 400:2 600:3 800:4" responsive="screen">
+      <n-grid-item v-for="mod in installed_mod" :key="mod.steamWorkshopId">
+        <n-card
+            :bordered="true"
+            :class="{ 'selected': selectedMods.has(mod.steamWorkshopId) }"
+            :segmented="{ content: true, footer: 'soft' }"
+            :title="mod.name || `Mod ${mod.steamWorkshopId}`"
+            hoverable
+            @click="toggleModSelection(mod.steamWorkshopId)"
         >
-          Update All
-        </n-button>
-      </div>
-
-      <!-- 更新列表 -->
-      <n-list>
-        <n-list-item v-for="mod in modsToUpdate" :key="mod.id">
-          <n-thing>
-            <template #header>
-              <n-ellipsis style="max-width: 200px">
-                {{ mod.name }}
-              </n-ellipsis>
-            </template>
-
-            <template #description>
-              <n-space align="center" size="small">
-                <n-tag type="default">{{ mod.currentVersion }}</n-tag>
-                <n-icon color="#666" size="16">
-                  <ArrowForward/>
-                </n-icon>
-                <n-tag type="success">{{ mod.newVersion }}</n-tag>
-              </n-space>
-              <n-ellipsis style="margin-top: 4px; max-width: 300px">
-                {{ mod.description }}
-              </n-ellipsis>
-            </template>
-
-            <template #actions>
-              <n-space>
-                <n-button
-                    :loading="mod.updating"
-                    size="small"
-                    type="primary"
-                    @click="updateMod(mod.id)"
-                >
-                  {{ mod.updating ? 'Updating...' : 'Update' }}
-                </n-button>
-                <n-button
-                    secondary
-                    size="small"
-                    @click="viewChangelog(mod.id)"
-                >
-                  Changelog
-                </n-button>
-              </n-space>
-            </template>
-          </n-thing>
-        </n-list-item>
-      </n-list>
-    </div>
-  </n-card>
+          <template #header-extra>
+            <n-tag type="info">ID: {{ mod.steamWorkshopId }}</n-tag>
+          </template>
+          <n-space vertical>
+            <n-ellipsis style="font-size: 0.9em">
+              {{ mod.description || 'No description available' }}
+            </n-ellipsis>
+            <n-space justify="space-between">
+              <n-text depth="3">Version: {{ mod.version || 'Unknown' }}</n-text>
+              <n-text depth="3">Size: {{ formatBytes(mod.size) }}</n-text>
+            </n-space>
+          </n-space>
+          <template #footer>
+            <n-space align="center" justify="space-between">
+              <n-tag :type="mod.updateRequired ? 'warning' : 'success'">
+                {{ mod.updateRequired ? 'Update Available' : 'Up to date' }}
+              </n-tag>
+              <n-checkbox
+                  :checked="selectedMods.has(mod.steamWorkshopId)"
+                  @update:checked="toggleModSelection(mod.steamWorkshopId)"
+                  @click.stop
+              />
+            </n-space>
+          </template>
+        </n-card>
+      </n-grid-item>
+    </n-grid>
+    <n-space v-if="installed_mod.length > 0" justify="center" style="margin-top: 20px">
+      <n-button
+          :disabled="selectedMods.size === 0"
+          ghost
+          type="primary"
+          @click="updateSelectedMods"
+      >
+        Update Selected ({{ selectedMods.size }})
+      </n-button>
+    </n-space>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { ArrowForward } from "@vicons/ionicons5";
+import { onMounted, ref } from "vue";
+import {
+	download_mods,
+	installed_mod,
+	list_installed_mods,
+} from "../../invokes";
 
-// 定义接口
-interface ModUpdate {
-	id: string;
-	name: string;
-	currentVersion: string;
-	newVersion: string;
-	description: string;
-	updating?: boolean;
+// Set to keep track of selected mods for update
+const selectedMods = ref(new Set<number>());
+
+// Toggle mod selection for update
+function toggleModSelection(modId: number) {
+	if (selectedMods.value.has(modId)) {
+		selectedMods.value.delete(modId);
+	} else {
+		selectedMods.value.add(modId);
+	}
 }
 
-// 响应式数据
-const modsToUpdate = ref<ModUpdate[]>([
-	{
-		id: "1",
-		name: "Better Graphics",
-		currentVersion: "1.2.3",
-		newVersion: "1.3.0",
-		description: "Enhanced textures and lighting improvements",
-	},
-	{
-		id: "2",
-		name: "New Weapons Pack",
-		currentVersion: "2.0.1",
-		newVersion: "2.1.0",
-		description: "Added 10 new weapons and balanced existing ones",
-	},
-]);
+// Update selected mods
+async function updateSelectedMods() {
+	if (selectedMods.value.size === 0) return;
 
-const isUpdatingAll = ref(false);
-
-// 更新单个mod
-const updateMod = async (modId: string) => {
-	const mod = modsToUpdate.value.find((m) => m.id === modId);
-	if (!mod) return;
-
-	mod.updating = true;
 	try {
-		// 模拟更新过程
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+		const modIds = Array.from(selectedMods.value);
+		await download_mods(modIds);
 
-		// 更新成功后从列表中移除
-		modsToUpdate.value = modsToUpdate.value.filter((m) => m.id !== modId);
+		// Clear selection after update
+		selectedMods.value.clear();
 
-		window.$message?.success(`Updated ${mod.name} successfully!`);
-		await refreshInstalledMods();
+		// Refresh the mod list
+		await list_installed_mods();
 	} catch (error) {
-		window.$message?.error(`Failed to update ${mod.name}`);
-	} finally {
-		mod.updating = false;
+		console.error("Failed to update mods:", error);
 	}
-};
+}
 
-// 更新所有mods
-const updateAllMods = async () => {
-	isUpdatingAll.value = true;
-	try {
-		// 并行更新所有mods
-		const updatePromises = modsToUpdate.value.map((mod) => updateMod(mod.id));
-		await Promise.all(updatePromises);
-		window.$message?.success("All mods updated successfully!");
-	} catch (error) {
-		window.$message?.error("Some updates failed");
-	} finally {
-		isUpdatingAll.value = false;
-	}
-};
+// Format bytes to human readable format
+function formatBytes(bytes: number | undefined): string {
+	if (!bytes) return "Unknown";
 
-// 查看更新日志
-const viewChangelog = (modId: string) => {
-	const mod = modsToUpdate.value.find((m) => m.id === modId);
-	if (mod) {
-		window.$message?.info(`Changelog for ${mod.name}:
-- Improved performance
-- Fixed bugs
-- Added new features`);
-	}
-};
+	const sizes = ["Bytes", "KB", "MB", "GB"];
+	if (bytes === 0) return "0 Byte";
+
+	const i = Math.floor(Math.log(bytes) / Math.log(1024));
+	return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
+}
+
+// Load mods on component mount
+onMounted(async () => {
+	await list_installed_mods();
+});
 </script>
 
 <style scoped>
-.update-mod-card {
-  height: 100%;
+.update-mod-tab {
+  padding: 20px;
 }
 
-.update-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #eee;
+.selected {
+  border: 2px solid #409eff;
 }
 </style>

@@ -3,10 +3,10 @@ use crate::retrieve::retrieve_mod_metadata;
 use crate::{BarotraumaMod, ModList};
 use constants::BarotraumaHome;
 use fs_utils::hash_directory;
+use rayon::prelude::*;
 use std::path::PathBuf;
 use steam_api::SteamWorkShopClient;
 use walkdir::WalkDir;
-
 #[derive(Default, Debug)]
 pub struct BarotraumaModManager {
     game_home: Option<BarotraumaHome>,
@@ -15,14 +15,16 @@ pub struct BarotraumaModManager {
 
 impl BarotraumaModManager {
     fn discover_mods(mod_dir: &PathBuf) -> Vec<BarotraumaMod> {
-        WalkDir::new(&mod_dir)
+        let mut mods: Vec<BarotraumaMod> = WalkDir::new(&mod_dir)
             .max_depth(1)
             .min_depth(1)
             .into_iter()
-            .filter_map(|entry| entry.ok())
-            .map(|entry| BarotraumaMod::from_mod_dir(entry.path()))
-            .filter_map(|result| result.ok())
-            .collect()
+            .par_bridge()
+            .filter_map(Result::ok)
+            .filter_map(|entry| BarotraumaMod::from_mod_dir(entry.path()).ok())
+            .collect();
+        mods.sort_by_key(|mod_obj| mod_obj.steam_workshop_id);
+        mods
     }
 
     pub async fn retrieve_metadata(

@@ -6,12 +6,12 @@
             v-model:value="modInput"
             :autosize="{ minRows: 3, maxRows: 6 }"
             placeholder="Paste mod ID or link here (one per line for batch processing)"
-            type="textarea"
+            type=textarea
         />
       </n-form-item>
       <n-form-item>
         <n-space>
-          <n-button type="primary" @click="addMods">Add to Queue</n-button>
+          <n-button :loading="isAddingMods" type="primary" @click="addMods">Add to Queue</n-button>
           <n-button @click="clearInput">Clear</n-button>
         </n-space>
       </n-form-item>
@@ -24,7 +24,10 @@
         <n-list-item v-for="(mod, index) in modQueue" :key="index">
           <n-thing>
             <template #header>
-              {{ mod.id || mod.url }}
+              {{ mod.id ? mod.id.toString() : mod.url }}
+              <n-tag v-if="mod.verified" size="small" style="margin-left: 8px" type="success">
+                Verified
+              </n-tag>
             </template>
             <template #description>
               <n-tag :type="getStatusType(mod.status)">
@@ -42,7 +45,7 @@
         </n-list-item>
       </n-list>
       <n-space style="margin-top: 16px">
-        <n-button type="success" @click="processQueue">Process All</n-button>
+        <n-button :loading="isProcessing" type="success" @click="processQueue">Process All</n-button>
         <n-button @click="clearQueue">Clear Queue</n-button>
       </n-space>
     </n-card>
@@ -53,38 +56,109 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-
+import { getSteamWorkshopId } from "../../composables/network.ts";
 import { CloseOutline } from "@vicons/ionicons5";
+import { download_mods, is_barotrauma_mod } from "../../invokes.ts";
+import { useMessage } from "naive-ui";
+
+const message = useMessage();
 
 interface ModItem {
-	id?: string;
+	id?: number;
 	url?: string;
 	status: "pending" | "downloading" | "completed" | "error";
+	verified?: boolean;
 }
 
 const modInput = ref("");
 const modQueue = ref<ModItem[]>([]);
+// Add loading state
+const isAddingMods = ref(false);
+const isProcessing = ref(false);
 
-const addMods = () => {
+// Parse a single input line into a mod item
+const parseModInput = (input: string): ModItem => {
+	const mod: ModItem = { status: "pending" };
+
+	if (input.startsWith("http")) {
+		mod.url = input;
+		const extractedId = getSteamWorkshopId(input);
+		if (extractedId !== null) {
+			mod.id = extractedId;
+		}
+	} else {
+		const parsedId = Number(input.trim());
+		if (!isNaN(parsedId) && Number.isInteger(parsedId) && parsedId > 0) {
+			mod.id = parsedId;
+		}
+	}
+
+	return mod;
+};
+
+// Validate if a mod is a valid Barotrauma mod
+const validateMod = async (mod: ModItem): Promise<boolean> => {
+	if (!mod.id) return false;
+
+	try {
+		return await is_barotrauma_mod(mod.id);
+	} catch (error) {
+		console.error("Error validating mod:", error);
+		return false;
+	}
+};
+
+const addMods = async () => {
+	// Set loading state
+	isAddingMods.value = true;
+
 	const inputs = modInput.value
 		.split("\n")
 		.filter((item) => item.trim() !== "");
 
-	inputs.forEach((input) => {
-		const mod: ModItem = {
-			status: "pending",
-		};
+	for (const input of inputs) {
+		const mod = parseModInput(input);
 
-		if (input.startsWith("http")) {
-			mod.url = input;
-		} else {
-			mod.id = input;
+		// Check if mod is already in queue
+		const isDuplicate = modQueue.value.some((existingMod) => {
+			// Compare by ID if available
+			if (mod.id && existingMod.id) {
+				return mod.id === existingMod.id;
+			}
+			// Otherwise compare by URL if available
+			if (mod.url && existingMod.url) {
+				return mod.url === existingMod.url;
+			}
+			// If neither ID nor URL match, not a duplicate
+			return false;
+		});
+
+		// Skip if duplicate
+		if (isDuplicate) {
+			// Show message to user about duplication
+			message.warning(
+				`Mod "${mod.id ? mod.id : mod.url}" is already in the queue`,
+			);
+			continue;
+		}
+
+		// Only validate mods with IDs
+		if (mod.id) {
+			const isValid = await validateMod(mod);
+			if (!isValid) {
+				mod.status = "error";
+			} else {
+				// Add verification flag
+				mod.verified = true;
+			}
 		}
 
 		modQueue.value.push(mod);
-	});
+	}
 
 	modInput.value = "";
+	// Reset loading state
+	isAddingMods.value = false;
 };
 
 const clearInput = () => {
@@ -100,11 +174,50 @@ const clearQueue = () => {
 };
 
 const processQueue = async () => {
-	for (const mod of modQueue.value) {
-		mod.status = "downloading";
-		// Simulate download process
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		mod.status = "completed";
+	// Set processing state
+	isProcessing.value = true;
+
+	// Get all valid mod IDs from the queue
+	const modIds = modQueue.value
+		.filter((mod) => mod.id && mod.status !== "error")
+		.map((mod) => mod.id as number);
+
+	if (modIds.length === 0) {
+		isProcessing.value = false;
+		return;
+	}
+
+	try {
+		// Update status for all mods that will be downloaded
+		modQueue.value
+			.filter((mod) => mod.id && mod.status !== "error")
+			.forEach((mod) => {
+				mod.status = "downloading";
+			});
+
+		// Call the download_mods function with all mod IDs
+		await download_mods(modIds);
+
+		// Update status for all mods to completed
+		modQueue.value
+			.filter((mod) => mod.id && mod.status === "downloading")
+			.forEach((mod) => {
+				mod.status = "completed";
+			});
+
+		message.success(`Successfully downloaded ${modIds.length} mods`);
+	} catch (error) {
+		console.error("Error downloading mods:", error);
+		message.error("Failed to download mods");
+
+		// Update status for all mods to error
+		modQueue.value
+			.filter((mod) => mod.id && mod.status === "downloading")
+			.forEach((mod) => {
+				mod.status = "error";
+			});
+	} finally {
+		isProcessing.value = false;
 	}
 };
 
