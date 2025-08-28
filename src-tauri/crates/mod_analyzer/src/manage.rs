@@ -27,6 +27,14 @@ impl BarotraumaModManager {
         mods
     }
 
+    pub fn mod_dir(&self) -> Result<&PathBuf, String> {
+        if let Some(ref game_home) = self.game_home {
+            Ok(game_home.mod_dir())
+        } else {
+            Err("Game home not set".to_string())
+        }
+    }
+
     pub async fn retrieve_metadata(
         &mut self,
         client: &SteamWorkShopClient,

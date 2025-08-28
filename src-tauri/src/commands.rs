@@ -7,12 +7,10 @@
 //! The configuration is stored in TOML format under a global config file path,
 //! typically in the OS-specific roaming/app data directory.
 
-use configuration::Config;
-use std::collections::HashMap;
+use configuration::{Config, InstallStrategy};
 use std::fs;
-use std::fs::soft_link;
 use std::ops::Deref;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
@@ -21,9 +19,11 @@ use mod_analyzer::{BarotraumaMod, ModList};
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
 use base64::{Engine as _, engine::general_purpose};
-use futures::{FutureExt, TryFutureExt};
+use fs_extra::dir::CopyOptions;
+use futures::TryFutureExt;
 use logger::{debug, info};
 use steam_api::WorkshopItem;
+use tokio::fs::symlink_dir;
 
 use mod_analyzer::retrieve_mod_metadata as get_mod_metadata;
 /// Writes the given configuration to disk in TOML format.
@@ -152,7 +152,7 @@ pub async fn list_enabled_mods() -> Result<Vec<BarotraumaMod>, String> {
 
 /// Downloads the specified mods using SteamCMD.
 #[tauri::command]
-pub async fn download_mods(mods: Vec<usize>) -> Result<(), String> {
+pub async fn download_mods(mods: Vec<u64>) -> Result<(), String> {
     let conf: Config = read_config()?;
 
     info!("Starting to download mods: {:?}", mods);
@@ -264,12 +264,51 @@ pub fn get_build_info() -> BuildInfo {
 }
 
 #[tauri::command]
-pub async fn is_barotrauma_mod(item_id: usize) -> Result<bool, String> {
+pub async fn is_barotrauma_mod(item_id: u64) -> Result<bool, String> {
     STEAM_WORKSHOP_CLIENT
         .read()
         .await
-        .get_item(item_id as u64)
+        .get_item(item_id)
         .map_err(|e| format!("{}, failed to retrieve mod metadata.", e))
         .await
-        .map(|item: WorkshopItem| item.consumer_app_id as usize == BAROTRAUMA_GAME_ID)
+        .map(|item: WorkshopItem| item.consumer_app_id == BAROTRAUMA_GAME_ID)
+}
+
+#[tauri::command]
+pub async fn install_mod(item_id: u64) -> Result<(), String> {
+    let conf: Config = read_config()?;
+
+    match conf.install_strategy {
+        s if InstallStrategy::Copy as i32 == s => {
+            let mod_dir: PathBuf = STEAMCMD_MANAGER
+                .read()
+                .await
+                .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?;
+            fs_extra::copy_items(
+                &[mod_dir],
+                BARO_MANAGER.read().await.mod_dir()?,
+                &CopyOptions::new().overwrite(true),
+            )
+            .map(|_| ())
+            .map_err(|e| format!("{}, failed to copy mod.", e))?;
+        }
+        s if InstallStrategy::Link as i32 == s => {
+            symlink_dir(
+                STEAMCMD_MANAGER
+                    .read()
+                    .await
+                    .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?,
+                BARO_MANAGER
+                    .read()
+                    .await
+                    .mod_dir()?
+                    .join(item_id.to_string()),
+            )
+            .await
+            .map_err(|e| format!("{}, failed to symlink mod.", e))?;
+        }
+        _ => {}
+    }
+
+    Ok(())
 }

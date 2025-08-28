@@ -6,14 +6,13 @@ pub const MOD_FILELIST_FILE: &str = "filelist.xml";
 
 pub const LOG_DIR_NAME: &str = "log";
 
-pub const BAROTRAUMA_GAME_ID: usize = 602960;
+pub const BAROTRAUMA_GAME_ID: u64 = 602960;
 
 /// The application name used across the project.
 pub const APP_NAME: &str = "BaroBaro";
 
 /// The default configuration file name used by the application.
 pub const CONFIG_FILE: &str = "BaroBaro.toml";
-
 
 /// Returns the path to the user's config directory based on the operating system.
 ///
@@ -82,7 +81,6 @@ impl BarotraumaHome {
     pub fn home_dir(&self) -> &PathBuf {
         &self.home_dir
     }
-
 
     /// Returns the path to the player configuration file.
     pub fn player_config_file(&self) -> PathBuf {

@@ -19,7 +19,7 @@ impl SteamCMD {
         }
     }
 
-    pub fn workshop_item_dir(&self, app_id: usize, mod_id: usize) -> Result<PathBuf, String> {
+    pub fn workshop_item_dir(&self, app_id: u64, mod_id: u64) -> Result<PathBuf, String> {
         self.home_dir
             .clone()
             .map(|home_dir: PathBuf| {
@@ -69,7 +69,7 @@ impl SteamCMD {
             .await
     }
 
-    fn download_item(game_id: usize, mod_id: usize) -> String {
+    fn download_item(game_id: u64, mod_id: u64) -> String {
         format!("workshop_download_item {} {}", game_id, mod_id)
     }
 
@@ -81,7 +81,7 @@ impl SteamCMD {
             (None, None) => "login anonymous".to_string(),
         }
     }
-    pub async fn download_mod(&self, game_id: usize, mod_ids: Vec<usize>) -> Result<(), String> {
+    pub async fn download_mod(&self, game_id: u64, mod_ids: Vec<u64>) -> Result<(), String> {
         // gen all mod down scripts
         let script = {
             let mut script = String::new();
@@ -98,8 +98,8 @@ impl SteamCMD {
 
     pub async fn download_mod_par(
         &self,
-        game_id: usize,
-        mod_ids: Vec<usize>,
+        game_id: u64,
+        mod_ids: Vec<u64>,
         n: usize,
     ) -> Result<(), String> {
         let chunk_size = mod_ids.len() + 1 / n;
