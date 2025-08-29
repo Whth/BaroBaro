@@ -1,35 +1,63 @@
 <template>
-  <n-config-provider :theme="currentTheme" autofocus>
+
+  <n-config-provider
+      :style="{ backgroundImage: `url(${currentBackgroundImage})`, backgroundSize: 'cover' , backgroundBlur: '20px'}"
+      :theme="currentTheme" :theme-overrides="currentThemeOverrides"
+      autofocus>
     <n-message-provider>
 
-      <div class="app-container">
-        <Layout>
-          <router-view/>
-        </Layout>
-      </div>
+      <Layout>
+        <router-view/>
+
+
+      </Layout>
+
     </n-message-provider>
   </n-config-provider>
+
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount } from "vue";
+import { onBeforeMount, ref, Ref } from "vue";
 import Layout from "./components/core/Layout.vue";
-import { Language, languageToJSON, Theme } from "./proto/config.ts";
+import { Language, languageToJSON } from "./proto/config.ts";
 import {
 	config,
+	get_background_image,
 	list_enabled_mods,
 	list_installed_mods,
 	list_mod_lists,
 	refresh_config,
 	retrieve_mod_metadata,
 } from "./invokes.ts";
-import { currentTheme, theme_mapping } from "./composables/useTheme.ts";
+import {
+	currentBackgroundImage,
+	currentTheme,
+	currentThemeOverrides,
+	setBackgroundImage,
+	setTheme,
+	setTransparent,
+} from "./composables/useTheme.ts";
 import { i18n } from "./i18n.ts";
 
+const image: Ref<string | null> = ref("");
+
 onBeforeMount(async () => {
-	await refresh_config(),
-		(currentTheme.value =
-			theme_mapping[config.value.uiConfig?.theme ?? Theme.Light]);
+	try {
+		const bgImage = await get_background_image();
+		if (bgImage) {
+			image.value = bgImage;
+		}
+	} catch (err) {
+		console.error("Failed to load background image:", err);
+	}
+});
+
+onBeforeMount(async () => {
+	await refresh_config();
+	setTransparent();
+	setTheme();
+	await setBackgroundImage();
 	i18n.global.locale.value = languageToJSON(
 		config.value.uiConfig?.language ?? Language.EN,
 	);

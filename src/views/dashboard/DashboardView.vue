@@ -3,7 +3,6 @@
     <template #title>
       <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
     </template>
-
     <n-grid cols="12" x-gap="24" y-gap="24">
       <n-grid-item span="7">
         <n-card :title="$t('modList.title')">

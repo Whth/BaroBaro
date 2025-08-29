@@ -37,8 +37,12 @@ import { ref } from "vue";
 import { Refresh as RefreshIcon, Save as SaveIcon } from "@vicons/ionicons5";
 import { config, reset_config, save_config } from "../../invokes.ts";
 import { i18n } from "../../i18n.ts";
-import { Language, languageToJSON, Theme } from "../../proto/config.ts";
-import { currentTheme, theme_mapping } from "../../composables/useTheme.ts";
+import { Language, languageToJSON } from "../../proto/config.ts";
+import {
+	setBackgroundImage,
+	setTheme,
+	setTransparent,
+} from "../../composables/useTheme.ts";
 import TitledPage from "../../components/core/TitledPage.vue";
 import VersionInfo from "../../components/settings/VersionInfo.vue";
 import UIPreferences from "../../components/settings/UIPreferences.vue";
@@ -56,8 +60,10 @@ const apply_and_save_config = async () => {
 	i18n.global.locale.value = languageToJSON(
 		config.value.uiConfig?.language ?? Language.EN,
 	);
-	currentTheme.value =
-		theme_mapping[config.value.uiConfig?.theme ?? Theme.Light];
+	setTransparent();
+	setTheme();
+	await setBackgroundImage();
+
 	message.success(t("settings.saved"));
 };
 </script>

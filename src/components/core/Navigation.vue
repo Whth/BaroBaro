@@ -42,13 +42,19 @@ watch(isCollapsed, (newVal) => {
 });
 
 // Currently active menu item
-const activeKey = computed(() => {
-	const map: Record<string, string> = {
-		"/": "dashboard",
-		"/mods": "mods",
-		"/settings": "settings",
-	};
-	return map[route.path] || "";
+const activeKey = computed({
+	get: () => {
+		const map: Record<string, string> = {
+			"/": "dashboard",
+			"/mods": "mods",
+			"/settings": "settings",
+		};
+		return map[route.path] || "";
+	},
+	set: (key) => {
+		const item = menuOptions.value.find((opt) => opt.key === key);
+		if (item?.path) router.push(item.path);
+	},
 });
 
 // Menu item configuration

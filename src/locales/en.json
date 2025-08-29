@@ -120,7 +120,15 @@
 		"clear": "Clear",
 		"savePreferences": "Save Preferences",
 		"metadataRetrieveBatchsize": "Metadata Retrieve Batch Size",
-		"metadataRetrieveBatchsizePlaceholder": "Enter the batch size for metadata retrieval, 0 means unlimited."
+		"metadataRetrieveBatchsizePlaceholder": "Enter the batch size for metadata retrieval, 0 means unlimited.",
+		"gameAndSteam": "Game and SteamCMD",
+		"gameHomePlaceholder": "Please select your game installation path",
+		"steamCmdHomePlaceholder": "Please select your SteamCMD installation path",
+		"steamUsernamePlaceholder": "Please enter your Steam username",
+		"steamPasswordPlaceholder": "Please enter your Steam password",
+		"parallelDownloadsPlaceholder": "Please enter the number of parallel downloads, 0 means unlimited.",
+		"loggingAndAdvanced": "Advanced Settings",
+		"installStrategy": "Installation Strategy"
 	},
 	"tabs": {
 		"installMod": "Install Mod",

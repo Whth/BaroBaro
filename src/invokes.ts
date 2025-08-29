@@ -90,3 +90,7 @@ export async function is_barotrauma_mod(itemId: number): Promise<boolean> {
 export async function install_mods(modIds: number[]): Promise<null> {
 	return await invoke("install_mods", { modIds });
 }
+
+export async function get_background_image(): Promise<string | null> {
+	return await invoke("get_background_image");
+}

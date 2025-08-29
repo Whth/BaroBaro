@@ -120,7 +120,15 @@
 		"clear": "清除",
 		"savePreferences": "保存偏好设置",
 		"metadataRetrieveBatchsize": "元数据检索批处理大小",
-		"metadataRetrieveBatchsizePlaceholder": "请输入元数据检索的批处理大小，0 表示无限制。"
+		"metadataRetrieveBatchsizePlaceholder": "请输入元数据检索的批处理大小，0 表示无限制。",
+		"gameAndSteam": "游戏和SteamCMD",
+		"gameHomePlaceholder": "请选择你的游戏安装路径",
+		"steamCmdHomePlaceholder": "请选择你的SteamCMD安装路径",
+		"steamUsernamePlaceholder": "请输入你的Steam用户名",
+		"steamPasswordPlaceholder": "请输入你的Steam密码",
+		"parallelDownloadsPlaceholder": "请输入并行下载数，0 表示无限制。",
+		"loggingAndAdvanced": "高级设置",
+		"installStrategy": "安装策略"
 	},
 	"tabs": {
 		"installMod": "安装模组",

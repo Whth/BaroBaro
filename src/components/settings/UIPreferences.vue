@@ -61,14 +61,14 @@
               v-model:value="backgroundOpacityModel"
               :max="1"
               :min="0"
-              :step="0.1"
+              :step="0.01"
           />
         </n-form-item>
 
         <n-form-item :label="$t('settings.backgroundBlur')">
           <n-slider
               v-model:value="backgroundBlurModel"
-              :max="20"
+              :max="100"
               :min="0"
               :step="1"
           />

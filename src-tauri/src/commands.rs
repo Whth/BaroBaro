@@ -245,6 +245,7 @@ pub fn get_background_image() -> Result<Option<String>, String> {
 
         // Encode as base64
         let base64_data = general_purpose::STANDARD.encode(&image_data);
+        info!("Background image have been encoded as base64.");
         // Return as data URL
         Ok(Some(format!("data:{};base64,{}", mime_type, base64_data)))
     } else {
