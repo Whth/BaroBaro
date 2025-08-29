@@ -1,29 +1,12 @@
 <template>
-  <n-grid v-if="mod!=null && mod.previewImage===undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
-    <!-- Image skeleton -->
-    <n-gi span="4">
-      <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
-    </n-gi>
-
-    <!-- Description skeleton -->
-    <n-gi span="3">
-      <n-skeleton :height="24" :repeat="6" text/>
-    </n-gi>
-
-    <!-- Tags skeleton -->
-    <n-gi span="7">
-      <n-space>
-        <n-skeleton v-for="i in 4" :key="i" height="1.7em" round width="60px"/>
-      </n-space>
-    </n-gi>
-  </n-grid>
 
 
-  <n-grid v-else-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
+  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
 
-    <n-gi span="4">
+    <n-gi v-if="imageRendered" span="4">
 
-      <n-image :lazy="true" :src="mod.previewImage" width="100%">
+      <n-image :lazy="true" :src="mod.previewImage" width="100%" @load="imageRendered=true"
+               @loadstart="imageRendered=false">
         <template #error>
           <n-icon color="lightGrey" size="10vw" style="align-content: center">
             <ImageOutline/>
@@ -31,8 +14,11 @@
         </template>
       </n-image>
     </n-gi>
+    <n-gi v-else span="4">
+      <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
+    </n-gi>
 
-    <n-gi span="3">
+    <n-gi v-if="!!mod.creator" span="3">
       <n-descriptions :column="2">
         <n-descriptions-item :label="$t('modDetails.name')" span="2">
           <inline-code :displayText="mod.name"/>
@@ -56,7 +42,13 @@
       </n-descriptions>
 
     </n-gi>
-    <n-gi span="7">
+    <!-- Description skeleton -->
+    <n-gi v-else span="3">
+      <n-skeleton :height="24" :repeat="6" text/>
+    </n-gi>
+
+
+    <n-gi v-if="mod.tags" span="7">
       <n-flex>
         <n-tag v-for="tag in mod.tags" :key="tag" :color="getTagColorConfig(tag)"
                round
@@ -66,6 +58,12 @@
           }}
         </n-tag>
       </n-flex>
+    </n-gi>
+    <!-- Tags skeleton -->
+    <n-gi v-else span="7">
+      <n-space>
+        <n-skeleton v-for="i in 4" :key="i" height="1.7em" round width="60px"/>
+      </n-space>
     </n-gi>
   </n-grid>
   <n-h4 v-else class="animate-bounce">
@@ -84,6 +82,9 @@ import getTagColorConfig from "../../composables/coloredTag.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { ref } from "vue";
+
+const imageRendered = ref(false);
 
 /**
  * Convert a timestamp in seconds to a date string in YYYY-MM-DD format

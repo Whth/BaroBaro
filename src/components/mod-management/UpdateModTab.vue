@@ -15,27 +15,7 @@
           <template #header-extra>
             <n-tag type="info">ID: {{ mod.steamWorkshopId }}</n-tag>
           </template>
-          <n-space vertical>
-            <n-ellipsis style="font-size: 0.9em">
-              {{ mod.description || 'No description available' }}
-            </n-ellipsis>
-            <n-space justify="space-between">
-              <n-text depth="3">Version: {{ mod.version || 'Unknown' }}</n-text>
-              <n-text depth="3">Size: {{ formatBytes(mod.size) }}</n-text>
-            </n-space>
-          </n-space>
-          <template #footer>
-            <n-space align="center" justify="space-between">
-              <n-tag :type="mod.updateRequired ? 'warning' : 'success'">
-                {{ mod.updateRequired ? 'Update Available' : 'Up to date' }}
-              </n-tag>
-              <n-checkbox
-                  :checked="selectedMods.has(mod.steamWorkshopId)"
-                  @update:checked="toggleModSelection(mod.steamWorkshopId)"
-                  @click.stop
-              />
-            </n-space>
-          </template>
+
         </n-card>
       </n-grid-item>
     </n-grid>
@@ -88,17 +68,6 @@ async function updateSelectedMods() {
 	} catch (error) {
 		console.error("Failed to update mods:", error);
 	}
-}
-
-// Format bytes to human readable format
-function formatBytes(bytes: number | undefined): string {
-	if (!bytes) return "Unknown";
-
-	const sizes = ["Bytes", "KB", "MB", "GB"];
-	if (bytes === 0) return "0 Byte";
-
-	const i = Math.floor(Math.log(bytes) / Math.log(1024));
-	return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
 }
 
 // Load mods on component mount
