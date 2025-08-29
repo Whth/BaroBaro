@@ -1,0 +1,16 @@
+[package]
+name = "imagen"
+edition.workspace = true
+license-file.workspace = true
+authors.workspace = true
+version.workspace = true
+
+[dependencies]
+base64 = "0.22.1"
+image = "0.25.6"
+libblur = { version = "0.19.4", features = ["image"] }
+
+
+logger = { path = "../logger" }
+rayon = "1.11.0"
+thiserror = "1.0.69"

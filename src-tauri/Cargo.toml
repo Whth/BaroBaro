@@ -31,10 +31,10 @@ mod_analyzer = { path = "./crates/mod_analyzer" }
 logger = { path = "./crates/logger" }
 configuration = { path = "./crates/configuration" }
 steam-api = { path = "./crates/steam-api" }
+imagen = { path = "./crates/imagen" }
 once_cell = "1.21.3"
 tokio = "1.47.1"
 futures = "0.3.31"
-base64 = "0.22.1"
 prost = "0.14.1"
 fs_extra = "1.3.0"
 

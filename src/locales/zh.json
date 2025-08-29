@@ -116,6 +116,7 @@
 		"noImageSelected": "请选择一张图片作为背景",
 		"backgroundImage": "背景图片",
 		"backgroundOpacity": "背景透明度",
+		"foregroundOpacity": "前景透明度",
 		"backgroundBlur": "背景模糊",
 		"clear": "清除",
 		"savePreferences": "保存偏好设置",

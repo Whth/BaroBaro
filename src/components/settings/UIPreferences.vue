@@ -73,6 +73,14 @@
               :step="1"
           />
         </n-form-item>
+        <n-form-item :label="$t('settings.foregroundOpacity')">
+          <n-slider
+              v-model:value="foregroundOpacityModel"
+              :max="1"
+              :min="0"
+              :step="0.01"
+          />
+        </n-form-item>
       </n-card>
 
     </n-gi>
@@ -145,6 +153,19 @@ const backgroundBlurModel = computed({
 			config.value.uiConfig = UIConfig.fromPartial({ backgroundBlur: value });
 		} else {
 			config.value.uiConfig.backgroundBlur = value;
+		}
+	},
+});
+
+const foregroundOpacityModel = computed({
+	get: () => config.value.uiConfig?.foregroundOpacity ?? 1,
+	set: (value) => {
+		if (!config.value.uiConfig) {
+			config.value.uiConfig = UIConfig.fromPartial({
+				foregroundOpacity: value,
+			});
+		} else {
+			config.value.uiConfig.foregroundOpacity = value;
 		}
 	},
 });

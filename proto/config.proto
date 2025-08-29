@@ -15,9 +15,9 @@ enum Level {
 // SteamCmdConfig holds configuration settings for SteamCMD.
 message SteamCmdConfig {
   // The username used to log into SteamCMD.
-  string username = 1;
+  optional string username = 1;
   // The password used to log into SteamCMD.
-  string password = 2;
+  optional string password = 2;
   // The number of parallel downloads allowed.
   uint64 parallel = 5;
 }
@@ -73,7 +73,8 @@ message UIConfig {
   // The selected language for the user interface (e.g., en, fr, es).
   Language language = 2;
   // The accent color for the user interface.
-  string backgroundImage = 3;
+  optional string backgroundImage = 3;
   float backgroundOpacity = 4;
   uint64 backgroundBlur = 5;
+  float foregroundOpacity = 6;
 }

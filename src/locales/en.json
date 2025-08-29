@@ -116,6 +116,7 @@
 		"noImageSelected": "Select an image to use as a background",
 		"backgroundImage": "Background Image",
 		"backgroundOpacity": "Background Opacity",
+		"foregroundOpacity": "Foreground Opacity",
 		"backgroundBlur": "Background Blur",
 		"clear": "Clear",
 		"savePreferences": "Save Preferences",

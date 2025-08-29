@@ -16,16 +16,17 @@ impl Config {
             metadata_retrieve_batchsize: 20,
             install_strategy: InstallStrategy::Copy as i32,
             steamcmd_config: Some(SteamCmdConfig {
-                username: "".to_string(),
-                password: "".to_string(),
+                username: None,
+                password: None,
                 parallel: 3,
             }),
             ui_config: Some(UiConfig {
                 theme: Theme::Light as i32,
                 language: Language::En as i32,
-                background_image: "".to_string(),
+                background_image: None,
                 background_opacity: 0.2,
                 background_blur: 5,
+                foreground_opacity: 0.35,
             }),
         }
     }
@@ -52,6 +53,6 @@ impl Provider for Config {
     }
 
     fn data(&self) -> Result<Map<Profile, Dict>, Error> {
-        figment::providers::Serialized::defaults(Config::default()).data()
+        figment::providers::Serialized::defaults(Config::default_settings()).data()
     }
 }

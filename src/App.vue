@@ -1,9 +1,10 @@
 <template>
 
   <n-config-provider
-      :style="{ backgroundImage: `url(${currentBackgroundImage})`, backgroundSize: 'cover' , backgroundBlur: '20px'}"
-      :theme="currentTheme" :theme-overrides="currentThemeOverrides"
-      autofocus>
+      :style="{ backgroundImage: `url(${currentBackgroundImage})`, backgroundSize: 'cover'}"
+      :theme="currentTheme"
+      :theme-overrides="currentThemeOverrides"
+      autofocus class="glass-card">
     <n-message-provider>
 
       <Layout>

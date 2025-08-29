@@ -35,7 +35,7 @@ export function setTheme() {
 }
 
 export function setTransparent() {
-	const a = config.value.uiConfig?.backgroundOpacity ?? 0.4;
+	const a = config.value.uiConfig?.foregroundOpacity ?? 0.4;
 	darkOverrides.value = {
 		common: {
 			bodyColor: darkOpc(a),

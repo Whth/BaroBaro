@@ -13,16 +13,15 @@ use std::ops::Deref;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
-use mod_analyzer::{BarotraumaMod, ModList};
-
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
-use base64::{Engine as _, engine::general_purpose};
+use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
 use fs_extra::dir::CopyOptions;
 use futures::TryFutureExt;
 use futures::future::try_join_all;
+use imagen::{BackgroundConfig, process_background};
 use logger::{debug, info};
+use mod_analyzer::{BarotraumaMod, ModList};
 use steam_api::WorkshopItem;
 use tokio::fs::symlink_dir;
 
@@ -215,41 +214,21 @@ pub async fn list_mod_lists() -> Result<Vec<ModList>, String> {
 /// In a production environment, consider validating the file path to prevent directory
 /// traversal attacks.
 #[tauri::command]
-pub fn get_background_image() -> Result<Option<String>, String> {
-    // Read current configuration
-    let config: Config = read_config()?;
+pub async fn get_background_image() -> Result<Option<String>, String> {
+    let conf: Config = read_config()?;
 
-    if let Some(ui_conf) = config.ui_config
-        && let Ok(image_path) = PathBuf::from_str(ui_conf.background_image.as_str())
-        && image_path.exists()
-        && let Ok(image_data) = fs::read(&image_path)
+    if let Some(ui_conf) = conf.ui_config
+        && let Some(p_raw) = ui_conf.background_image
+        && let Ok(p) = PathBuf::from_str(p_raw.as_str())
+        && p.exists()
     {
-        info!("Reading background image from {}", image_path.display());
-        // Determine MIME type based on file extension
-        let mime_type = match image_path
-            .extension()
-            .and_then(|ext| ext.to_str())
-            .map(|ext| ext.to_lowercase())
-        {
-            Some(ext) => match ext.as_str() {
-                "png" => "image/png",
-                "jpg" | "jpeg" => "image/jpeg",
-                "gif" => "image/gif",
-                "webp" => "image/webp",
-                "bmp" => "image/bmp",
-                "svg" => "image/svg+xml",
-                _ => "image/png", // Default fallback
-            },
-            None => "image/png", // Default if no extension
-        };
-
-        // Encode as base64
-        let base64_data = general_purpose::STANDARD.encode(&image_data);
-        info!("Background image have been encoded as base64.");
-        // Return as data URL
-        Ok(Some(format!("data:{};base64,{}", mime_type, base64_data)))
+        process_background(BackgroundConfig {
+            image_path: Some(p_raw.to_string()),
+            blur_radius: ui_conf.background_blur,
+            opacity: ui_conf.background_opacity as f64,
+        })
+        .map_err(|e| format!("{}, failed to process background image.", e))
     } else {
-        info!("No background image configured or image does not exist.");
         Ok(None)
     }
 }
