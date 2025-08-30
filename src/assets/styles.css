@@ -113,3 +113,13 @@
 .animate-bounce {
 	animation: bounce 1.1s infinite;
 }
+
+.mod-tag {
+	cursor: pointer;
+	transition: all 0.2s ease;
+	opacity: 0.85;
+}
+
+.mod-tag:hover {
+	opacity: 1;
+}

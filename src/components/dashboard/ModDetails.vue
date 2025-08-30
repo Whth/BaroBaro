@@ -55,11 +55,10 @@
       transition: 'all 0.2s ease',
       opacity: '0.85'
     }"
+            class="mod-tag"
             round
             size="medium"
             @click="openUrl(`https://steamcommunity.com/workshop/browse/?appid=602960&requiredtags[]=${encodeURIComponent(tag)}`)"
-            @mouseenter="e => e.target.style.opacity = '1'"
-            @mouseleave="e => e.target.style.opacity = '0.85'"
         >
           {{ tag }}
         </n-tag>
