@@ -190,7 +190,9 @@
 		"expectedHash": "Expected Hash",
 		"homeDir": "Home Directory",
 		"corePackage": "Core Package",
-		"localMod": "Local Mod"
+		"localMod": "Local Mod",
+		"enabled": "Enabled",
+		"disabled": "Disabled"
 	},
 	"modDetails": {
 		"notSelected": "Click any mod to preview",

@@ -1,19 +1,17 @@
 <template>
 
-  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
+  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 65vh" x-gap="20" y-gap="2vh">
 
     <n-gi span="4">
-      <n-image :lazy="true" :src="mod.previewImage" width="100%" @load="imageRendered=true"
-               @loadstart="imageRendered=false">
+      <n-image v-show="imageRendered" :lazy="false" :src="mod.previewImage" width="100%"
+               @load="imageRendered=true">
         <template #error>
           <n-icon color="lightGrey" size="10vw" style="align-content: center">
             <ImageOutline/>
           </n-icon>
         </template>
-        <template #placeholder>
-          <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
-        </template>
       </n-image>
+      <n-skeleton v-show="!imageRendered" :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
     </n-gi>
 
     <n-gi v-if="!!mod.creator" span="3">
@@ -48,12 +46,22 @@
 
     <n-gi v-if="mod.tags" span="7">
       <n-flex>
-        <n-tag v-for="tag in mod.tags" :key="tag" :color="getTagColorConfig(tag)"
-               round
-               size="medium"
-               @click="openUrl(`https://steamcommunity.com/workshop/browse/?appid=602960&requiredtags[]=${tag}`)">{{
-            tag
-          }}
+        <n-tag
+            v-for="tag in mod.tags"
+            :key="tag"
+            :color="getTagColorConfig(tag)"
+            :style="{
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      opacity: '0.85'
+    }"
+            round
+            size="medium"
+            @click="openUrl(`https://steamcommunity.com/workshop/browse/?appid=602960&requiredtags[]=${encodeURIComponent(tag)}`)"
+            @mouseenter="e => e.target.style.opacity = '1'"
+            @mouseleave="e => e.target.style.opacity = '0.85'"
+        >
+          {{ tag }}
         </n-tag>
       </n-flex>
     </n-gi>
@@ -80,7 +88,7 @@ import getTagColorConfig from "../../composables/coloredTag.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const imageRendered = ref(false);
 
@@ -105,5 +113,12 @@ interface Props {
 	mod: BarotraumaMod | null;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+watch(
+	() => props.mod,
+	() => {
+		imageRendered.value = false;
+	},
+	{ immediate: false },
+);
 </script>

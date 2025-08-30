@@ -1,5 +1,5 @@
 <template>
-  <n-button circle quaternary @click="refreshMods">
+  <n-button circle quaternary style="vertical-align: text-bottom" @click="refreshMods">
     <template #icon>
       <n-icon>
         <RefreshIcon/>

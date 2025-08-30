@@ -3,14 +3,20 @@
     <n-thing>
       <template #header>
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-
           <n-text strong style="font-size: 16px; ">{{ `${index}. ` }}</n-text>
           <n-text strong style="font-size: 16px;">{{ mod.name }}</n-text>
-          <n-tag v-if="mod.corePackage" size="small" type="info" v-text="$t('modCard.corePackage')"></n-tag>
-          <n-tag v-if="mod.homeDir" size="small" type="success" v-text="$t('modCard.localMod')"></n-tag>
+
         </div>
       </template>
       <template #description>
+        <n-flex>
+          <n-tag v-if="is_enabled(mod)" size="small" type="warning">{{ $t('modCard.enabled') }}</n-tag>
+          <n-tag v-else size="small" type="error">{{ $t('modCard.disabled') }}</n-tag>
+          <n-tag v-if="mod.corePackage" size="small" type="info">{{ $t('modCard.corePackage') }}</n-tag>
+          <n-tag v-if="mod.homeDir" size="small" type="success">{{ $t('modCard.localMod') }}</n-tag>
+        </n-flex>
+      </template>
+      <template #default>
         <n-flex :size="6" style="margin-top: 8px;" vertical>
           <n-descriptions :column="4" size="small">
             <!-- Mod Version -->
@@ -50,11 +56,18 @@ import type { BarotraumaMod } from "../../proto/mods.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
 import Reveal from "../utils/Reveal.vue";
+import { enabled_mods } from "../../invokes.ts";
 
 interface Props {
 	mod: BarotraumaMod;
 	index: number;
 }
+
+const is_enabled = (mod: BarotraumaMod): boolean => {
+	return !!enabled_mods.value.find(
+		(m) => m.steamWorkshopId === mod.steamWorkshopId,
+	);
+};
 
 const props = defineProps<Props>();
 

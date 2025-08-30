@@ -48,11 +48,11 @@ function getTagColorConfig(tag: string): TagColorConfig {
 	const lightnessBorder = `${52 + (hash % 8)}%`;
 
 	// Text color: neutral dark gray (not colored!) → better readability and elegance
-	const textColor = "hsl(0, 0%, 18%)"; // near-black gray
+	const textColor = "rgba(0, 0%, 18%,0.6)"; // near-black gray
 
 	// Generate colors
-	const color = `hsl(${hue}, ${saturation}, ${lightnessBg})`;
-	const borderColor = `hsl(${hue}, ${saturation}, ${lightnessBorder})`;
+	const color = `hsla(${hue}, ${saturation}, ${lightnessBg}, 0.55)`;
+	const borderColor = `hsla(${hue}, ${saturation}, ${lightnessBorder}, 0.7)`;
 
 	const config: TagColorConfig = {
 		color,
