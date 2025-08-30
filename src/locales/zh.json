@@ -207,5 +207,16 @@
 	"modList": {
 		"title": "模组列表",
 		"empty": "未发现模组"
+	},
+	"downloadMods": {
+		"modInput": "模组ID或链接",
+		"modInputPlaceholder": "请输入创意工坊中的模组ID或Steam创意工坊链接（每行一个以进行批量添加）",
+		"queueTitle": "下载队列",
+		"addToQueue": "添加到队列",
+		"clear": "清空",
+		"empty": "队列中没有模组",
+		"verified": "已验证",
+		"processAll": "全部处理",
+		"clearQueue": "清空队列"
 	}
 }

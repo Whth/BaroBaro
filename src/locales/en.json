@@ -207,5 +207,16 @@
 	"modList": {
 		"title": "Mod List",
 		"empty": "No mods found"
+	},
+	"downloadMods": {
+		"modInput": "Mod ID or Link",
+		"modInputPlaceholder": "Enter mod ID in the workshop or steam workshop link (one per line for batch process) ",
+		"queueTitle": "Download Queue",
+		"addToQueue": "Add to Queue",
+		"clear": "Clear",
+		"empty": "No mods in queue",
+		"verified": "Verified",
+		"processAll": "Process All",
+		"clearQueue": "Clear Queue"
 	}
 }

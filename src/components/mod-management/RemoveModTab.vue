@@ -1,13 +1,11 @@
 <template>
-  <n-card :bordered="false" class="remove-mod-card">
-    <n-h2>Remove Mods</n-h2>
+  <n-scrollbar style="max-height: 60vh">
     <n-list :bordered="false" style="background-color: transparent">
-
       <n-list-item v-for="mod in installed_mod" :key="mod.steamWorkshopId">
         <ModItem :mod="mod"/>
       </n-list-item>
     </n-list>
-  </n-card>
+  </n-scrollbar>
 </template>
 
 <script lang="ts" setup>

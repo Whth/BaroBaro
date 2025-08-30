@@ -1,6 +1,5 @@
 <template>
-  <div class="update-mod-tab">
-    <n-h2>Update Mods</n-h2>
+  <n-scrollbar style="max-height: 60vh">
     <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
     <n-grid v-else :x-gap="12" :y-gap="12" cols="1 400:2 600:3 800:4" responsive="screen">
       <n-grid-item v-for="mod in installed_mod" :key="mod.steamWorkshopId">
@@ -29,7 +28,7 @@
         Update Selected ({{ selectedMods.size }})
       </n-button>
     </n-space>
-  </div>
+  </n-scrollbar>
 </template>
 
 <script lang="ts" setup>
@@ -76,12 +75,3 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
-.update-mod-tab {
-  padding: 20px;
-}
-
-.selected {
-  border: 2px solid #409eff;
-}
-</style>
