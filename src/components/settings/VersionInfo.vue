@@ -1,5 +1,5 @@
 <template>
-  <n-card :bordered="false" class="version-info-card">
+  <n-card>
     <n-grid :cols="3" :x-gap="16" :y-gap="16" class="animate-fade-in">
       <!-- Game Mod Manager Card -->
       <n-gi>

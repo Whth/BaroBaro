@@ -6,13 +6,19 @@
     <n-card>
       <n-tabs v-model:value="activeTab" animated type="line">
         <n-tab-pane :tab="$t('settings.general')" name="general">
-          <GeneralSettings/>
+          <n-scrollbar style="max-height: 67vh">
+            <GeneralSettings/>
+          </n-scrollbar>
         </n-tab-pane>
         <n-tab-pane :tab="$t('settings.ui')" name="ui">
-          <UIPreferences/>
+          <n-scrollbar style="max-height: 67vh">
+            <UIPreferences/>
+          </n-scrollbar>
         </n-tab-pane>
         <n-tab-pane :tab="$t('settings.versionInfo')" name="version">
-          <VersionInfo/>
+          <n-scrollbar style="max-height: 67vh">
+            <VersionInfo/>
+          </n-scrollbar>
         </n-tab-pane>
       </n-tabs>
     </n-card>
