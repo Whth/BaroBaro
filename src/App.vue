@@ -6,13 +6,9 @@
       :theme-overrides="currentThemeOverrides"
       autofocus class="glass-card">
     <n-message-provider>
-
       <Layout>
         <router-view/>
-
-
       </Layout>
-
     </n-message-provider>
   </n-config-provider>
 

@@ -14,7 +14,7 @@ pub struct BarotraumaModManager {
 
 impl BarotraumaModManager {
     fn discover_mods(mod_dir: &PathBuf) -> Vec<BarotraumaMod> {
-        let mut mods: Vec<BarotraumaMod> = WalkDir::new(&mod_dir)
+        let mut mods: Vec<BarotraumaMod> = WalkDir::new(mod_dir)
             .max_depth(1)
             .min_depth(1)
             .into_iter()
@@ -40,7 +40,7 @@ impl BarotraumaModManager {
         batch_size: usize,
     ) -> Result<&mut Self, String> {
         let mods = self.mods.clone();
-        self.mods = retrieve_mod_metadata(mods, batch_size, &client)
+        self.mods = retrieve_mod_metadata(mods, batch_size, client)
             .await
             .map_err(|e| format!("{e}, failed to retrieve mod metadata."))?;
         Ok(self)
@@ -80,9 +80,36 @@ impl BarotraumaModManager {
     pub fn get_mods(&self) -> &Vec<BarotraumaMod> {
         &self.mods
     }
+
+    pub fn get_mod_occupation(&self, mod_id: u64) -> Result<u64, String> {
+        if let Some(target_mod) = self
+            .mods
+            .iter()
+            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
+            .next_back()
+        {
+            target_mod.mod_occupation()
+        } else {
+            Err("Mod not found".to_string())
+        }
+    }
+
+    pub fn get_mod_hash(&self, mod_id: u64) -> Result<String, String> {
+        if let Some(target_mod) = self
+            .mods
+            .iter()
+            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
+            .next_back()
+        {
+            target_mod.mod_hash()
+        } else {
+            Err("Mod not found".to_string())
+        }
+    }
+
     pub fn refresh_mods(&mut self) -> Result<&mut Self, String> {
         if let Some(ref game_home) = self.game_home {
-            self.mods = BarotraumaModManager::discover_mods(&game_home.mod_dir());
+            self.mods = BarotraumaModManager::discover_mods(game_home.mod_dir());
             Ok(self)
         } else {
             Err("Game home not set".to_string())

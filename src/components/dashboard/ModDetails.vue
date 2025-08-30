@@ -1,10 +1,8 @@
 <template>
 
-
   <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 70vh" x-gap="20" y-gap="2vh">
 
-    <n-gi v-if="imageRendered" span="4">
-
+    <n-gi span="4">
       <n-image :lazy="true" :src="mod.previewImage" width="100%" @load="imageRendered=true"
                @loadstart="imageRendered=false">
         <template #error>
@@ -12,10 +10,10 @@
             <ImageOutline/>
           </n-icon>
         </template>
+        <template #placeholder>
+          <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
+        </template>
       </n-image>
-    </n-gi>
-    <n-gi v-else span="4">
-      <n-skeleton :sharp="false" :size="'large'" style="height: 80% ;width: 100%"></n-skeleton>
     </n-gi>
 
     <n-gi v-if="!!mod.creator" span="3">

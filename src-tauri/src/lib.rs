@@ -31,7 +31,9 @@ pub fn run() -> Result<(), String> {
             retrieve_mod_metadata,
             is_barotrauma_mod,
             install_mods,
-            uninstall_mods
+            uninstall_mods,
+            get_mod_occupation,
+            get_mod_hash
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

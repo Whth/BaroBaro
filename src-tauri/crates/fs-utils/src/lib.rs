@@ -26,4 +26,4 @@ pub fn link_directory(src: String, dst: String) -> Result<(), String> {
     Ok(())
 }
 
-pub use hash::hash_directory;
+pub use hash::*;

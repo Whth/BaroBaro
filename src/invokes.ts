@@ -94,3 +94,11 @@ export async function install_mods(modIds: number[]): Promise<null> {
 export async function get_background_image(): Promise<string | null> {
 	return await invoke("get_background_image");
 }
+
+export async function get_mod_occupation(modId: number): Promise<number> {
+	return await invoke("get_mod_occupation", { modId });
+}
+
+export async function get_mod_hash(modId: number): Promise<string> {
+	return await invoke("get_mod_hash", { modId });
+}

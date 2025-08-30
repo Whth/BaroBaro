@@ -119,9 +119,7 @@ pub async fn list_installed_mods() -> Result<Vec<BarotraumaMod>, String> {
         )
         .refresh_mods()?
         .get_mods()
-        .iter()
-        .map(|baro_mod| baro_mod.clone())
-        .collect::<Vec<_>>())
+        .to_vec())
 }
 
 #[tauri::command]
@@ -310,4 +308,14 @@ pub async fn uninstall_mods(mod_ids: Vec<u64>) -> Result<(), String> {
         .collect::<Vec<_>>();
 
     fs_extra::remove_items(&targets).map_err(|e| format!("{}, failed to uninstall mod.", e))
+}
+
+#[tauri::command]
+pub async fn get_mod_occupation(mod_id: u64) -> Result<u64, String> {
+    BARO_MANAGER.read().await.get_mod_occupation(mod_id)
+}
+
+#[tauri::command]
+pub async fn get_mod_hash(mod_id: u64) -> Result<String, String> {
+    BARO_MANAGER.read().await.get_mod_hash(mod_id)
 }

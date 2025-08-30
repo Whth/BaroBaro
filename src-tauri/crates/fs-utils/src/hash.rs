@@ -128,6 +128,23 @@ pub fn hash_directory<P: AsRef<Path>>(path: P) -> Result<String> {
     Ok(final_hasher.finalize().to_hex().to_string())
 }
 
+pub fn hash_file<P: AsRef<Path>>(path: P) -> Result<String> {
+    let path = path.as_ref();
+    let file = File::open(path)?;
+    let mut reader = BufReader::new(file);
+    let mut buffer = [0; 8192];
+    let mut hasher = Hasher::new();
+
+    loop {
+        let n = reader.read(&mut buffer)?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buffer[..n]);
+    }
+
+    Ok(hasher.finalize().to_hex().to_string())
+}
 // ================
 // 🧪 UNIT TESTS
 // ================
