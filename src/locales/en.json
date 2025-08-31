@@ -217,6 +217,8 @@
 		"empty": "No mods in queue",
 		"verified": "Verified",
 		"processAll": "Process All",
-		"clearQueue": "Clear Queue"
+		"clearQueue": "Clear Queue",
+		"inputTitle": "Mod Analysis",
+		"queueCount": "{count} mods in queue"
 	}
 }

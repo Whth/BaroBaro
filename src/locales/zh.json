@@ -217,6 +217,8 @@
 		"empty": "队列中没有模组",
 		"verified": "已验证",
 		"processAll": "全部处理",
-		"clearQueue": "清空队列"
+		"clearQueue": "清空队列",
+		"inputTitle": "模组解析",
+		"queueCount": "{count}个项目已列"
 	}
 }

@@ -319,3 +319,13 @@ pub async fn get_mod_occupation(mod_id: u64) -> Result<u64, String> {
 pub async fn get_mod_hash(mod_id: u64) -> Result<String, String> {
     BARO_MANAGER.read().await.get_mod_hash(mod_id)
 }
+
+#[tauri::command]
+pub async fn get_workshop_items(item_ids: Vec<u64>) -> Result<Vec<WorkshopItem>, String> {
+    STEAM_WORKSHOP_CLIENT
+        .read()
+        .await
+        .get_items(item_ids)
+        .map_err(|e| format!("{}, failed to retrieve workshop items.", e))
+        .await
+}

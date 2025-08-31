@@ -3,9 +3,12 @@
     <template #title>
       <n-h1 v-text="$t('navigation.mods')"></n-h1>
     </template>
-    <n-card>
-      <ModManagementTabs/>
-    </n-card>
+
+    <n-scrollbar style="height: 85vh">
+      <n-card>
+        <ModManagementTabs/>
+      </n-card>
+    </n-scrollbar>
   </TitledPage>
 </template>
 

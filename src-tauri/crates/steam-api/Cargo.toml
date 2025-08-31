@@ -12,10 +12,13 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1.0.143"
 thiserror = "1"
 logger = { path = "../logger" }
+prost = "0.14.1"
+
 
 [dev-dependencies]
 mockito = "1.7.0"
 tokio = { version = "1.47.1", features = ["macros", "test-util"] }
 
-
+[build-dependencies]
+transmission = { path = "../transmission" }
 

@@ -1,65 +1,90 @@
 <template>
-  <n-form>
-    <n-form-item :label="$t('downloadMods.modInput')">
-      <n-input
-          v-model:value="modInput"
-          :autosize="{ minRows: 3, maxRows: 6 }"
-          :placeholder="$t('downloadMods.modInputPlaceholder')"
-          type=textarea
-      />
-    </n-form-item>
-    <n-form-item>
-      <n-space>
-        <n-button :loading="isAddingMods" type="primary" @click="addMods">{{ $t('downloadMods.addToQueue') }}</n-button>
-        <n-button @click="clearInput">{{ $t('downloadMods.clear') }}</n-button>
-      </n-space>
-    </n-form-item>
-  </n-form>
-
-  <n-divider/>
-
-  <n-card v-if="modQueue.length > 0" :title="$t('downloadMods.queueTitle')">
-    <n-list>
-      <n-list-item v-for="(mod, index) in modQueue" :key="index">
-        <n-thing>
-          <template #header>
-            {{ mod.id ? mod.id.toString() : mod.url }}
-            <n-tag v-if="mod.verified" size="small" style="margin-left: 8px" type="success">
-              {{ $t('downloadMods.verified') }}
-            </n-tag>
-          </template>
-          <template #description>
-            <n-tag :type="getStatusType(mod.status)">
-              {{ mod.status }}
-            </n-tag>
-          </template>
-        </n-thing>
-        <template #suffix>
-          <n-button text @click="removeFromQueue(index)">
-            <n-icon>
-              <close-outline/>
-            </n-icon>
-          </n-button>
+  <n-grid cols="2" style="height: 100%" x-gap="16" y-gap="8">
+    <!-- Left Column: Input Form -->
+    <n-gi>
+      <n-card :title="$t('downloadMods.inputTitle')" embedded style="height: 100%">
+        <n-input
+            v-model:value="modInput"
+            :autosize="{ minRows: 7, maxRows: 18 }"
+            :placeholder="$t('downloadMods.modInputPlaceholder')"
+            type="textarea"
+        />
+        <template #footer>
+          <n-space>
+            <n-button :loading="isAddingMods" type="primary" @click="addMods">
+              {{ $t('downloadMods.addToQueue') }}
+            </n-button>
+            <n-button @click="clearInput">
+              {{ $t('downloadMods.clear') }}
+            </n-button>
+          </n-space>
         </template>
-      </n-list-item>
-    </n-list>
-    <n-space style="margin-top: 16px">
-      <n-button :loading="isProcessing" type="success" @click="processQueue">{{
-          $t('downloadMods.processAll')
-        }}
-      </n-button>
-      <n-button @click="clearQueue">{{ $t('downloadMods.clearQueue') }}</n-button>
-    </n-space>
-  </n-card>
 
-  <n-empty v-else :description="$t('downloadMods.empty')"/>
+      </n-card>
+    </n-gi>
 
+    <!-- Right Column: Mod Queue -->
+    <n-gi>
+      <n-card :title="$t('downloadMods.queueTitle')" embedded style="height: 100%">
+        <template #header-extra>
+          <n-tag size="small">
+            {{ $t('downloadMods.queueCount', {count: modQueue.length}) }}
+          </n-tag>
+        </template>
+        <template #default>
+          <n-scrollbar style="max-height: 40vh">
+            <n-list v-if="modQueue.length > 0">
+              <n-list-item v-for="(mod, index) in modQueue" :key="index">
+                <n-thing>
+                  <template #header>
+                    {{ mod.id ? mod.id.toString() : mod.url }}
+                    <n-tag v-if="mod.verified" size="small" style="margin-left: 0.75em" type="success">
+                      {{ $t('downloadMods.verified') }}
+                    </n-tag>
+                  </template>
+                  <template #description>
+                    <n-tag :type="getStatusType(mod.status)">
+                      {{ mod.status }}
+                    </n-tag>
+                  </template>
+                </n-thing>
+                <template #suffix>
+                  <n-button text @click="removeFromQueue(index)">
+                    <n-icon>
+                      <close-outline/>
+                    </n-icon>
+                  </n-button>
+                </template>
+              </n-list-item>
+            </n-list>
+
+
+            <!-- Empty state when no mods in queue -->
+            <n-empty v-else :content="$t('downloadMods.empty')" style="margin-top: 20px"/>
+
+          </n-scrollbar>
+        </template>
+
+        <template #footer>
+          <n-space style="margin-top: 0.8em">
+            <n-button :loading="isProcessing" type="success" @click="processQueue">
+              {{ $t('downloadMods.processAll') }}
+            </n-button>
+            <n-button @click="clearQueue">
+              {{ $t('downloadMods.clearQueue') }}
+            </n-button>
+          </n-space>
+        </template>
+      </n-card>
+
+
+    </n-gi>
+  </n-grid>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 import { getSteamWorkshopId } from "../../composables/network.ts";
-import { CloseOutline } from "@vicons/ionicons5";
 import {
 	download_mods,
 	install_mods,

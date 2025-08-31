@@ -1,6 +1,6 @@
 <template>
 
-  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" style="height: 65vh" x-gap="20" y-gap="2vh">
+  <n-grid v-if="mod!=null && mod.previewImage!==undefined" cols="7" x-gap="20" y-gap="2vh">
 
     <n-gi span="4">
       <n-image v-show="imageRendered" :lazy="false" :src="mod.previewImage" width="100%"

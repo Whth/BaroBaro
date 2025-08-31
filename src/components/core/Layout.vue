@@ -3,7 +3,7 @@
     <Navigation/>
     <n-layout>
       <n-scrollbar>
-        <n-layout-content style="padding: 3%">
+        <n-layout-content style="padding-left: 3%;padding-right: 3%;height: 100vh">
           <slot/>
         </n-layout-content>
       </n-scrollbar>

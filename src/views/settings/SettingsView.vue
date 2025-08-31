@@ -6,17 +6,17 @@
     <n-card>
       <n-tabs v-model:value="activeTab" animated type="line">
         <n-tab-pane :tab="$t('settings.general')" name="general">
-          <n-scrollbar style="max-height: 67vh">
+          <n-scrollbar style="height: 72vh">
             <GeneralSettings/>
           </n-scrollbar>
         </n-tab-pane>
         <n-tab-pane :tab="$t('settings.ui')" name="ui">
-          <n-scrollbar style="max-height: 67vh">
+          <n-scrollbar style="height: 72vh">
             <UIPreferences/>
           </n-scrollbar>
         </n-tab-pane>
         <n-tab-pane :tab="$t('settings.versionInfo')" name="version">
-          <n-scrollbar style="max-height: 67vh">
+          <n-scrollbar style="height: 72vh">
             <VersionInfo/>
           </n-scrollbar>
         </n-tab-pane>
@@ -63,13 +63,12 @@ const message = useMessage();
 
 const apply_and_save_config = async () => {
 	await save_config();
+	message.success(t("settings.saved"));
 	i18n.global.locale.value = languageToJSON(
 		config.value.uiConfig?.language ?? Language.EN,
 	);
 	setTransparent();
 	setTheme();
 	await setBackgroundImage();
-
-	message.success(t("settings.saved"));
 };
 </script>

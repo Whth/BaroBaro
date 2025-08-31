@@ -56,16 +56,16 @@
             </n-space>
           </template>
           <n-space vertical>
-            <n-button href="https://github.com/Whth/BaroBaro" tag="a" text type="primary">
+            <n-button text type="primary" @click="openUrl('https://github.com/Whth/BaroBaro')">
               {{ $t('version.repository') }}
             </n-button>
-            <n-button href="https://github.com/Whth/BaroBaro/blob/master/README.md" tag="a" text type="primary">
+            <n-button text type="primary" @click="openUrl('https://github.com/Whth/BaroBaro/blob/master/README.md')">
               {{ $t('version.documentation') }}
             </n-button>
-            <n-button href="https://github.com/Whth/BaroBaro/discussions" tag="a" text type="primary">
+            <n-button text type="primary" @click="openUrl('https://github.com/Whth/BaroBaro/discussions')">
               {{ $t('version.support') }}
             </n-button>
-            <n-button href="https://github.com/Whth/BaroBaro/issues" tag="a" text type="primary">
+            <n-button text type="primary" @click="openUrl('https://github.com/Whth/BaroBaro/issues')">
               {{ $t('version.report_issues') }}
             </n-button>
           </n-space>
@@ -104,6 +104,7 @@ import {
 import { get_build_info } from "../../invokes.ts";
 import { onMounted, type Ref, ref } from "vue";
 import { BuildInfo } from "../../proto/build_info.ts";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 const build_info: Ref<BuildInfo> = ref(BuildInfo.create());
 

@@ -1,23 +1,22 @@
 <template>
-  <n-card :bordered="false" class="mod-management-card">
-    <n-tabs
-        v-model:value="activeTab"
-        animated
-        justify-content="space-evenly"
-        type="line"
-    >
+  <n-tabs
+      v-model:value="activeTab"
+      animated
+      justify-content="space-evenly"
+      style="height: 100%"
+      type="line"
+  >
 
-      <n-tab-pane
-          v-for="tab in tabs"
-          :key="tab.id"
-          :name="tab.id"
-          :tab="tab.name"
-          style="max-height: 61vh">
+    <n-tab-pane
+        v-for="tab in tabs"
+        :key="tab.id"
+        :name="tab.id"
+        :tab="tab.name"
+        style="height: 100%">
 
-        <component :is="tab.component"/>
-      </n-tab-pane>
-    </n-tabs>
-  </n-card>
+      <component :is="tab.component" style="height: 70vh"/>
+    </n-tab-pane>
+  </n-tabs>
 </template>
 
 <script lang="ts" setup>

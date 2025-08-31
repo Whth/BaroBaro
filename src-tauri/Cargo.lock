@@ -4732,11 +4732,13 @@ dependencies = [
  "futures",
  "logger",
  "mockito",
+ "prost",
  "reqwest",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
+ "transmission",
 ]
 
 [[package]]

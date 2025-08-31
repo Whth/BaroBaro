@@ -27,7 +27,7 @@
         </n-card>
       </n-grid-item>
 
-      <n-grid-item span="5">
+      <n-grid-item span="5" style="height: 100%">
         <n-card :title="$t('modDetails.title')">
           <ModDetails :mod="curMod"></ModDetails>
         </n-card>

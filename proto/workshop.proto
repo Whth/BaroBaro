@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package workshop;
+
+
+// Represents a single Steam Workshop item.
+message WorkshopItem {
+  // The unique 64-bit ID of the published file
+  uint64 published_file_id = 1;
+
+  // Result code for this item (1 = success)
+  int32 result = 2;
+
+  // Creator's Steam 64 ID
+  uint64 creator = 3;
+
+  // App ID that created this item
+  uint64 creator_app_id = 4;
+
+  // App ID consuming this item
+  uint64 consumer_app_id = 5;
+
+  // Name of the uploaded file
+  string filename = 6;
+
+  // File size in bytes (as uint64)
+  uint64 file_size = 7;
+
+  // Direct URL to the file
+  string file_url = 8;
+
+  // Content hash of the file
+  string hcontent_file = 9;
+
+  // URL to preview image
+  string preview_url = 10;
+
+  // Content hash of the preview image
+  string hcontent_preview = 11;
+
+  // Title of the workshop item
+  string title = 12;
+
+  // Description of the item
+  string description = 13;
+
+  // Unix timestamp when the item was created
+  uint64 time_created = 14;
+
+  // Unix timestamp when the item was last updated
+  uint64 time_updated = 15;
+
+  // Visibility state (e.g., public, friends-only, private)
+  int32 visibility = 16;
+
+  // Whether the item is banned (0 = not banned, 1 = banned)
+  int64 banned = 17;  // using int64 to match `isize` in Rust (but usually 0 or 1)
+
+  // Reason for the ban (if any)
+  string ban_reason = 18;
+
+  // Current number of subscriptions
+  uint64 subscriptions = 19;
+
+  // Current number of favorites
+  uint64 favorited = 20;
+
+  // Lifetime number of subscriptions
+  uint64 lifetime_subscriptions = 21;
+
+  // Lifetime number of favorites
+  uint64 lifetime_favorited = 22;
+
+  // Total number of views
+  uint64 views = 23;
+
+  // Tags associated with the item
+  repeated Tag tags = 24;
+}
+
+// Represents a tag on a workshop item
+message Tag {
+  // The tag name
+  string tag = 1;
+}

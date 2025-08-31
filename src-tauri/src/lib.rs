@@ -33,7 +33,8 @@ pub fn run() -> Result<(), String> {
             install_mods,
             uninstall_mods,
             get_mod_occupation,
-            get_mod_hash
+            get_mod_hash,
+            get_workshop_items
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
