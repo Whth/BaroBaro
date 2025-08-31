@@ -3,12 +3,15 @@ import { Config } from "./proto/config";
 import { type Ref, ref } from "vue";
 import type { BarotraumaMod, ModList } from "./proto/mods";
 import { BuildInfo } from "./proto/build_info.ts";
+import { WorkshopItem } from "./proto/workshop.ts";
 
 export const config: Ref<Config> = ref(Config.create());
 export const installed_mod: Ref<BarotraumaMod[]> = ref([]);
 export const mod_lists: Ref<ModList[]> = ref([]);
 
 export const enabled_mods: Ref<BarotraumaMod[]> = ref([]);
+
+export const BAROTRAUMA_GAME_ID: number = 602960;
 
 export async function refresh_config() {
 	config.value = await invoke("read_config").then((data) =>
@@ -83,8 +86,13 @@ export async function retrieve_mod_metadata() {
 	});
 }
 
-export async function is_barotrauma_mod(itemId: number): Promise<boolean> {
-	return await invoke("is_barotrauma_mod", { itemId });
+export async function is_barotrauma_mod(
+	item: number | WorkshopItem,
+): Promise<boolean> {
+	if (typeof item === "number") {
+		return await invoke("is_barotrauma_mod", { itemId: item });
+	}
+	return item.consumerAppId === BAROTRAUMA_GAME_ID;
 }
 
 export async function install_mods(modIds: number[]): Promise<null> {
@@ -101,4 +109,10 @@ export async function get_mod_occupation(modId: number): Promise<number> {
 
 export async function get_mod_hash(modId: number): Promise<string> {
 	return await invoke("get_mod_hash", { modId });
+}
+
+export async function get_workshop_items(
+	modIds: number[],
+): Promise<WorkshopItem[]> {
+	return await invoke("get_workshop_items", { modIds });
 }
