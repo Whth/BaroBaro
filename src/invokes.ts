@@ -112,7 +112,7 @@ export async function get_mod_hash(modId: number): Promise<string> {
 }
 
 export async function get_workshop_items(
-	modIds: number[],
+	itemIds: number[],
 ): Promise<WorkshopItem[]> {
-	return await invoke("get_workshop_items", { modIds });
+	return await invoke("get_workshop_items", { itemIds });
 }

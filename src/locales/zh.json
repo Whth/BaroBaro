@@ -220,5 +220,22 @@
 		"clearQueue": "清空队列",
 		"inputTitle": "模组解析",
 		"queueCount": "{count}个项目已列"
+	},
+	"workshop": {
+		"status": {
+			"pending": "等待中",
+			"downloading": "下载中",
+			"completed": "已完成",
+			"error": "出错"
+		},
+		"verified": "已验证",
+		"verifyFailed": "验证失败",
+		"size": "大小",
+		"lastUpdated": "最后更新",
+		"subscriptions": "订阅数",
+		"favorited": "点赞数"
+	},
+	"code": {
+		"copied": "已复制到剪贴板"
 	}
 }

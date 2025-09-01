@@ -162,6 +162,7 @@ impl SteamWorkShopClient {
 
         Ok(items)
     }
+
     /// Fetch multiple Workshop items by their IDs (as `u64`) in batches.
     ///
     /// This method splits the provided item IDs into batches of the specified size

@@ -32,33 +32,22 @@
           </n-tag>
         </template>
         <template #default>
-          <n-scrollbar style="max-height: 40vh">
+
+          <n-scrollbar style="height: 40vh">
             <n-list v-if="modQueue.length > 0">
               <n-list-item v-for="(mod, index) in modQueue" :key="index">
-                <n-thing>
-                  <template #header>
-                    {{ mod.id ? mod.id.toString() : mod.url }}
-                    <n-tag v-if="mod.verified" size="small" style="margin-left: 0.75em" type="success">
-                      {{ $t('downloadMods.verified') }}
-                    </n-tag>
-                  </template>
-                  <template #description>
-                    <n-tag :type="getStatusType(mod.status)">
-                      {{ mod.status }}
-                    </n-tag>
-                  </template>
-                </n-thing>
+
+                <WorkshopItemDisplay :item="mod" style="padding: 10px"/>
+
                 <template #suffix>
-                  <n-button text @click="removeFromQueue(index)">
-                    <n-icon>
+                  <n-button size="large" text @click="removeFromQueue(index)">
+                    <n-icon size="2em">
                       <close-outline/>
                     </n-icon>
                   </n-button>
                 </template>
               </n-list-item>
             </n-list>
-
-
             <!-- Empty state when no mods in queue -->
             <n-empty v-else :content="$t('downloadMods.empty')" style="margin-top: 20px"/>
 
@@ -84,24 +73,21 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import { CloseOutline } from "@vicons/ionicons5";
 import { getSteamWorkshopId } from "../../composables/network.ts";
 import {
 	download_mods,
+	get_workshop_items,
 	install_mods,
 	is_barotrauma_mod,
 } from "../../invokes.ts";
 import { useMessage } from "naive-ui";
+import { WorkshopItem } from "../../proto/workshop.ts";
+import { ModItem, ModStatus } from "../../composables/workshop.ts";
+import WorkshopItemDisplay from "./WorkshopItemDisplay.vue";
 
 // Initialize Naive UI message instance for user feedback
 const message = useMessage();
-
-// Interface defining the structure of a mod item in the queue
-interface ModItem {
-	id?: number; // Steam Workshop ID (if available)
-	url?: string; // Original URL input (if provided)
-	status: "pending" | "downloading" | "completed" | "error"; // Current download status
-	verified?: boolean; // Whether the mod has passed validation
-}
 
 // Reactive reference for user input (mod IDs or URLs)
 const modInput = ref<string>("");
@@ -124,7 +110,7 @@ const parseInputLine = (line: string): ModItem | null => {
 	const trimmed = line.trim();
 	if (!trimmed) return null;
 
-	const mod: ModItem = { status: "pending" };
+	const mod: ModItem = { status: ModStatus.Pending };
 
 	if (trimmed.startsWith("http")) {
 		mod.url = trimmed;
@@ -136,7 +122,6 @@ const parseInputLine = (line: string): ModItem | null => {
 			mod.id = num;
 		}
 	}
-
 	return mod;
 };
 
@@ -164,11 +149,22 @@ const isDuplicateMod = (mod: ModItem): boolean => {
  */
 const verifyMod = async (mod: ModItem): Promise<boolean> => {
 	if (!mod.id) return false;
-
 	try {
-		const isValid = await is_barotrauma_mod(mod.id);
+		let isValid = false;
+		let target = undefined;
+		let retrieved_items: WorkshopItem[] = await get_workshop_items([mod.id]);
+
+		if (retrieved_items.length > 0) {
+			console.log("retrieved item info.");
+
+			target = retrieved_items[0];
+
+			isValid = await is_barotrauma_mod(target);
+		}
+
 		if (isValid) {
 			mod.verified = true;
+			mod.retrieved = target;
 		}
 		return isValid;
 	} catch (error) {
@@ -218,7 +214,7 @@ const addSingleModToQueue = async (input: string): Promise<void> => {
 	if (mod.id) {
 		const isValid = await verifyMod(mod);
 		if (!isValid) {
-			mod.status = "error";
+			mod.status = ModStatus.Error;
 			showInvalidModWarning(mod);
 		}
 	}
@@ -245,7 +241,9 @@ const addMods = async () => {
 	}
 
 	modInput.value = "";
-	const validCount = modQueue.value.filter((m) => m.status !== "error").length;
+	const validCount = modQueue.value.filter(
+		(m) => m.status !== ModStatus.Error,
+	).length;
 	message.success(`Added ${validCount} mods to queue.`);
 	isAddingMods.value = false;
 };
@@ -280,7 +278,7 @@ const clearQueue = () => {
  */
 const getValidModIds = (): number[] => {
 	return modQueue.value
-		.filter((mod) => mod.id && mod.status !== "error")
+		.filter((mod) => mod.id && mod.status !== ModStatus.Error)
 		.map((mod) => mod.id as number);
 };
 
@@ -292,7 +290,7 @@ const getValidModIds = (): number[] => {
  */
 const updateModStatus = (
 	predicate: (mod: ModItem) => boolean,
-	status: ModItem["status"],
+	status: ModStatus,
 ) => {
 	modQueue.value.forEach((mod) => {
 		if (predicate(mod)) {
@@ -317,15 +315,18 @@ const processQueue = async () => {
 
 	try {
 		// Mark all valid mods as downloading
-		updateModStatus((mod) => !!mod.id && mod.status !== "error", "downloading");
+		updateModStatus(
+			(mod) => !!mod.id && mod.status !== ModStatus.Error,
+			ModStatus.Downloading,
+		);
 
 		// Call backend to download all mods
 		await download_mods(modIds);
 		await install_mods(modIds);
 		// Mark successfully downloading mods as completed
 		updateModStatus(
-			(mod) => !!mod.id && mod.status === "downloading",
-			"completed",
+			(mod) => !!mod.id && mod.status === ModStatus.Downloading,
+			ModStatus.Completed,
 		);
 
 		message.success(`Successfully downloaded ${modIds.length} mods.`);
@@ -334,7 +335,10 @@ const processQueue = async () => {
 		message.error("Failed to download mods.");
 
 		// Mark any downloading mods as failed
-		updateModStatus((mod) => !!mod.id && mod.status === "downloading", "error");
+		updateModStatus(
+			(mod) => !!mod.id && mod.status === ModStatus.Downloading,
+			ModStatus.Error,
+		);
 	} finally {
 		isProcessing.value = false;
 	}
@@ -346,20 +350,4 @@ const processQueue = async () => {
  * @param status - The current status of the mod
  * @returns Corresponding tag type
  */
-const getStatusType = (
-	status: ModItem["status"],
-): "default" | "warning" | "success" | "error" => {
-	switch (status) {
-		case "pending":
-			return "default";
-		case "downloading":
-			return "warning";
-		case "completed":
-			return "success";
-		case "error":
-			return "error";
-		default:
-			return "default";
-	}
-};
 </script>

@@ -82,31 +82,14 @@ import abbreviate from "number-abbreviate";
 import type { BarotraumaMod } from "../../proto/mods.ts";
 import { ImageOutline } from "@vicons/ionicons5";
 import bytes from "bytes";
-import { Language, languageToJSON } from "../../proto/config.ts";
 import getTagColorConfig from "../../composables/coloredTag.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ref, watch } from "vue";
+import { formatTimestampToDate } from "../../composables/utils.ts";
 
 const imageRendered = ref(false);
-
-/**
- * Convert a timestamp in seconds to a date string in YYYY-MM-DD format
- * @param timestamp - Timestamp in seconds (e.g., 1751876035)
- * @returns Formatted date string, such as "2025-07-06"
- */
-function formatTimestampToDate(timestamp: number): string {
-	const date = new Date(timestamp * 1000);
-
-	return date
-		.toLocaleDateString(languageToJSON(Language.ZH), {
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-		})
-		.replace(/\//g, "-");
-}
 
 interface Props {
 	mod: BarotraumaMod | null;

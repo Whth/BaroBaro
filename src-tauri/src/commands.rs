@@ -322,10 +322,12 @@ pub async fn get_mod_hash(mod_id: u64) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn get_workshop_items(item_ids: Vec<u64>) -> Result<Vec<WorkshopItem>, String> {
+    let conf: Config = read_config()?;
+
     STEAM_WORKSHOP_CLIENT
         .read()
         .await
-        .get_items(item_ids)
+        .get_items_batched(item_ids, conf.metadata_retrieve_batchsize as usize)
         .map_err(|e| format!("{}, failed to retrieve workshop items.", e))
         .await
 }
