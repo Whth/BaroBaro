@@ -28,7 +28,8 @@
     "active": true,
     "targets": "all",
     "icon": [
-      "icons/BaroBaro.ico"
+      "icons/BaroBaro.ico",
+      "icons/BaroBaro.png"
     ]
   }
 }
