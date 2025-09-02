@@ -115,6 +115,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -144,7 +148,7 @@ jobs:
       - name: Install protoc (Protocol Buffers compiler)
         uses: arduino/setup-protoc@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.PAT }}
 
       - name: Cache cargo
         uses: actions/cache@v4
