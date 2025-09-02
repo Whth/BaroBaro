@@ -23,7 +23,6 @@ use imagen::{BackgroundConfig, process_background};
 use logger::{debug, info};
 use mod_analyzer::{BarotraumaMod, ModList};
 use steam_api::WorkshopItem;
-use tokio::fs::symlink_dir;
 
 use mod_analyzer::retrieve_mod_metadata as get_mod_metadata;
 /// Writes the given configuration to disk in TOML format.
@@ -274,19 +273,25 @@ pub async fn install_mods(mod_ids: Vec<u64>) -> Result<(), String> {
                     .map(|_| ())
                     .map_err(|e| format!("{}, failed to copy mod.", e))
                 }
-                s if InstallStrategy::Link as i32 == s => symlink_dir(
-                    STEAMCMD_MANAGER
-                        .read()
-                        .await
-                        .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?,
-                    BARO_MANAGER
-                        .read()
-                        .await
-                        .mod_dir()?
-                        .join(item_id.to_string()),
-                )
-                .await
-                .map_err(|e| format!("{}, failed to symlink mod.", e)),
+                s if InstallStrategy::Link as i32 == s => {
+                    #[cfg(target_os = "windows")]
+                    let linker = tokio::fs::symlink_dir;
+                    #[cfg(target_os = "linux")]
+                    let linker = tokio::fs::symlink;
+                    linker(
+                        STEAMCMD_MANAGER
+                            .read()
+                            .await
+                            .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?,
+                        BARO_MANAGER
+                            .read()
+                            .await
+                            .mod_dir()?
+                            .join(item_id.to_string()),
+                    )
+                    .await
+                    .map_err(|e| format!("{}, failed to symlink mod.", e))
+                }
                 _ => Err("Invalid install strategy".to_string()),
             }
         })
