@@ -1,23 +1,19 @@
 <template>
   <n-scrollbar style="max-height: 60vh">
     <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
+
     <n-grid v-else :x-gap="12" :y-gap="12" cols="1 400:2 600:3 800:4" responsive="screen">
       <n-grid-item v-for="mod in installed_mod" :key="mod.steamWorkshopId">
-        <n-card
-            :bordered="true"
+        <!-- Use ModItemDisplay instead of n-card -->
+        <ModItemDisplay
             :class="{ 'selected': selectedMods.has(mod.steamWorkshopId) }"
-            :segmented="{ content: true, footer: 'soft' }"
-            :title="mod.name || `Mod ${mod.steamWorkshopId}`"
-            hoverable
+            :mod="mod"
+            :style="{ cursor: 'pointer', borderRadius: 'var(--n-border-radius)' }"
             @click="toggleModSelection(mod.steamWorkshopId)"
-        >
-          <template #header-extra>
-            <n-tag type="info">ID: {{ mod.steamWorkshopId }}</n-tag>
-          </template>
-
-        </n-card>
+        />
       </n-grid-item>
     </n-grid>
+
     <n-space v-if="installed_mod.length > 0" justify="center" style="margin-top: 20px">
       <n-button
           :disabled="selectedMods.size === 0"
@@ -38,20 +34,22 @@ import {
 	installed_mod,
 	list_installed_mods,
 } from "../../invokes";
+import ModItemDisplay from "./ModItemDisplay.vue";
 
-// Set to keep track of selected mods for update
+// Set to track selected mods for update
 const selectedMods = ref(new Set<number>());
 
-// Toggle mod selection for update
+// Toggle selection of a mod
 function toggleModSelection(modId: number) {
-	if (selectedMods.value.has(modId)) {
+	const isSelected = selectedMods.value.has(modId);
+	if (isSelected) {
 		selectedMods.value.delete(modId);
 	} else {
 		selectedMods.value.add(modId);
 	}
 }
 
-// Update selected mods
+// Update all selected mods
 async function updateSelectedMods() {
 	if (selectedMods.value.size === 0) return;
 
@@ -62,16 +60,22 @@ async function updateSelectedMods() {
 		// Clear selection after update
 		selectedMods.value.clear();
 
-		// Refresh the mod list
+		// Refresh the installed mod list
 		await list_installed_mods();
 	} catch (error) {
 		console.error("Failed to update mods:", error);
 	}
 }
 
-// Load mods on component mount
+// Load installed mods on mount
 onMounted(async () => {
 	await list_installed_mods();
 });
 </script>
 
+<style scoped>
+/* Optional: Highlight selected mod with border or shadow */
+.selected {
+  box-shadow: 0 0 0 2px #409eff !important;
+}
+</style>

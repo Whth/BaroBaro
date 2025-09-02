@@ -237,5 +237,11 @@
 	},
 	"code": {
 		"copied": "已复制到剪贴板"
+	},
+	"modItem": {
+		"occupation": "占用空间",
+		"version": "模组版本",
+		"gameVersion": "游戏版本",
+		"hash": "哈希值"
 	}
 }

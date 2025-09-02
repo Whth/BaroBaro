@@ -237,5 +237,11 @@
 	},
 	"code": {
 		"copied": "Copied to clipboard"
+	},
+	"modItem": {
+		"occupation": "Occupation",
+		"version": "Mod Version",
+		"gameVersion": "Game Version",
+		"hash": "Hash"
 	}
 }
