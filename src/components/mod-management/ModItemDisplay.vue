@@ -1,6 +1,6 @@
 <template>
   <n-grid cols="10" x-gap="10px">
-    <n-gi>
+    <n-gi span="3">
       <n-image :src="mod.previewImage" width="100%"/>
     </n-gi>
     <n-gi
