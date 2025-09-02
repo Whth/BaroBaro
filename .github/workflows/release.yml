@@ -128,6 +128,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        
+      - name: Install protoc (Protocol Buffers compiler)
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.PAT }}
 
       - name: Generate Protobuf (via protoc + ts-proto)
         run: |
@@ -145,10 +150,6 @@ jobs:
           toolchain: nightly
           target: ${{ matrix.target }}
 
-      - name: Install protoc (Protocol Buffers compiler)
-        uses: arduino/setup-protoc@v3
-        with:
-          repo-token: ${{ secrets.PAT }}
 
       - name: Cache cargo
         uses: actions/cache@v4
