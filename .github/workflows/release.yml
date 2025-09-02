@@ -97,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
   build:
-    name: Build Tauri App (${{ matrix.os }})
+    name: Build Tauri App
     needs: [ determine_changes, create_release ]
     if: needs.determine_changes.outputs.version_changed == 'true' && github.event_name != 'pull_request'
     runs-on: ${{ matrix.os }}
