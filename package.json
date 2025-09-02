@@ -7,7 +7,7 @@
     "email": "zettainspector@foxmail.com"
   },
   "private": true,
-  "version": "0.1.6",
+  "version": "0.1.7",
   "type": "module",
   "scripts": {
     "gen": "node scripts/gen_proto.cjs",
