@@ -13,7 +13,7 @@ impl Config {
             loglevel: Level::Info as i32,
             game_home: "".to_string(),
             steamcmd_home: "".to_string(),
-            metadata_retrieve_batchsize: 20,
+            metadata_retrieve_batchsize: 10,
             install_strategy: InstallStrategy::Copy as i32,
             steamcmd_config: Some(SteamCmdConfig {
                 username: None,
@@ -24,9 +24,9 @@ impl Config {
                 theme: Theme::Light as i32,
                 language: Language::En as i32,
                 background_image: None,
-                background_opacity: 0.2,
+                background_opacity: 0.8,
                 background_blur: 5,
-                foreground_opacity: 0.35,
+                foreground_opacity: 0.9,
             }),
         }
     }
