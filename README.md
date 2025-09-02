@@ -5,11 +5,10 @@ Barotrauma mods with ease, allowing you to install, update, and organize your mo
 
 ## Features
 
-- **Mod Management**: Install, update, and remove Barotrauma mods
-- **Profile System**: Create and manage mod profiles for different gameplay experiences
-- **Steam Workshop Integration**: Download mods directly from the Steam Workshop
-- **Drag & Drop Organization**: Easily reorder your mods with drag and drop functionality
-- **Configuration Management**: Manage game and SteamCMD settings
+- [x] **Mod Management**: Install, update, and remove Barotrauma mods
+- [ ] **Profile System**: Create and manage mod profiles for different gameplay experiences
+- [ ] **Steam Workshop Integration**: Download mods directly from the Steam Workshop
+- [ ] **Drag & Drop Organization**: Easily reorder your mods with drag and drop functionality
 
 ## Recommended IDE Setup
 

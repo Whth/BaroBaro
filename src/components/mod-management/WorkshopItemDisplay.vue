@@ -83,7 +83,7 @@ import InlineCode from "../utils/inlineCode.vue";
 import abbreviate from "number-abbreviate";
 import { getStatusType, ModItem } from "../../composables/workshop.ts";
 
-const props = defineProps<{
+defineProps<{
 	item: ModItem;
 }>();
 </script>
