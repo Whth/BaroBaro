@@ -128,7 +128,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Install protoc (Protocol Buffers compiler)
         uses: arduino/setup-protoc@v3
         with:
@@ -165,14 +165,13 @@ jobs:
 
       - name: Build Tauri binary
         run: |
-          cd src-tauri
-          cargo tauri build --target ${{ matrix.target }} --release
+          pnpm tauri build
 
       - name: Upload artifact to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.determine_changes.outputs.current_version }}
           files: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*
+            src-tauri/target/release/bundle/*/*
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
