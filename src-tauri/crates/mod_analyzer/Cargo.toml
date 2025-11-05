@@ -6,11 +6,11 @@ license-file.workspace = true
 authors.workspace = true
 
 [dependencies]
-quick-xml = { version = "0.38.1", features = ["async-tokio", "serde", "serialize"] }
+quick-xml = { version = "0.38.3", features = ["async-tokio", "serde", "serialize"] }
 steam-api = { path = "../steam-api" }
 logger = { path = "../logger" }
 walkdir = "2.5.0"
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 constants = { path = "../constants" }
 prost = "0.14.1"
 fs-utils = { path = "../fs-utils" }
@@ -18,7 +18,7 @@ rayon = "1.11.0"
 
 
 [dev-dependencies]
-serde_json = { version = "1.0.143" }
+serde_json = { version = "1.0.145" }
 
 [build-dependencies]
 transmission = { path = "../transmission" }

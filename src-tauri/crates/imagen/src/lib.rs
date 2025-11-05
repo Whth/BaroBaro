@@ -1,7 +1,7 @@
 use base64::{Engine as _, engine::general_purpose};
 use image::{DynamicImage, ImageFormat};
 use libblur::{
-    ConvolutionMode, EdgeMode, GaussianBlurParams, ThreadingPolicy, gaussian_blur_image,
+    ConvolutionMode, EdgeMode, EdgeMode2D, GaussianBlurParams, ThreadingPolicy, gaussian_blur_image,
 };
 // src/lib.rs
 use rayon::prelude::*;
@@ -64,7 +64,7 @@ fn apply_gaussian_blur(img: &DynamicImage, radius: f64) -> Result<DynamicImage, 
     gaussian_blur_image(
         img.clone(),
         GaussianBlurParams::new_from_kernel(radius),
-        EdgeMode::Clamp,
+        EdgeMode2D::new(EdgeMode::Clamp),
         ConvolutionMode::FixedPoint,
         ThreadingPolicy::Adaptive,
     )

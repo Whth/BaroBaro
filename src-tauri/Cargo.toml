@@ -33,7 +33,7 @@ configuration = { path = "./crates/configuration" }
 steam-api = { path = "./crates/steam-api" }
 imagen = { path = "./crates/imagen" }
 once_cell = "1.21.3"
-tokio = "1.47.1"
+tokio = "1.48.0"
 futures = "0.3.31"
 prost = "0.14.1"
 fs_extra = "1.3.0"

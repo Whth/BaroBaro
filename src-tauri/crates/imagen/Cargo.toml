@@ -7,10 +7,10 @@ version.workspace = true
 
 [dependencies]
 base64 = "0.22.1"
-image = "0.25.6"
-libblur = { version = "0.19.4", features = ["image"] }
+image = "0.25.8"
+libblur = { version = "0.20.0", features = ["image"] }
 
 
 logger = { path = "../logger" }
 rayon = "1.11.0"
-thiserror = "1.0.69"
+thiserror = "2.0.17"
