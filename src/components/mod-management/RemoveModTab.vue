@@ -1,25 +1,27 @@
 <template>
   <n-scrollbar style="max-height: 60vh">
-    <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
+    <n-empty v-if="installed_mod.length === 0" :description="$t('modManagement.noInstalledMods')"/>
 
     <div v-else>
       <!-- Compact bulk actions -->
-      <div v-if="selectedMods.size > 0" class="bulk-actions">
+      <div class="bulk-actions">
         <n-button
-            class="bulk-delete-btn"
+            :disabled="selectedMods.size === 0"
+            class="action-btn"
             size="small"
             type="error"
             @click="showBulkDeleteDialog = true"
         >
-          🗑️ Delete Selected ({{ selectedMods.size }})
+          {{ $t('modManagement.deleteSelected', {count: selectedMods.size}) }}
         </n-button>
         <n-button
-            class="clear-selection-btn"
+            :disabled="selectedMods.size === 0"
+            class="action-btn"
             ghost
             size="small"
             @click="clearSelection"
         >
-          ✖️ Clear
+          {{ $t('modManagement.clearSelection') }}
         </n-button>
       </div>
 
@@ -61,7 +63,7 @@
                   type="error"
                   @click.stop="showDeleteDialog(mod)"
               >
-                🗑️
+                {{ $t('modManagement.deleteMod') }}
               </n-button>
             </div>
           </div>
@@ -71,30 +73,32 @@
   </n-scrollbar>
 
   <!-- Individual delete confirmation dialog -->
-  <n-modal v-model:show="showIndividualDeleteDialog" preset="dialog" title="Delete Mod">
+  <n-modal v-model:show="showIndividualDeleteDialog" :title="$t('modManagement.deleteMod')" preset="dialog">
     <div v-if="modToDelete">
-      <p>Are you sure you want to delete <strong>{{ modToDelete.name }}</strong>?</p>
+      <p>{{ $t('modManagement.confirmDeleteSingle', {name: modToDelete.name}) }}</p>
       <p style="margin-top: 8px; color: var(--n-text-color-2); font-size: 12px;">
-        This action cannot be undone and will permanently remove the mod from your system.
+        {{ $t('modManagement.deleteWarning') }}
       </p>
     </div>
     <template #action>
-      <n-button ghost @click="cancelDelete">Cancel</n-button>
-      <n-button :loading="isDeleting" type="error" @click="confirmDelete">Delete</n-button>
+      <n-button ghost @click="cancelDelete">{{ $t('app.cancel') }}</n-button>
+      <n-button :loading="isDeleting" type="error" @click="confirmDelete">{{ $t('app.delete') }}</n-button>
     </template>
   </n-modal>
 
   <!-- Bulk delete confirmation dialog -->
-  <n-modal v-model:show="showBulkDeleteDialog" preset="dialog" title="Delete Selected Mods">
+  <n-modal v-model:show="showBulkDeleteDialog" :title="$t('modManagement.deleteMod')" preset="dialog">
     <div>
-      <p>Are you sure you want to delete <strong>{{ selectedMods.size }}</strong> selected mod(s)?</p>
+      <p>{{ $t('modManagement.confirmDeleteMultiple', {count: selectedMods.size}) }}</p>
       <p style="margin-top: 8px; color: var(--n-text-color-2); font-size: 12px;">
-        This action cannot be undone and will permanently remove the selected mods from your system.
+        {{ $t('modManagement.deleteWarning') }}
       </p>
     </div>
     <template #action>
-      <n-button ghost @click="cancelBulkDelete">Cancel</n-button>
-      <n-button :loading="isDeleting" type="error" @click="confirmBulkDelete">Delete Selected</n-button>
+      <n-button ghost @click="cancelBulkDelete">{{ $t('app.cancel') }}</n-button>
+      <n-button :loading="isDeleting" type="error" @click="confirmBulkDelete">
+        {{ $t('modManagement.deleteSelected', {count: selectedMods.size}) }}
+      </n-button>
     </template>
   </n-modal>
 </template>
@@ -233,20 +237,12 @@ onMounted(async () => {
   backdrop-filter: blur(10px);
 }
 
-.bulk-delete-btn {
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
-  transition: all 0.2s ease;
+.action-btn {
+  transition: all 0.15s ease;
 }
 
-.bulk-delete-btn:hover {
+.action-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
-}
-
-.clear-selection-btn {
-  color: var(--n-text-color-2);
-  border: 1px solid var(--n-border-color);
 }
 
 /* Compact mod grid layout */

@@ -137,6 +137,20 @@
 		"updateMod": "Update Mod",
 		"removeMod": "Remove Mod"
 	},
+	"modManagement": {
+		"deleteSelected": "Delete Selected ({count})",
+		"clearSelection": "Clear Selection",
+		"updateSelected": "Update Selected ({count})",
+		"refreshMods": "Refresh Mods",
+		"deleteMod": "Delete Mod",
+		"updateMod": "Update Mod",
+		"confirmDeleteSingle": "Are you sure you want to delete \"{name}\"?",
+		"confirmDeleteMultiple": "Are you sure you want to delete {count} selected mod(s)?",
+		"confirmUpdateMultiple": "Are you sure you want to update {count} selected mod(s)?",
+		"deleteWarning": "This action cannot be undone and will permanently remove the selected mods from your system.",
+		"updateWarning": "This will delete the current versions and redownload the latest versions from Steam Workshop.",
+		"noInstalledMods": "No installed mods found."
+	},
 	"messages": {
 		"settingsSaved": "Settings saved successfully!",
 		"pathsSaved": "Paths settings saved successfully!",

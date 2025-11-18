@@ -1,38 +1,40 @@
 <template>
   <n-scrollbar style="max-height: 60vh">
-    <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
+    <n-empty v-if="installed_mod.length === 0" :description="$t('modManagement.noInstalledMods')"/>
 
     <div v-else>
       <!-- Compact bulk actions -->
-      <div v-if="selectedMods.size > 0" class="bulk-actions">
+      <div class="bulk-actions">
         <n-button
-            class="bulk-update-btn"
+            :disabled="selectedMods.size === 0"
+            class="action-btn"
             size="small"
             type="primary"
             @click="showUpdateDialog = true"
         >
-          📥 Update Selected ({{ selectedMods.size }})
+          {{ $t('modManagement.updateSelected', {count: selectedMods.size}) }}
         </n-button>
         <n-button
-            class="clear-selection-btn"
+            :disabled="selectedMods.size === 0"
+            class="action-btn"
             ghost
             size="small"
             @click="clearSelection"
         >
-          ✖️ Clear
+          {{ $t('modManagement.clearSelection') }}
         </n-button>
       </div>
 
       <div class="actions-row">
         <n-button
             :loading="isRefreshing"
-            class="refresh-btn"
+            class="action-btn"
             ghost
             size="small"
             type="info"
             @click="refreshMods"
         >
-          🔄 Refresh Mods
+          {{ $t('modManagement.refreshMods') }}
         </n-button>
       </div>
 
@@ -74,21 +76,25 @@
   </n-scrollbar>
 
   <!-- Update confirmation dialog -->
-  <n-modal v-model:show="showUpdateDialog" preset="dialog" title="Update Mods">
+  <n-modal v-model:show="showUpdateDialog" :title="$t('modManagement.updateMod')" preset="dialog">
     <div>
-      <p>Are you sure you want to update <strong>{{ selectedMods.size }}</strong> selected mod(s)?</p>
+      <p>{{ $t('modManagement.confirmUpdateMultiple', {count: selectedMods.size}) }}</p>
       <p style="margin-top: 8px; color: var(--n-text-color-2); font-size: 12px;">
-        This will delete the current versions and redownload the latest versions from Steam Workshop.
+        {{ $t('modManagement.updateWarning') }}
       </p>
     </div>
     <template #action>
-      <n-button ghost @click="cancelUpdate">Cancel</n-button>
-      <n-button :loading="isUpdating" type="primary" @click="confirmUpdate">Update</n-button>
+      <n-button ghost @click="cancelUpdate">{{ $t('app.cancel') }}</n-button>
+      <n-button :loading="isUpdating" type="primary" @click="confirmUpdate">{{
+          $t('modManagement.updateMod')
+        }}
+      </n-button>
     </template>
   </n-modal>
 
   <!-- Update progress dialog -->
-  <n-modal v-model:show="showProgressDialog" :title="`Updating ${updatingMods.length} mod(s)`" preset="dialog">
+  <n-modal v-model:show="showProgressDialog" :title="$t('modManagement.updateMod') + ` (${updatingMods.length})`"
+           preset="dialog">
     <div>
       <n-progress
           :percentage="updateProgress"
@@ -117,7 +123,7 @@
           type="primary"
           @click="closeProgressDialog"
       >
-        Close
+        {{ $t('app.cancel') }}
       </n-button>
     </template>
   </n-modal>
@@ -325,30 +331,18 @@ onMounted(async () => {
   backdrop-filter: blur(10px);
 }
 
-.bulk-update-btn {
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(24, 160, 88, 0.2);
-  transition: all 0.2s ease;
+.action-btn {
+  transition: all 0.15s ease;
 }
 
-.bulk-update-btn:hover {
+.action-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(24, 160, 88, 0.3);
-}
-
-.clear-selection-btn {
-  color: var(--n-text-color-2);
-  border: 1px solid var(--n-border-color);
 }
 
 .actions-row {
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
-}
-
-.refresh-btn {
-  transition: all 0.2s ease;
 }
 
 /* Compact mod grid layout */

@@ -137,6 +137,20 @@
 		"updateMod": "更新模组",
 		"removeMod": "移除模组"
 	},
+	"modManagement": {
+		"deleteSelected": "删除已选 ({count})",
+		"clearSelection": "清除选择",
+		"updateSelected": "更新已选 ({count})",
+		"refreshMods": "刷新模组",
+		"deleteMod": "删除模组",
+		"updateMod": "更新模组",
+		"confirmDeleteSingle": "确定要删除 \"{name}\" 吗？",
+		"confirmDeleteMultiple": "确定要删除 {count} 个已选择的模组吗？",
+		"confirmUpdateMultiple": "确定要更新 {count} 个已选择的模组吗？",
+		"deleteWarning": "此操作不可撤销，将永久从你的系统中移除选择的模组。",
+		"updateWarning": "这将删除当前版本并从Steam创意工坊重新下载最新版本。",
+		"noInstalledMods": "未找到已安装的模组。"
+	},
 	"messages": {
 		"settingsSaved": "设置已成功保存！",
 		"pathsSaved": "路径设置已成功保存！",
