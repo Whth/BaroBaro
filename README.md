@@ -3,6 +3,12 @@
 A dedicated mod manager for Barotrauma, built with Tauri, Vue 3, and TypeScript. This application helps you manage your
 Barotrauma mods with ease, allowing you to install, update, and organize your mods through an intuitive interface.
 
+## Preview
+
+<div style="width: 50%; margin: 0 auto;">
+  <img src="./public/preview.jpg" alt="BaroBaro Preview" style="width: 100%; height: auto;">
+</div>
+
 ## Features
 
 - [x] **Mod Management**: Install, update, and remove Barotrauma mods
