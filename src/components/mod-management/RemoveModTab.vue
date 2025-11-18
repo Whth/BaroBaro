@@ -3,52 +3,70 @@
     <n-empty v-if="installed_mod.length === 0" description="No installed mods found."/>
 
     <div v-else>
-      <n-space justify="center" style="margin-bottom: 16px">
+      <!-- Compact bulk actions -->
+      <div v-if="selectedMods.size > 0" class="bulk-actions">
         <n-button
-            v-if="selectedMods.size > 0"
-            ghost
+            class="bulk-delete-btn"
+            size="small"
             type="error"
             @click="showBulkDeleteDialog = true"
         >
-          Delete Selected ({{ selectedMods.size }})
+          🗑️ Delete Selected ({{ selectedMods.size }})
         </n-button>
         <n-button
-            :disabled="selectedMods.size === 0"
+            class="clear-selection-btn"
             ghost
-            type="warning"
+            size="small"
             @click="clearSelection"
         >
-          Clear Selection
+          ✖️ Clear
         </n-button>
-      </n-space>
+      </div>
 
-      <n-list :bordered="false" style="background-color: transparent">
-        <n-list-item v-for="mod in installed_mod" :key="mod.steamWorkshopId">
-          <div
-              :style="{
-              cursor: 'pointer',
-              borderRadius: 'var(--n-border-radius)',
-              padding: '4px',
-              backgroundColor: selectedMods.has(mod.steamWorkshopId) ? 'rgba(64, 158, 255, 0.1)' : 'transparent',
-              border: selectedMods.has(mod.steamWorkshopId) ? '2px solid #409eff' : '2px solid transparent',
-              transition: 'all 0.2s ease'
-            }"
-              @click="toggleModSelection(mod.steamWorkshopId)"
-          >
-            <ModItemDisplay :mod="mod"/>
-            <n-space justify="end" style="margin-top: 8px">
+      <!-- Compact mod list -->
+      <div class="mod-grid">
+        <div
+            v-for="mod in installed_mod"
+            :key="mod.steamWorkshopId"
+            :class="{ selected: selectedMods.has(mod.steamWorkshopId) }"
+            class="mod-item"
+            @click="toggleModSelection(mod.steamWorkshopId)"
+        >
+          <div class="mod-content">
+            <div class="mod-info">
+              <div class="mod-header">
+                <h4 class="mod-title">{{ mod.name }}</h4>
+                <div class="mod-tags">
+                  <n-tag
+                      v-for="tag in mod.tags.slice(0, 3)"
+                      :key="tag"
+                      :style="getTagStyle(tag)"
+                      round
+                      size="small"
+                  >
+                    {{ tag }}
+                  </n-tag>
+                  <span v-if="mod.tags.length > 3" class="more-tags">+{{ mod.tags.length - 3 }}</span>
+                </div>
+              </div>
+              <div class="mod-details">
+                <span class="detail-item">v{{ mod.modVersion }}</span>
+                <span class="detail-item">Game: {{ mod.gameVersion }}</span>
+              </div>
+            </div>
+            <div class="mod-actions">
               <n-button
-                  ghost
-                  size="small"
+                  class="delete-btn"
+                  size="tiny"
                   type="error"
                   @click.stop="showDeleteDialog(mod)"
               >
-                Delete
+                🗑️
               </n-button>
-            </n-space>
+            </div>
           </div>
-        </n-list-item>
-      </n-list>
+        </div>
+      </div>
     </div>
   </n-scrollbar>
 
@@ -56,7 +74,7 @@
   <n-modal v-model:show="showIndividualDeleteDialog" preset="dialog" title="Delete Mod">
     <div v-if="modToDelete">
       <p>Are you sure you want to delete <strong>{{ modToDelete.name }}</strong>?</p>
-      <p style="margin-top: 8px; color: #666; font-size: 12px;">
+      <p style="margin-top: 8px; color: var(--n-text-color-2); font-size: 12px;">
         This action cannot be undone and will permanently remove the mod from your system.
       </p>
     </div>
@@ -70,7 +88,7 @@
   <n-modal v-model:show="showBulkDeleteDialog" preset="dialog" title="Delete Selected Mods">
     <div>
       <p>Are you sure you want to delete <strong>{{ selectedMods.size }}</strong> selected mod(s)?</p>
-      <p style="margin-top: 8px; color: #666; font-size: 12px;">
+      <p style="margin-top: 8px; color: var(--n-text-color-2); font-size: 12px;">
         This action cannot be undone and will permanently remove the selected mods from your system.
       </p>
     </div>
@@ -88,12 +106,23 @@ import {
 	list_installed_mods,
 	remove_mods,
 } from "../../invokes.ts";
-import ModItemDisplay from "./ModItemDisplay.vue";
 import { BarotraumaMod } from "../../proto/mods.ts";
 import { useMessage } from "naive-ui";
+import getTagColorConfig from "../../composables/coloredTag.ts";
 
 // Message API for notifications
 const message = useMessage();
+
+// Get tag style configuration
+function getTagStyle(tag: string) {
+	const config = getTagColorConfig(tag);
+	return {
+		cursor: "pointer",
+		transition: "all 0.2s ease",
+		opacity: "0.85",
+		...config,
+	};
+}
 
 // Selection management
 const selectedMods = ref(new Set<number>());
@@ -190,3 +219,186 @@ onMounted(async () => {
 	await list_installed_mods();
 });
 </script>
+
+<style scoped>
+/* Bulk actions - compact and positioned */
+.bulk-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.bulk-delete-btn {
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+  transition: all 0.2s ease;
+}
+
+.bulk-delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.clear-selection-btn {
+  color: var(--n-text-color-2);
+  border: 1px solid var(--n-border-color);
+}
+
+/* Compact mod grid layout */
+.mod-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr;
+}
+
+.mod-item {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.mod-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mod-item.selected {
+  background: rgba(64, 158, 255, 0.1);
+  border-color: #409eff;
+  box-shadow: 0 0 12px rgba(64, 158, 255, 0.2);
+}
+
+/* Compact content layout */
+.mod-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mod-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mod-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.mod-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--n-text-color);
+  line-height: 1.2;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mod-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  max-width: 200px;
+  align-items: center;
+}
+
+.more-tags {
+  color: var(--n-text-color-2);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.mod-details {
+  display: flex;
+  gap: 16px;
+  color: var(--n-text-color-2);
+  font-size: 12px;
+}
+
+.detail-item {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Compact action button */
+.mod-actions {
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.15);
+}
+
+.delete-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mod-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mod-tags {
+    max-width: none;
+  }
+
+  .mod-details {
+    flex-wrap: wrap;
+  }
+}
+
+/* Dark theme adjustments */
+:global(.dark) .mod-title {
+  color: #e5e7eb;
+}
+
+:global(.dark) .mod-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .mod-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .detail-item {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d1d5db;
+}
+
+:global(.dark) .mod-details {
+  color: #9ca3af;
+}
+
+:global(.dark) .bulk-actions {
+  background: rgba(255, 255, 255, 0.05);
+}
+</style>
