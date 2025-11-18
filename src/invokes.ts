@@ -116,3 +116,11 @@ export async function get_workshop_items(
 ): Promise<WorkshopItem[]> {
 	return await invoke("get_workshop_items", { itemIds });
 }
+
+export async function uninstall_mods(modIds: number[]): Promise<null> {
+	return await invoke("uninstall_mods", { modIds });
+}
+
+export async function remove_mods(modIds: number[]): Promise<null> {
+	return await invoke("uninstall_mods", { modIds });
+}
