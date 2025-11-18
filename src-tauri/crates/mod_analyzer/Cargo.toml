@@ -6,7 +6,7 @@ license-file.workspace = true
 authors.workspace = true
 
 [dependencies]
-quick-xml = { version = "0.38.3", features = ["async-tokio", "serde", "serialize"] }
+quick-xml = { version = "0.38.4", features = ["async-tokio", "serde", "serialize"] }
 steam-api = { path = "../steam-api" }
 logger = { path = "../logger" }
 walkdir = "2.5.0"
