@@ -8,7 +8,7 @@
         <n-button
             :disabled="selectedMods.size === 0"
             class="action-btn"
-            size="small"
+            size="medium"
             type="error"
             @click="showBulkDeleteDialog = true"
         >
@@ -18,7 +18,7 @@
             :disabled="selectedMods.size === 0"
             class="action-btn"
             ghost
-            size="small"
+            size="medium"
             @click="clearSelection"
         >
           {{ $t('modManagement.clearSelection') }}
@@ -59,7 +59,6 @@
             <div class="mod-actions">
               <n-button
                   class="delete-btn"
-                  size="tiny"
                   type="error"
                   @click.stop="showDeleteDialog(mod)"
               >
@@ -340,8 +339,6 @@ onMounted(async () => {
 }
 
 .delete-btn {
-  width: 32px;
-  height: 32px;
   border-radius: 6px;
   display: flex;
   align-items: center;

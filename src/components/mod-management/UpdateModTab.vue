@@ -8,7 +8,7 @@
         <n-button
             :disabled="selectedMods.size === 0"
             class="action-btn"
-            size="small"
+            size="medium"
             type="primary"
             @click="showUpdateDialog = true"
         >
@@ -18,25 +18,23 @@
             :disabled="selectedMods.size === 0"
             class="action-btn"
             ghost
-            size="small"
+            size="medium"
             @click="clearSelection"
         >
           {{ $t('modManagement.clearSelection') }}
         </n-button>
-      </div>
-
-      <div class="actions-row">
         <n-button
             :loading="isRefreshing"
             class="action-btn"
             ghost
-            size="small"
+            size="medium"
             type="info"
             @click="refreshMods"
         >
           {{ $t('modManagement.refreshMods') }}
         </n-button>
       </div>
+
 
       <!-- Compact mod list -->
       <div class="mod-grid">
