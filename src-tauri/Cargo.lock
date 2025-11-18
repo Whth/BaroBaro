@@ -354,7 +354,7 @@ dependencies = [
 
 [[package]]
 name = "barobaro"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "built",
  "configuration",
@@ -703,7 +703,7 @@ dependencies = [
 
 [[package]]
 name = "configuration"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "figment",
  "logger",
@@ -721,7 +721,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "constants"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "directories-next",
  "figment",
@@ -1416,7 +1416,7 @@ dependencies = [
 
 [[package]]
 name = "fs-utils"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "blake3",
  "logger",
@@ -2249,7 +2249,7 @@ dependencies = [
 
 [[package]]
 name = "imagen"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "base64 0.22.1",
  "image",
@@ -2616,7 +2616,7 @@ checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
 
 [[package]]
 name = "logger"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "constants",
  "tracing",
@@ -2757,7 +2757,7 @@ dependencies = [
 
 [[package]]
 name = "mod_analyzer"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "constants",
  "fs-utils",
@@ -4770,7 +4770,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "steam-api"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "futures",
  "logger",
@@ -4786,7 +4786,7 @@ dependencies = [
 
 [[package]]
 name = "steamcmd-rs"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "futures",
  "tempfile",
@@ -5673,7 +5673,7 @@ dependencies = [
 
 [[package]]
 name = "transmission"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "prost-build",
 ]
