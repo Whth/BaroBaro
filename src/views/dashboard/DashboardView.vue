@@ -50,7 +50,6 @@ const curMod = ref<BarotraumaMod | null>(null);
 const themeVars = useThemeVars();
 
 function handleModClick(mod: BarotraumaMod) {
-	console.log("Clicked mod:", mod);
 	curMod.value = mod;
 }
 </script>

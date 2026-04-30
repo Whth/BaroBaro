@@ -31,7 +31,6 @@ export async function reset_config() {
 
 export async function list_installed_mods() {
 	installed_mod.value = await invoke("list_installed_mods");
-	console.log(`Found ${installed_mod.value.length} installed mods`);
 }
 
 export async function download_mods(mods: number[]) {
@@ -40,7 +39,6 @@ export async function download_mods(mods: number[]) {
 
 export async function list_mod_lists() {
 	mod_lists.value = await invoke("list_mod_lists");
-	console.log(`Found ${mod_lists.value.length} mod lists`);
 }
 
 export async function get_build_info(): Promise<BuildInfo> {
@@ -51,20 +49,17 @@ export async function get_build_info(): Promise<BuildInfo> {
 
 export async function list_enabled_mods() {
 	enabled_mods.value = await invoke("list_enabled_mods");
-	console.log(`Found ${enabled_mods.value.length} enabled mods`);
 }
 
 // Retrieve metadata for enabled mods
 export async function retrieve_mod_metadata() {
 	await refresh_config();
-	console.log(`Retrieving metadata for ${installed_mod.value.length} mods`);
 
 	let retried = await invoke<BarotraumaMod[]>("retrieve_mod_metadata", {
 		mods: installed_mod.value,
 		batchSize: config.value.metadataRetrieveBatchsize,
 	});
 
-	console.log(`Retrieved metadata for ${retried.length} mods`);
 
 	const enabled_mapping = new Map(
 		enabled_mods.value.map((mod) => [mod.steamWorkshopId, mod]),
@@ -118,9 +113,5 @@ export async function get_workshop_items(
 }
 
 export async function uninstall_mods(modIds: number[]): Promise<null> {
-	return await invoke("uninstall_mods", { modIds });
-}
-
-export async function remove_mods(modIds: number[]): Promise<null> {
 	return await invoke("uninstall_mods", { modIds });
 }
