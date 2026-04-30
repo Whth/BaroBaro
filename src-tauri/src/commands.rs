@@ -8,6 +8,7 @@
 //! typically in the OS-specific roaming/app data directory.
 
 use configuration::{Config, InstallStrategy};
+use std::collections::HashSet;
 use std::fs;
 use std::ops::Deref;
 use std::path::PathBuf;
@@ -20,7 +21,7 @@ use fs_extra::dir::CopyOptions;
 use futures::TryFutureExt;
 use futures::future::try_join_all;
 use imagen::{BackgroundConfig, process_background};
-use logger::{debug, info};
+use logger::{debug, error, info, warn};
 use mod_analyzer::{BarotraumaMod, ModList};
 use steam_api::WorkshopItem;
 
@@ -304,16 +305,81 @@ pub async fn install_mods(mod_ids: Vec<u64>) -> Result<(), String> {
 }
 #[tauri::command]
 pub async fn uninstall_mods(mod_ids: Vec<u64>) -> Result<(), String> {
-    let targets = BARO_MANAGER
-        .read()
-        .await
+    let id_set: HashSet<u64> = mod_ids.into_iter().collect();
+    let manager = BARO_MANAGER.read().await;
+
+    let targets: Vec<_> = manager
         .get_mods()
         .iter()
-        .filter(|mod_obj| mod_ids.contains(&mod_obj.steam_workshop_id))
-        .filter_map(|mod_obj| mod_obj.home_dir.clone())
-        .collect::<Vec<_>>();
+        .filter(|m| id_set.contains(&m.steam_workshop_id))
+        .collect();
 
-    fs_extra::remove_items(&targets).map_err(|e| format!("{}, failed to uninstall mod.", e))
+    if targets.is_empty() {
+        return Err("No matching mods found for the given IDs.".to_string());
+    }
+
+    let mut deleted = 0;
+    let mut errors: Vec<String> = Vec::new();
+
+    for mod_obj in &targets {
+        match &mod_obj.home_dir {
+            Some(dir) if dir.exists() => {
+                info!(
+                    "Deleting mod '{}' (id={}) at {:?}",
+                    mod_obj.name, mod_obj.steam_workshop_id, dir
+                );
+                match fs::remove_dir_all(dir) {
+                    Ok(()) => deleted += 1,
+                    Err(e) => {
+                        let msg = format!(
+                            "Failed to delete '{}' (id={}): {}",
+                            mod_obj.name, mod_obj.steam_workshop_id, e
+                        );
+                        error!("{}", msg);
+                        errors.push(msg);
+                    }
+                }
+            }
+            Some(dir) => {
+                let msg = format!(
+                    "Mod '{}' (id={}) path does not exist: {:?}",
+                    mod_obj.name, mod_obj.steam_workshop_id, dir
+                );
+                warn!("{}", msg);
+                errors.push(msg);
+            }
+            None => {
+                let msg = format!(
+                    "Mod '{}' (id={}) has no home directory — cannot delete.",
+                    mod_obj.name, mod_obj.steam_workshop_id
+                );
+                warn!("{}", msg);
+                errors.push(msg);
+            }
+        }
+    }
+
+    info!(
+        "Uninstall complete: {} deleted, {} errors",
+        deleted,
+        errors.len()
+    );
+
+    if errors.is_empty() {
+        Ok(())
+    } else if deleted > 0 {
+        Err(format!(
+            "Deleted {} mod(s), but {} failed: {}",
+            deleted,
+            errors.len(),
+            errors.join("; ")
+        ))
+    } else {
+        Err(format!(
+            "Failed to delete all requested mods: {}",
+            errors.join("; ")
+        ))
+    }
 }
 
 #[tauri::command]
