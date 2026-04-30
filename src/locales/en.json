@@ -135,7 +135,8 @@
 		"installMod": "Install Mod",
 		"downloadMod": "Download Mod",
 		"updateMod": "Update Mod",
-		"removeMod": "Remove Mod"
+		"removeMod": "Remove Mod",
+		"profiles": "Profiles"
 	},
 	"modManagement": {
 		"deleteSelected": "Delete Selected ({count})",
@@ -150,6 +151,21 @@
 		"deleteWarning": "This action cannot be undone and will permanently remove the selected mods from your system.",
 		"updateWarning": "This will delete the current versions and redownload the latest versions from Steam Workshop.",
 		"noInstalledMods": "No installed mods found."
+	},
+	"profiles": {
+		"title": "Mod Profiles",
+		"saveCurrent": "Save Current Mods",
+		"profileName": "Profile Name",
+		"profileNamePlaceholder": "Enter a name for this profile",
+		"basePackage": "Base",
+		"modCount": "{count} mods",
+		"apply": "Apply",
+		"applyConfirm": "Apply profile \"{name}\"? This will replace your current mod list.",
+		"deleteConfirm": "Delete profile \"{name}\"? This cannot be undone.",
+		"noProfiles": "No profiles saved yet. Save your current mod list as a profile to get started.",
+		"applied": "Profile \"{name}\" applied",
+		"created": "Profile \"{name}\" created",
+		"deleted": "Profile \"{name}\" deleted"
 	},
 	"messages": {
 		"settingsSaved": "Settings saved successfully!",

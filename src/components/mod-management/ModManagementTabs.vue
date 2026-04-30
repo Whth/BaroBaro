@@ -24,6 +24,7 @@ import { computed, ref } from "vue";
 import DownloadModTab from "./DownloadModTab.vue";
 import UpdateModTab from "./UpdateModTab.vue";
 import RemoveModTab from "./RemoveModTab.vue";
+import ProfilesTab from "./ProfilesTab.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -31,6 +32,7 @@ const tabs = computed(() => [
 	{ id: "download", name: t("tabs.downloadMod"), component: DownloadModTab },
 	{ id: "update", name: t("tabs.updateMod"), component: UpdateModTab },
 	{ id: "remove", name: t("tabs.removeMod"), component: RemoveModTab },
+	{ id: "profiles", name: t("tabs.profiles"), component: ProfilesTab },
 ]);
 const activeTab = ref("download");
 </script>

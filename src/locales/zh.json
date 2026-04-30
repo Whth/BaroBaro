@@ -135,7 +135,8 @@
 		"installMod": "安装模组",
 		"downloadMod": "下载模组",
 		"updateMod": "更新模组",
-		"removeMod": "移除模组"
+		"removeMod": "移除模组",
+		"profiles": "配置方案"
 	},
 	"modManagement": {
 		"deleteSelected": "删除已选 ({count})",
@@ -150,6 +151,21 @@
 		"deleteWarning": "此操作不可撤销，将永久从你的系统中移除选择的模组。",
 		"updateWarning": "这将删除当前版本并从Steam创意工坊重新下载最新版本。",
 		"noInstalledMods": "未找到已安装的模组。"
+	},
+	"profiles": {
+		"title": "模组配置方案",
+		"saveCurrent": "保存当前模组",
+		"profileName": "方案名称",
+		"profileNamePlaceholder": "输入配置方案名称",
+		"basePackage": "基础包",
+		"modCount": "{count} 个模组",
+		"apply": "应用",
+		"applyConfirm": "应用配置方案 \"{name}\"？这将替换你当前的模组列表。",
+		"deleteConfirm": "删除配置方案 \"{name}\"？此操作不可撤销。",
+		"noProfiles": "暂无保存的配置方案。将当前模组列表保存为配置方案即可开始使用。",
+		"applied": "配置方案 \"{name}\" 已应用",
+		"created": "配置方案 \"{name}\" 已创建",
+		"deleted": "配置方案 \"{name}\" 已删除"
 	},
 	"messages": {
 		"settingsSaved": "设置已成功保存！",

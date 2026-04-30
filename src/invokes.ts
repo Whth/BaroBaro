@@ -115,3 +115,20 @@ export async function get_workshop_items(
 export async function uninstall_mods(modIds: number[]): Promise<null> {
 	return await invoke("uninstall_mods", { modIds });
 }
+
+export async function create_mod_list(profileName: string): Promise<ModList> {
+	const result: ModList = await invoke("create_mod_list", { profileName });
+	await list_mod_lists();
+	return result;
+}
+
+export async function delete_mod_list(profileName: string): Promise<void> {
+	await invoke("delete_mod_list", { profileName });
+	await list_mod_lists();
+}
+
+export async function apply_mod_list(profileName: string): Promise<void> {
+	await invoke("apply_mod_list", { profileName });
+	await list_installed_mods();
+	await list_enabled_mods();
+}
