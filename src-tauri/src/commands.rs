@@ -236,6 +236,7 @@ pub fn get_build_info() -> BuildInfo {
     BuildInfo {
         version: crate::rust_built_info::PKG_VERSION.to_string(),
         commit: crate::rust_built_info::GIT_COMMIT_HASH.expect("Can get the commit hash")[..7]
+            .into(),
         // BUILT_TIME_UTC format: "Mon Jan  1 12:00:00 2025" — extract "Jan  1 12:00"
         date: crate::rust_built_info::BUILT_TIME_UTC[5..16].into(),
     }

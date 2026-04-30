@@ -1,5 +1,5 @@
-use serde::de::Visitor;
 use serde::Deserializer;
+use serde::de::Visitor;
 use std::fmt;
 
 /// Custom deserializer for boolean values that supports "True"/"False" and "1"/"0" strings,
@@ -14,7 +14,8 @@ where
         type Value = bool;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("a boolean, a string ('true', 'false', '1', '0'), or a number (0, 1)")
+            formatter
+                .write_str("a boolean, a string ('true', 'false', '1', '0'), or a number (0, 1)")
         }
 
         fn visit_bool<E>(self, v: bool) -> Result<bool, E>

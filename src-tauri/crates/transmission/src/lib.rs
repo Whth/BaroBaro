@@ -81,7 +81,6 @@ pub fn compile_proto_de(name: &str) -> Result<(), Box<dyn std::error::Error>> {
     compile_proto_raw(name, "#[derive(serde::Deserialize)]")
 }
 
-
 #[derive(Debug, Default)]
 pub struct AttrRegistry {
     global_type_attrs: Vec<&'static str>,
@@ -99,7 +98,6 @@ impl AttrRegistry {
         self.global_field_attrs.push(attr);
         self
     }
-
 
     pub fn add_field_attr(&mut self, target: &'static str, attr: &'static str) -> &mut Self {
         self.field_attrs.push((target, attr));
@@ -122,24 +120,19 @@ impl AttrRegistry {
     }
 
     pub fn export(&self) -> (Vec<(&str, &str)>, Vec<(&str, &str)>) {
-        let type_attrs =
-            self.global_type_attrs.iter().map(
-                |&attr| (".", attr)
-            )
+        let type_attrs = self
+            .global_type_attrs
+            .iter()
+            .map(|&attr| (".", attr))
+            .chain(self.type_attrs.clone())
+            .collect();
 
-                .chain(
-                    self.type_attrs.clone()
-                )
-                .collect();
-
-        let field_attrs =
-            self.global_field_attrs.iter().map(
-                |&attr| (".", attr)
-            )
-                .chain(
-                    self.field_attrs.clone()
-                )
-                .collect();
+        let field_attrs = self
+            .global_field_attrs
+            .iter()
+            .map(|&attr| (".", attr))
+            .chain(self.field_attrs.clone())
+            .collect();
 
         (type_attrs, field_attrs)
     }
