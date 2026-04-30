@@ -102,7 +102,7 @@ impl SteamCMD {
         mod_ids: Vec<u64>,
         n: usize,
     ) -> Result<(), String> {
-        let chunk_size = mod_ids.len() + 1 / n;
+        let chunk_size = (mod_ids.len() + 1) / n;
         let scripts = mod_ids
             .chunks(chunk_size)
             .map(|mod_ids| {
