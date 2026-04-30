@@ -34,7 +34,7 @@
 //! }
 //! ```
 
-pub(crate) mod de;
+pub mod de;
 mod workshop;
 
 pub use crate::workshop::*;
