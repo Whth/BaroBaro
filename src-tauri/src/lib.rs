@@ -37,6 +37,6 @@ pub fn run() -> Result<(), String> {
             get_workshop_items
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
