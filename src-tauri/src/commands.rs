@@ -11,7 +11,7 @@ use configuration::{Config, InstallStrategy};
 use std::collections::HashSet;
 use std::fs;
 use std::ops::Deref;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 use crate::build_info::BuildInfo;
@@ -323,30 +323,32 @@ pub async fn uninstall_mods(mod_ids: Vec<u64>) -> Result<(), String> {
 
     for mod_obj in &targets {
         match &mod_obj.home_dir {
-            Some(dir) if dir.exists() => {
-                info!(
-                    "Deleting mod '{}' (id={}) at {:?}",
-                    mod_obj.name, mod_obj.steam_workshop_id, dir
-                );
-                match fs::remove_dir_all(dir) {
-                    Ok(()) => deleted += 1,
-                    Err(e) => {
-                        let msg = format!(
-                            "Failed to delete '{}' (id={}): {}",
-                            mod_obj.name, mod_obj.steam_workshop_id, e
-                        );
-                        error!("{}", msg);
-                        errors.push(msg);
-                    }
-                }
-            }
             Some(dir) => {
-                let msg = format!(
-                    "Mod '{}' (id={}) path does not exist: {:?}",
-                    mod_obj.name, mod_obj.steam_workshop_id, dir
-                );
-                warn!("{}", msg);
-                errors.push(msg);
+                let path = Path::new(dir);
+                if path.exists() {
+                    info!(
+                        "Deleting mod '{}' (id={}) at {:?}",
+                        mod_obj.name, mod_obj.steam_workshop_id, path
+                    );
+                    match fs::remove_dir_all(path) {
+                        Ok(()) => deleted += 1,
+                        Err(e) => {
+                            let msg = format!(
+                                "Failed to delete '{}' (id={}): {}",
+                                mod_obj.name, mod_obj.steam_workshop_id, e
+                            );
+                            error!("{}", msg);
+                            errors.push(msg);
+                        }
+                    }
+                } else {
+                    let msg = format!(
+                        "Mod '{}' (id={}) path does not exist: {:?}",
+                        mod_obj.name, mod_obj.steam_workshop_id, path
+                    );
+                    warn!("{}", msg);
+                    errors.push(msg);
+                }
             }
             None => {
                 let msg = format!(
