@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .add_field_attr(
             "WorkshopItem.published_file_id",
-            "#[serde(alias = "publishedfileid",deserialize_with = \"crate::de::deserialize_u64\")]"
+            "#[serde(alias = \"publishedfileid\",deserialize_with = \"crate::de::deserialize_u64\")]"
         )
         .add_field_attr(
             "WorkshopItem.creator",
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .add_field_attr(
             "WorkshopItem.file_size",
-            "#[serde(alias = "file_size", deserialize_with = \"crate::de::deserialize_u64\")]"
+            "#[serde(alias = \"file_size\", deserialize_with = \"crate::de::deserialize_u64\")]"
         )
         .add_field_attr(
             "WorkshopItem.file_url",
