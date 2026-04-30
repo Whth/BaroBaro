@@ -27,3 +27,7 @@ target
 
 src/proto
 .roo
+
+# Rust build artifacts
+*.pdb
+*.dwarf

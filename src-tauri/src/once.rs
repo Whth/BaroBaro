@@ -1,6 +1,5 @@
 use mod_analyzer::BarotraumaModManager;
 use once_cell::sync::Lazy;
-use std::convert::Into;
 use steam_api::SteamWorkShopClient;
 use steamcmd_rs::SteamCMD;
 use tokio::sync::RwLock;
