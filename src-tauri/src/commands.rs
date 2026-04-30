@@ -405,3 +405,141 @@ pub async fn get_workshop_items(item_ids: Vec<u64>) -> Result<Vec<WorkshopItem>,
         .map_err(|e| format!("{}, failed to retrieve workshop items.", e))
         .await
 }
+
+#[tauri::command]
+pub async fn create_mod_list(profile_name: String) -> Result<ModList, String> {
+    let enabled = list_enabled_mods().await?;
+    if enabled.is_empty() {
+        return Err("No enabled mods to save as a profile.".to_string());
+    }
+
+    // Read config to get the base package
+    let conf: Config = read_config()?;
+    let game_home = constants::BarotraumaHome::new(
+        PathBuf::from_str(&conf.game_home).map_err(|e| format!("{e}, invalid game home path."))?,
+    );
+    let base_package = {
+        let config_file = game_home.player_config_file();
+        if config_file.exists() {
+            let baro_conf = mod_analyzer::BaroConfig::from_file(&config_file)
+                .map_err(|e| format!("{e}, failed to read player config."))?;
+            baro_conf
+                .core_package()
+                .rsplit('/')
+                .next()
+                .unwrap_or("Vanilla")
+                .replace(".xml", "")
+        } else {
+            "Vanilla".to_string()
+        }
+    };
+
+    let mod_list = ModList {
+        profile_name: profile_name.clone(),
+        base_package,
+        mods: enabled.iter().map(|m| m.name.clone()).collect(),
+    };
+
+    BARO_MANAGER.read().await.save_mod_list(&mod_list)?;
+
+    info!(
+        "Created profile '{}' with {} mods",
+        profile_name,
+        enabled.len()
+    );
+    Ok(mod_list)
+}
+
+#[tauri::command]
+pub async fn delete_mod_list(profile_name: String) -> Result<(), String> {
+    BARO_MANAGER.read().await.delete_mod_list(&profile_name)?;
+    info!("Deleted profile '{}'", profile_name);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn apply_mod_list(profile_name: String) -> Result<(), String> {
+    // 1. Read the profile
+    let mod_list_dir = BARO_MANAGER.read().await.mod_list_dir()?.clone();
+    let profile_path = mod_list_dir.join(format!("{}.xml", profile_name));
+    if !profile_path.exists() {
+        return Err(format!("Profile '{}' not found.", profile_name));
+    }
+    let mod_list = ModList::from_xml_path(&profile_path)
+        .map_err(|e| format!("{e}, failed to read profile."))?;
+
+    // 2. Build a name -> id mapping from installed mods
+    let installed = list_installed_mods().await?;
+    let name_to_id: std::collections::HashMap<String, u64> = installed
+        .iter()
+        .map(|m| (m.name.clone(), m.steam_workshop_id))
+        .collect();
+
+    // 3. Resolve profile mod names to installed mod IDs
+    let mut resolved_ids: Vec<u64> = Vec::new();
+    for mod_name in &mod_list.mods {
+        if let Some(&id) = name_to_id.get(mod_name) {
+            resolved_ids.push(id);
+        } else {
+            warn!(
+                "Profile mod '{}' not found in installed mods, skipping.",
+                mod_name
+            );
+        }
+    }
+
+    // 4. Read current config and replace regularpackages
+    let conf: Config = read_config()?;
+    let config_path = PathBuf::from_str(&conf.game_home)
+        .map_err(|e| format!("{e}, invalid game home."))?
+        .join(constants::BarotraumaHome::PLAYER_CONFIG);
+
+    if !config_path.exists() {
+        return Err(
+            "Player config file not found. Launch the game at least once first.".to_string(),
+        );
+    }
+
+    let config_content = fs::read_to_string(&config_path)
+        .map_err(|e| format!("{e}, failed to read player config."))?;
+
+    // Build the new regularpackages XML block
+    let new_packages: String = resolved_ids
+        .iter()
+        .map(|id| format!("      <package path=\"LocalMods/{}/filelist.xml\" />", id))
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    // Replace the <regularpackages>...</regularpackages> block
+    let new_config = if let Some(start) = config_content.find("<regularpackages>") {
+        if let Some(end) = config_content.find("</regularpackages>") {
+            let end_with_tag = end + "</regularpackages>".len();
+            format!(
+                "{}<regularpackages>\n{}\n    </regularpackages>{}",
+                &config_content[..start],
+                new_packages,
+                &config_content[end_with_tag..]
+            )
+        } else {
+            return Err(
+                "Malformed config: found <regularpackages> but no closing tag.".to_string(),
+            );
+        }
+    } else {
+        return Err("Malformed config: <regularpackages> section not found.".to_string());
+    };
+
+    fs::write(&config_path, new_config)
+        .map_err(|e| format!("{e}, failed to write player config."))?;
+
+    // 5. Refresh mod manager state
+    BARO_MANAGER.write().await.refresh_mods()?;
+
+    info!(
+        "Applied profile '{}' ({} mods resolved from {} in profile)",
+        profile_name,
+        resolved_ids.len(),
+        mod_list.mods.len()
+    );
+    Ok(())
+}

@@ -34,7 +34,10 @@ pub fn run() -> Result<(), String> {
             uninstall_mods,
             get_mod_occupation,
             get_mod_hash,
-            get_workshop_items
+            get_workshop_items,
+            create_mod_list,
+            delete_mod_list,
+            apply_mod_list
         ])
         .run(tauri::generate_context!())
         .map_err(|e| e.to_string())?;
