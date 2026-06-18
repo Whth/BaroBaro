@@ -84,15 +84,19 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import {
 	download_mods,
 	uninstall_mods,
 	installed_mod,
 	list_installed_mods,
+	check_mod_updates,
 } from "../../invokes";
 import { BarotraumaMod } from "../../proto/mods.ts";
 import { useMessage } from "naive-ui";
 import ModGrid from "./ModGrid.vue";
+
+const { t } = useI18n();
 
 const message = useMessage();
 
@@ -111,7 +115,7 @@ const isRefreshing = ref(false);
 // Progress tracking
 const updateProgress = ref(0);
 const updateStatuses = ref<
-	Map<number, "pending" | "updating" | "success" | "error">
+	Map<number, "pending" | "updating" | "success" | "error" | "checking" | "uptodate">
 >(new Map());
 
 function toggleModSelection(modId: number) {
@@ -133,10 +137,12 @@ function getUpdateStatusType(
 	const status = updateStatuses.value.get(modId);
 	switch (status) {
 		case "success":
+		case "uptodate":
 			return "success";
 		case "error":
 			return "error";
 		case "updating":
+		case "checking":
 			return "info";
 		default:
 			return "default";
@@ -147,13 +153,17 @@ function getUpdateStatusText(modId: number): string {
 	const status = updateStatuses.value.get(modId);
 	switch (status) {
 		case "success":
-			return "Updated";
+			return t("modManagement.statusSuccess");
 		case "error":
-			return "Failed";
+			return t("modManagement.statusError");
 		case "updating":
-			return "Updating...";
+			return t("modManagement.statusUpdating");
+		case "checking":
+			return t("modManagement.statusChecking");
+		case "uptodate":
+			return t("modManagement.statusUpToDate");
 		default:
-			return "Pending";
+			return t("modManagement.statusPending");
 	}
 }
 
@@ -193,15 +203,48 @@ async function confirmUpdate() {
 	);
 	updatingMods.value = selectedModList;
 
+	// Start all as "checking"
 	selectedModList.forEach((mod) => {
-		updateStatuses.value.set(mod.steamWorkshopId, "pending");
+		updateStatuses.value.set(mod.steamWorkshopId, "checking");
 	});
 
+	// Determine which mods actually need updating
+	let toUpdate: BarotraumaMod[] = [];
+	try {
+		const results = await check_mod_updates(modIds);
+		for (const result of results) {
+			const mod = selectedModList.find(
+				(m) => m.steamWorkshopId === result.modId,
+			);
+			if (!mod) continue;
+			if (result.needsUpdate) {
+				updateStatuses.value.set(mod.steamWorkshopId, "pending");
+				toUpdate.push(mod);
+			} else {
+				updateStatuses.value.set(mod.steamWorkshopId, "uptodate");
+			}
+		}
+	} catch (error) {
+		console.error("Failed to check mod updates:", error);
+		// Fall back to updating all
+		selectedModList.forEach((mod) => {
+			updateStatuses.value.set(mod.steamWorkshopId, "pending");
+		});
+		toUpdate = [...selectedModList];
+	}
+
+	// If nothing needs updating
+	if (toUpdate.length === 0) {
+		message.success(t("modManagement.allAlreadyUpToDate"));
+		isUpdating.value = false;
+		return;
+	}
+
 	let completedCount = 0;
-	const totalCount = selectedModList.length;
+	const totalCount = toUpdate.length;
 
 	try {
-		for (const mod of selectedModList) {
+		for (const mod of toUpdate) {
 			updateStatuses.value.set(mod.steamWorkshopId, "updating");
 
 			try {
@@ -223,8 +266,18 @@ async function confirmUpdate() {
 		await list_installed_mods();
 		clearSelection();
 
+		const uptodateCount = selectedModList.length - totalCount;
 		if (completedCount === totalCount) {
-			message.success("All mods updated successfully!");
+			if (uptodateCount > 0) {
+				message.success(
+					t("modManagement.someUpToDate", {
+						updated: completedCount,
+						uptodate: uptodateCount,
+					}),
+				);
+			} else {
+				message.success("All mods updated successfully!");
+			}
 		} else {
 			message.warning(`Updated ${completedCount} out of ${totalCount} mods`);
 		}
