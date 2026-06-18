@@ -35,7 +35,13 @@
 		"allTypes": "所有类型",
 		"local": "本地",
 		"remote": "远程",
-		"selectMod": "选择一个模组以查看详细信息"
+		"selectMod": "选择一个模组以查看详细信息",
+		"conflictsDetected": "检测到缺失依赖",
+		"missingDependency": "需要",
+		"updatesAvailable": "有可用更新",
+		"updatesCount": "{count} 个模组在 Steam 创意工坊有更新版本",
+		"offline": "离线",
+		"offlineDescription": "无法连接 Steam API，下载和更新功能不可用。"
 	},
 	"mod": {
 		"name": "名称",
@@ -52,9 +58,6 @@
 		"viewDetails": "查看详情",
 		"update": "更新",
 		"remove": "移除",
-		"saveOrder": "保存模组顺序",
-		"loadOrder": "加载模组顺序",
-		"priority": "优先级",
 		"enabled": "已启用",
 		"disabled": "已禁用"
 	},
@@ -136,7 +139,8 @@
 		"downloadMod": "下载模组",
 		"updateMod": "更新模组",
 		"removeMod": "移除模组",
-		"profiles": "配置方案"
+		"profiles": "配置方案",
+		"browse": "浏览"
 	},
 	"modManagement": {
 		"deleteSelected": "删除已选 ({count})",
@@ -150,6 +154,14 @@
 		"confirmUpdateMultiple": "确定要更新 {count} 个已选择的模组吗？",
 		"deleteWarning": "此操作不可撤销，将永久从你的系统中移除选择的模组。",
 		"updateWarning": "这将删除当前版本并从Steam创意工坊重新下载最新版本。",
+		"statusPending": "等待中",
+		"statusUpdating": "更新中...",
+		"statusSuccess": "已更新",
+		"statusError": "失败",
+		"statusUpToDate": "已是最新",
+		"statusChecking": "检查中...",
+		"allAlreadyUpToDate": "所有选择的模组已是最新版本",
+		"someUpToDate": "已更新 {updated} 个, {uptodate} 个已是最新",
 		"noInstalledMods": "未找到已安装的模组。"
 	},
 	"profiles": {
@@ -165,7 +177,25 @@
 		"noProfiles": "暂无保存的配置方案。将当前模组列表保存为配置方案即可开始使用。",
 		"applied": "配置方案 \"{name}\" 已应用",
 		"created": "配置方案 \"{name}\" 已创建",
-		"deleted": "配置方案 \"{name}\" 已删除"
+		"deleted": "配置方案 \"{name}\" 已删除",
+		"rename": "重命名",
+		"renameTitle": "重命名配置方案",
+		"renamePlaceholder": "输入新的方案名称",
+		"renamed": "已将 \"{old}\" 重命名为 \"{new}\"",
+		"compare": "对比",
+		"compareTitle": "对比配置方案",
+		"selectProfileA": "第一个方案",
+		"selectProfileB": "第二个方案",
+		"inBoth": "两者共有",
+		"onlyInA": "仅在 {name}",
+		"onlyInB": "仅在 {name}",
+		"close": "关闭",
+		"import": "导入",
+		"imported": "配置方案 \"{name}\" 已导入",
+		"export": "导出",
+		"exported": "配置方案 \"{name}\" 已导出",
+		"clearActive": "清除激活",
+		"clearedActive": "已清除当前激活的配置方案"
 	},
 	"messages": {
 		"settingsSaved": "设置已成功保存！",
@@ -176,8 +206,6 @@
 		"failedToSelectPath": "选择路径失败",
 		"selectGamePath": "请选择 Barotrauma 游戏安装路径",
 		"selectSteamCmdPath": "请选择 SteamCMD 路径",
-		"savingModOrder": "正在保存模组顺序 - 实际实现中会连接到 Rust 后端",
-		"loadingModOrder": "正在加载模组顺序 - 实际实现中会连接到 Rust 后端",
 		"toggleMod": "切换模组",
 		"modSelected": "模组已选中",
 		"creatingModList": "正在创建模组列表",
@@ -236,7 +264,9 @@
 	},
 	"modList": {
 		"title": "模组列表",
-		"empty": "未发现模组"
+		"empty": "未发现模组",
+		"saveOrder": "保存顺序",
+		"orderSaved": "顺序已保存"
 	},
 	"downloadMods": {
 		"modInput": "模组ID或链接",
@@ -273,5 +303,11 @@
 		"version": "模组版本",
 		"gameVersion": "游戏版本",
 		"hash": "哈希值"
+	},
+	"browse": {
+		"searchPlaceholder": "搜索热门模组...",
+		"noResults": "未找到模组",
+		"download": "下载",
+		"downloadStarted": "下载已开始"
 	}
 }

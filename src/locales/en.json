@@ -35,7 +35,13 @@
 		"allTypes": "All Types",
 		"local": "Local",
 		"remote": "Remote",
-		"selectMod": "Select a mod to view details"
+		"selectMod": "Select a mod to view details",
+		"conflictsDetected": "Missing Dependencies Detected",
+		"missingDependency": "requires",
+		"updatesAvailable": "Updates Available",
+		"updatesCount": "{count} mod(s) have newer versions on Steam Workshop",
+		"offline": "Offline",
+		"offlineDescription": "Steam API is unreachable. Download and update features are unavailable."
 	},
 	"mod": {
 		"name": "Name",
@@ -52,9 +58,6 @@
 		"viewDetails": "View Details",
 		"update": "Update",
 		"remove": "Remove",
-		"saveOrder": "Save Mod Order",
-		"loadOrder": "Load Mod Order",
-		"priority": "Priority",
 		"enabled": "Enabled",
 		"disabled": "Disabled"
 	},
@@ -136,7 +139,8 @@
 		"downloadMod": "Download Mod",
 		"updateMod": "Update Mod",
 		"removeMod": "Remove Mod",
-		"profiles": "Profiles"
+		"profiles": "Profiles",
+		"browse": "Browse"
 	},
 	"modManagement": {
 		"deleteSelected": "Delete Selected ({count})",
@@ -150,6 +154,14 @@
 		"confirmUpdateMultiple": "Are you sure you want to update {count} selected mod(s)?",
 		"deleteWarning": "This action cannot be undone and will permanently remove the selected mods from your system.",
 		"updateWarning": "This will delete the current versions and redownload the latest versions from Steam Workshop.",
+		"statusPending": "Pending",
+		"statusUpdating": "Updating...",
+		"statusSuccess": "Updated",
+		"statusError": "Failed",
+		"statusUpToDate": "Up to date",
+		"statusChecking": "Checking...",
+		"allAlreadyUpToDate": "All selected mods are already up to date",
+		"someUpToDate": "{updated} updated, {uptodate} already up to date",
 		"noInstalledMods": "No installed mods found."
 	},
 	"profiles": {
@@ -165,7 +177,25 @@
 		"noProfiles": "No profiles saved yet. Save your current mod list as a profile to get started.",
 		"applied": "Profile \"{name}\" applied",
 		"created": "Profile \"{name}\" created",
-		"deleted": "Profile \"{name}\" deleted"
+		"deleted": "Profile \"{name}\" deleted",
+		"rename": "Rename",
+		"renameTitle": "Rename Profile",
+		"renamePlaceholder": "Enter new profile name",
+		"renamed": "Renamed \"{old}\" to \"{new}\"",
+		"compare": "Compare",
+		"compareTitle": "Compare Profiles",
+		"selectProfileA": "First profile",
+		"selectProfileB": "Second profile",
+		"inBoth": "In both",
+		"onlyInA": "Only in {name}",
+		"onlyInB": "Only in {name}",
+		"close": "Close",
+		"import": "Import",
+		"imported": "Profile \"{name}\" imported",
+		"export": "Export",
+		"exported": "Profile \"{name}\" exported",
+		"clearActive": "Clear Active",
+		"clearedActive": "Active profile cleared"
 	},
 	"messages": {
 		"settingsSaved": "Settings saved successfully!",
@@ -176,8 +206,6 @@
 		"failedToSelectPath": "Failed to select path",
 		"selectGamePath": "Select Barotrauma Game Installation Path",
 		"selectSteamCmdPath": "Select SteamCMD Path",
-		"savingModOrder": "Saving mod order - this would connect to the Rust backend in a real implementation",
-		"loadingModOrder": "Loading mod order - this would connect to the Rust backend in a real implementation",
 		"toggleMod": "Toggle mod",
 		"modSelected": "Mod selected",
 		"creatingModList": "Creating mod list",
@@ -236,7 +264,9 @@
 	},
 	"modList": {
 		"title": "Mod List",
-		"empty": "No mods found"
+		"empty": "No mods found",
+		"saveOrder": "Save Order",
+		"orderSaved": "Order Saved"
 	},
 	"downloadMods": {
 		"modInput": "Mod ID or Link",
@@ -273,5 +303,11 @@
 		"version": "Mod Version",
 		"gameVersion": "Game Version",
 		"hash": "Hash"
+	},
+	"browse": {
+		"searchPlaceholder": "Search popular mods...",
+		"noResults": "No mods found",
+		"download": "Download",
+		"downloadStarted": "Download started"
 	}
 }

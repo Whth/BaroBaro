@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Config } from "./proto/config";
-import { type Ref, ref } from "vue";
+import { type Ref, computed, ref } from "vue";
 import type { BarotraumaMod, ModList } from "./proto/mods";
 import { BuildInfo } from "./proto/build_info.ts";
 import { WorkshopItem } from "./proto/workshop.ts";
@@ -18,6 +18,8 @@ export async function refresh_config() {
 		Config.fromJSON(data),
 	);
 }
+
+export const active_profile = computed(() => config.value.activeProfile);
 
 export async function save_config() {
 	await invoke("write_config", { config: config.value });
@@ -106,6 +108,20 @@ export async function get_mod_hash(modId: number): Promise<string> {
 	return await invoke("get_mod_hash", { modId });
 }
 
+/** Status for a single mod in an update check. */
+export interface ModUpdateStatus {
+	modId: number;
+	needsUpdate: boolean;
+	storedHash: string | null;
+	currentHash: string | null;
+}
+
+export async function check_mod_updates(
+	modIds: number[],
+): Promise<ModUpdateStatus[]> {
+	return await invoke("check_mod_updates", { modIds });
+}
+
 export async function get_workshop_items(
 	itemIds: number[],
 ): Promise<WorkshopItem[]> {
@@ -125,10 +141,111 @@ export async function create_mod_list(profileName: string): Promise<ModList> {
 export async function delete_mod_list(profileName: string): Promise<void> {
 	await invoke("delete_mod_list", { profileName });
 	await list_mod_lists();
+	await refresh_config();
 }
 
 export async function apply_mod_list(profileName: string): Promise<void> {
 	await invoke("apply_mod_list", { profileName });
 	await list_installed_mods();
 	await list_enabled_mods();
+	await refresh_config();
+}
+
+export async function set_active_profile(name: string): Promise<void> {
+	await invoke("set_active_profile", { profileName: name });
+	await refresh_config();
+}
+
+export async function clear_active_profile(): Promise<void> {
+	await invoke("clear_active_profile");
+	await refresh_config();
+}
+
+export async function reorder_enabled_mods(orderedIds: number[]): Promise<void> {
+	await invoke("reorder_enabled_mods", { orderedIds });
+}
+
+/** Result of comparing two mod profiles. */
+export interface ProfileDiff {
+	onlyInA: string[];
+	onlyInB: string[];
+	inBoth: string[];
+}
+
+export async function rename_profile(
+	oldName: string,
+	newName: string,
+): Promise<ModList> {
+	const result = (await invoke("rename_profile", { oldName, newName })) as ModList;
+	await list_mod_lists();
+	await refresh_config();
+	return result;
+}
+
+export async function compare_profiles(
+	nameA: string,
+	nameB: string,
+): Promise<ProfileDiff> {
+	return await invoke("compare_profiles", { nameA, nameB });
+}
+
+export async function export_profile(
+	profileName: string,
+	exportPath: string,
+): Promise<void> {
+	await invoke("export_profile", { profileName, exportPath });
+}
+
+export async function import_profile(path: string): Promise<ModList> {
+	const result = (await invoke("import_profile", { path })) as ModList;
+	await list_mod_lists();
+	return result;
+}
+
+/** A dependency declared by a mod that is not satisfied by any enabled mod. */
+export interface MissingDependency {
+	modName: string;
+	modSteamId: number;
+	dependencyName: string;
+	dependencySteamId: number | null;
+}
+
+/** Result of conflict detection among enabled mods. */
+export interface ConflictReport {
+	missingDependencies: MissingDependency[];
+}
+
+/** Detects missing dependencies among currently enabled mods. */
+export async function detect_mod_conflicts(): Promise<ConflictReport> {
+	return await invoke("detect_mod_conflicts");
+}
+
+/** Status of a single mod's workshop update check. */
+export interface WorkshopUpdateStatus {
+	modId: number;
+	modName: string;
+	hasUpdate: boolean;
+	localLastModified: number | null;
+	workshopLastUpdated: number | null;
+}
+
+/** Network connectivity status. */
+export interface NetworkStatus {
+	steamApi: boolean;
+	steamcmdAvailable: boolean;
+}
+
+/** Checks installed mods against Steam Workshop for available updates. */
+export async function check_workshop_updates(): Promise<WorkshopUpdateStatus[]> {
+	return await invoke("check_workshop_updates");
+}
+
+/** Checks network connectivity to Steam services. */
+export async function check_network_status(): Promise<NetworkStatus> {
+	return await invoke("check_network_status");
+}
+
+/** Returns popular Barotrauma mods from the Steam Workshop. */
+export async function get_popular_mods(): Promise<WorkshopItem[]> {
+	return await invoke("get_popular_mods");
 }
