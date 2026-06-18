@@ -1,6 +1,6 @@
-use directories_next::BaseDirs;
-use once_cell::sync::Lazy;
-use std::path::PathBuf;
+use directories::BaseDirs;
+use std::sync::LazyLock;
+use std::path::{Path, PathBuf};
 
 pub const MOD_FILELIST_FILE: &str = "filelist.xml";
 
@@ -32,14 +32,14 @@ fn get_roaming_dir(app_name: &str) -> Option<PathBuf> {
 }
 
 /// A global static instance of the user's roaming configuration directory for the application.
-pub static ROAMING: Lazy<PathBuf> =
-    Lazy::new(|| get_roaming_dir(APP_NAME).expect("Failed to get roaming directory"));
+pub static ROAMING: LazyLock<PathBuf> =
+    LazyLock::new(|| get_roaming_dir(APP_NAME).expect("Failed to get roaming directory"));
 
 /// A global static instance of the user's global configuration file path for the application.
-pub static GLOBAL_CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(CONFIG_FILE));
+pub static GLOBAL_CONFIG_FILE: LazyLock<PathBuf> = LazyLock::new(|| ROAMING.join(CONFIG_FILE));
 
 /// A global static instance of the user's global log directory for the application.
-pub static GLOBAL_LOG_DIR: Lazy<PathBuf> = Lazy::new(|| ROAMING.join(LOG_DIR_NAME));
+pub static GLOBAL_LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| ROAMING.join(LOG_DIR_NAME));
 
 /// Represents the Barotrauma game home directory.
 #[derive(Debug)]
@@ -64,8 +64,8 @@ impl BarotraumaHome {
         }
     }
 
-    pub fn set_home_dir(&mut self, home_dir: &PathBuf) {
-        self.home_dir = home_dir.clone();
+    pub fn set_home_dir(&mut self, home_dir: &Path) {
+        self.home_dir = home_dir.to_path_buf();
         self.mod_dir = home_dir.join(Self::MOD_DIR);
         self.mod_list_dir = home_dir.join(Self::MOD_LIST_DIR);
     }

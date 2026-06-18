@@ -17,13 +17,27 @@ use std::str::FromStr;
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
 use constants::{BAROTRAUMA_GAME_ID, GLOBAL_CONFIG_FILE, ROAMING};
-use fs_extra::dir::CopyOptions;
 use futures::TryFutureExt;
 use futures::future::try_join_all;
 use imagen::{BackgroundConfig, process_background};
 use logger::{debug, error, info, warn};
 use mod_analyzer::{BarotraumaMod, ModList};
 use steam_api::WorkshopItem;
+
+/// Recursively copies a directory, overwriting existing files.
+fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
+    fs::create_dir_all(dst)?;
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let dest_path = dst.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            copy_dir_recursive(&entry.path(), &dest_path)?;
+        } else {
+            fs::copy(entry.path(), &dest_path)?;
+        }
+    }
+    Ok(())
+}
 
 use mod_analyzer::retrieve_mod_metadata as get_mod_metadata;
 /// Writes the given configuration to disk in TOML format.
@@ -267,13 +281,13 @@ pub async fn install_mods(mod_ids: Vec<u64>) -> Result<(), String> {
                         .read()
                         .await
                         .workshop_item_dir(BAROTRAUMA_GAME_ID, item_id)?;
-                    fs_extra::copy_items(
-                        &[mod_dir],
-                        BARO_MANAGER.read().await.mod_dir()?,
-                        &CopyOptions::new().overwrite(true),
-                    )
-                    .map(|_| ())
-                    .map_err(|e| format!("{}, failed to copy mod.", e))
+                    let dest = BARO_MANAGER.read().await.mod_dir()?.join(
+                        mod_dir
+                            .file_name()
+                            .ok_or_else(|| "Invalid mod directory name".to_string())?,
+                    );
+                    copy_dir_recursive(&mod_dir, &dest)
+                        .map_err(|e| format!("{}, failed to copy mod.", e))
                 }
                 s if InstallStrategy::Link as i32 == s => {
                     #[cfg(target_os = "windows")]
