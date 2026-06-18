@@ -10,6 +10,7 @@ mod retrieve;
 #[allow(unused)]
 pub(crate) use de::{deserialize_bool, deserialize_u64};
 
+pub use mod_analyzer::{ModDependency, parse_dependencies};
 pub use mods::*;
 
 pub use manage::BarotraumaModManager;
