@@ -1,11 +1,23 @@
 <template>
   <n-scrollbar style="height: 69vh">
-    <n-grid :cols="1" :x-gap="8" :y-gap="12">
-      <n-gi v-for="[index, mod] in installed_mod.entries()" :key="mod.name">
-        <ModCard :index="index" :mod="mod" @mod-selected="viewMod"></ModCard>
-      </n-gi>
-    </n-grid>
-    <n-empty v-if="installed_mod.length === 0" :description="$t('modList.empty')" style="margin-top: 20px">
+    <draggable
+      v-model="enabled_mods"
+      item-key="steamWorkshopId"
+      handle=".drag-handle"
+      @change="onOrderChanged"
+    >
+      <template #item="{ element, index }">
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+          <div class="drag-handle" style="cursor: grab; padding: 0 8px 0 0;">
+            <n-icon size="20"><menu-outline /></n-icon>
+          </div>
+          <div style="flex: 1;">
+            <ModCard :index="index + 1" :mod="element" @mod-selected="viewMod" />
+          </div>
+        </div>
+      </template>
+    </draggable>
+    <n-empty v-if="enabled_mods.length === 0" :description="$t('modList.empty')" style="margin-top: 20px">
       <template #icon>
         <n-icon>
           <archive-outline/>
@@ -13,19 +25,52 @@
       </template>
     </n-empty>
   </n-scrollbar>
+  <div v-if="orderChanged" style="margin-top: 12px; display: flex; justify-content: flex-end;">
+    <n-button type="primary" @click="saveOrder" :loading="saving">
+      {{ $t('modList.saveOrder') }}
+    </n-button>
+  </div>
 </template>
 
 
 <script lang="ts" setup>
-import { installed_mod } from "../../invokes.ts";
+import { enabled_mods, reorder_enabled_mods, list_enabled_mods, clear_active_profile } from "../../invokes.ts";
 import ModCard from "./ModCard.vue";
 import type { BarotraumaMod } from "../../proto/mods.ts";
-import { ArchiveOutline } from "@vicons/ionicons5";
+import { ArchiveOutline, MenuOutline } from "@vicons/ionicons5";
+import draggable from "vuedraggable";
+import { ref } from "vue";
+import { useMessage } from "naive-ui";
+import { useI18n } from "vue-i18n";
 
 const emit = defineEmits(["viewingMod"]);
+const message = useMessage();
+const { t } = useI18n();
+
+const orderChanged = ref(false);
+const saving = ref(false);
 
 function viewMod(mod: BarotraumaMod) {
-	emit("viewingMod", mod);
+  emit("viewingMod", mod);
+}
+
+function onOrderChanged() {
+  orderChanged.value = true;
+}
+
+async function saveOrder() {
+  saving.value = true;
+  try {
+    const orderedIds = enabled_mods.value.map((m) => m.steamWorkshopId);
+    await reorder_enabled_mods(orderedIds);
+    await list_enabled_mods();
+    await clear_active_profile();
+    orderChanged.value = false;
+    message.success(t("modList.orderSaved"));
+  } catch (error) {
+    message.error(String(error));
+  } finally {
+    saving.value = false;
+  }
 }
 </script>
-
