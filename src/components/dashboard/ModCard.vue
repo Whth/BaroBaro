@@ -76,7 +76,6 @@ type Emits = (e: "modSelected", data: BarotraumaMod) => void;
 const emit = defineEmits<Emits>();
 
 const onClick = () => {
-	console.log(`Selected mod: ${props.mod.name}`);
 	emit("modSelected", props.mod);
 };
 </script>

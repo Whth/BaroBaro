@@ -1,77 +1,32 @@
 <template>
-  <n-scrollbar style="max-height: 60vh">
-    <n-empty v-if="installed_mod.length === 0" :description="$t('modManagement.noInstalledMods')"/>
-
-    <div v-else>
-      <!-- Compact bulk actions -->
-      <div class="bulk-actions">
-        <n-button
-            :disabled="selectedMods.size === 0"
-            class="action-btn"
-            size="medium"
-            type="primary"
-            @click="showUpdateDialog = true"
-        >
-          {{ $t('modManagement.updateSelected', {count: selectedMods.size}) }}
-        </n-button>
-        <n-button
-            :disabled="selectedMods.size === 0"
-            class="action-btn"
-            ghost
-            size="medium"
-            @click="clearSelection"
-        >
-          {{ $t('modManagement.clearSelection') }}
-        </n-button>
-        <n-button
-            :loading="isRefreshing"
-            class="action-btn"
-            ghost
-            size="medium"
-            type="info"
-            @click="refreshMods"
-        >
-          {{ $t('modManagement.refreshMods') }}
-        </n-button>
-      </div>
-
-
-      <!-- Compact mod list -->
-      <div class="mod-grid">
-        <div
-            v-for="mod in installed_mod"
-            :key="mod.steamWorkshopId"
-            :class="{ selected: selectedMods.has(mod.steamWorkshopId) }"
-            class="mod-item"
-            @click="toggleModSelection(mod.steamWorkshopId)"
-        >
-          <div class="mod-content">
-            <div class="mod-info">
-              <div class="mod-header">
-                <h4 class="mod-title">{{ mod.name }}</h4>
-                <div class="mod-tags">
-                  <n-tag
-                      v-for="tag in mod.tags.slice(0, 3)"
-                      :key="tag"
-                      :style="getTagStyle(tag)"
-                      round
-                      size="small"
-                  >
-                    {{ tag }}
-                  </n-tag>
-                  <span v-if="mod.tags.length > 3" class="more-tags">+{{ mod.tags.length - 3 }}</span>
-                </div>
-              </div>
-              <div class="mod-details">
-                <span class="detail-item">v{{ mod.modVersion }}</span>
-                <span class="detail-item">Game: {{ mod.gameVersion }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </n-scrollbar>
+  <ModGrid
+      :mods="installed_mod"
+      :selected-mods="selectedMods"
+      @toggle-select="toggleModSelection"
+      @clear-selection="clearSelection"
+  >
+    <template #bulk-actions>
+      <n-button
+          :disabled="selectedMods.size === 0"
+          class="mg-action-btn"
+          size="medium"
+          type="primary"
+          @click="showUpdateDialog = true"
+      >
+        {{ $t('modManagement.updateSelected', {count: selectedMods.size}) }}
+      </n-button>
+      <n-button
+          :loading="isRefreshing"
+          class="mg-action-btn"
+          ghost
+          size="medium"
+          type="info"
+          @click="refreshMods"
+      >
+        {{ $t('modManagement.refreshMods') }}
+      </n-button>
+    </template>
+  </ModGrid>
 
   <!-- Update confirmation dialog -->
   <n-modal v-model:show="showUpdateDialog" :title="$t('modManagement.updateMod')" preset="dialog">
@@ -129,29 +84,21 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import {
 	download_mods,
+	uninstall_mods,
 	installed_mod,
 	list_installed_mods,
-	remove_mods,
+	check_mod_updates,
 } from "../../invokes";
 import { BarotraumaMod } from "../../proto/mods.ts";
 import { useMessage } from "naive-ui";
-import getTagColorConfig from "../../composables/coloredTag.ts";
+import ModGrid from "./ModGrid.vue";
 
-// Message API for notifications
+const { t } = useI18n();
+
 const message = useMessage();
-
-// Get tag style configuration
-function getTagStyle(tag: string) {
-	const config = getTagColorConfig(tag);
-	return {
-		cursor: "pointer",
-		transition: "all 0.2s ease",
-		opacity: "0.85",
-		...config,
-	};
-}
 
 // Selection management
 const selectedMods = ref(new Set<number>());
@@ -168,10 +115,9 @@ const isRefreshing = ref(false);
 // Progress tracking
 const updateProgress = ref(0);
 const updateStatuses = ref<
-	Map<number, "pending" | "updating" | "success" | "error">
+	Map<number, "pending" | "updating" | "success" | "error" | "checking" | "uptodate">
 >(new Map());
 
-// Toggle mod selection
 function toggleModSelection(modId: number) {
 	const isSelected = selectedMods.value.has(modId);
 	if (isSelected) {
@@ -181,56 +127,56 @@ function toggleModSelection(modId: number) {
 	}
 }
 
-// Clear all selections
 function clearSelection() {
 	selectedMods.value.clear();
 }
 
-// Get update status type for display
 function getUpdateStatusType(
 	modId: number,
 ): "default" | "success" | "error" | "warning" | "info" {
 	const status = updateStatuses.value.get(modId);
 	switch (status) {
 		case "success":
+		case "uptodate":
 			return "success";
 		case "error":
 			return "error";
 		case "updating":
+		case "checking":
 			return "info";
 		default:
 			return "default";
 	}
 }
 
-// Get update status text for display
 function getUpdateStatusText(modId: number): string {
 	const status = updateStatuses.value.get(modId);
 	switch (status) {
 		case "success":
-			return "Updated";
+			return t("modManagement.statusSuccess");
 		case "error":
-			return "Failed";
+			return t("modManagement.statusError");
 		case "updating":
-			return "Updating...";
+			return t("modManagement.statusUpdating");
+		case "checking":
+			return t("modManagement.statusChecking");
+		case "uptodate":
+			return t("modManagement.statusUpToDate");
 		default:
-			return "Pending";
+			return t("modManagement.statusPending");
 	}
 }
 
-// Cancel update
 function cancelUpdate() {
 	showUpdateDialog.value = false;
 }
 
-// Close progress dialog
 function closeProgressDialog() {
 	showProgressDialog.value = false;
 	updateProgress.value = 0;
 	updateStatuses.value.clear();
 }
 
-// Refresh mods list
 async function refreshMods() {
 	isRefreshing.value = true;
 	try {
@@ -244,7 +190,6 @@ async function refreshMods() {
 	}
 }
 
-// Confirm update
 async function confirmUpdate() {
 	if (selectedMods.value.size === 0) return;
 
@@ -258,27 +203,54 @@ async function confirmUpdate() {
 	);
 	updatingMods.value = selectedModList;
 
-	// Initialize status tracking
+	// Start all as "checking"
 	selectedModList.forEach((mod) => {
-		updateStatuses.value.set(mod.steamWorkshopId, "pending");
+		updateStatuses.value.set(mod.steamWorkshopId, "checking");
 	});
 
+	// Determine which mods actually need updating
+	let toUpdate: BarotraumaMod[] = [];
+	try {
+		const results = await check_mod_updates(modIds);
+		for (const result of results) {
+			const mod = selectedModList.find(
+				(m) => m.steamWorkshopId === result.modId,
+			);
+			if (!mod) continue;
+			if (result.needsUpdate) {
+				updateStatuses.value.set(mod.steamWorkshopId, "pending");
+				toUpdate.push(mod);
+			} else {
+				updateStatuses.value.set(mod.steamWorkshopId, "uptodate");
+			}
+		}
+	} catch (error) {
+		console.error("Failed to check mod updates:", error);
+		// Fall back to updating all
+		selectedModList.forEach((mod) => {
+			updateStatuses.value.set(mod.steamWorkshopId, "pending");
+		});
+		toUpdate = [...selectedModList];
+	}
+
+	// If nothing needs updating
+	if (toUpdate.length === 0) {
+		message.success(t("modManagement.allAlreadyUpToDate"));
+		isUpdating.value = false;
+		return;
+	}
+
 	let completedCount = 0;
-	const totalCount = selectedModList.length;
+	const totalCount = toUpdate.length;
 
 	try {
-		// Update each mod individually to track progress
-		for (const mod of selectedModList) {
+		for (const mod of toUpdate) {
 			updateStatuses.value.set(mod.steamWorkshopId, "updating");
 
 			try {
-				// Step 1: Remove the old mod
-				await remove_mods([mod.steamWorkshopId]);
-
-				// Step 2: Download the updated mod
+				await uninstall_mods([mod.steamWorkshopId]);
 				await download_mods([mod.steamWorkshopId]);
 
-				// Mark as successful
 				updateStatuses.value.set(mod.steamWorkshopId, "success");
 				message.success(`Updated "${mod.name}"`);
 			} catch (error) {
@@ -291,14 +263,21 @@ async function confirmUpdate() {
 			updateProgress.value = Math.round((completedCount / totalCount) * 100);
 		}
 
-		// Refresh the mod list after all updates
 		await list_installed_mods();
-
-		// Clear selections
 		clearSelection();
 
+		const uptodateCount = selectedModList.length - totalCount;
 		if (completedCount === totalCount) {
-			message.success("All mods updated successfully!");
+			if (uptodateCount > 0) {
+				message.success(
+					t("modManagement.someUpToDate", {
+						updated: completedCount,
+						uptodate: uptodateCount,
+					}),
+				);
+			} else {
+				message.success("All mods updated successfully!");
+			}
 		} else {
 			message.warning(`Updated ${completedCount} out of ${totalCount} mods`);
 		}
@@ -310,167 +289,7 @@ async function confirmUpdate() {
 	}
 }
 
-// Load installed mods on mount
 onMounted(async () => {
 	await list_installed_mods();
 });
 </script>
-
-<style scoped>
-/* Bulk actions - compact and positioned */
-.bulk-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 12px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-}
-
-.action-btn {
-  transition: all 0.15s ease;
-}
-
-.action-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.actions-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-/* Compact mod grid layout */
-.mod-grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: 1fr;
-}
-
-.mod-item {
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.mod-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.mod-item.selected {
-  background: rgba(64, 158, 255, 0.1);
-  border-color: #409eff;
-  box-shadow: 0 0 12px rgba(64, 158, 255, 0.2);
-}
-
-/* Compact content layout */
-.mod-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.mod-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.mod-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  gap: 12px;
-}
-
-.mod-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--n-text-color);
-  line-height: 1.2;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mod-tags {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  max-width: 200px;
-  align-items: center;
-}
-
-.more-tags {
-  color: var(--n-text-color-2);
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.mod-details {
-  display: flex;
-  gap: 16px;
-  color: var(--n-text-color-2);
-  font-size: 12px;
-}
-
-.detail-item {
-  background: rgba(0, 0, 0, 0.05);
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: 500;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .mod-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .mod-tags {
-    max-width: none;
-  }
-
-  .mod-details {
-    flex-wrap: wrap;
-  }
-}
-
-/* Dark theme adjustments */
-:global(.dark) .mod-title {
-  color: var(--n-text-color);
-}
-
-:global(.dark) .mod-item {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-:global(.dark) .mod-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .detail-item {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--n-text-color-2);
-}
-
-:global(.dark) .mod-details {
-  color: var(--n-text-color-2);
-}
-
-:global(.dark) .bulk-actions {
-  background: rgba(255, 255, 255, 0.05);
-}
-</style>

@@ -6,4 +6,4 @@ license-file.workspace = true
 authors.workspace = true
 
 [dependencies]
-prost-build = "0.14.1"
+prost-build = "0.14.4"

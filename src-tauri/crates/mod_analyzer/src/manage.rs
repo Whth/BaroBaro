@@ -77,6 +77,38 @@ impl BarotraumaModManager {
             Err("Game home not set".to_string())
         }
     }
+    pub fn mod_list_dir(&self) -> Result<&PathBuf, String> {
+        if let Some(ref game_home) = self.game_home {
+            Ok(game_home.mod_list_dir())
+        } else {
+            Err("Game home not set".to_string())
+        }
+    }
+
+    pub fn player_config_file(&self) -> Result<PathBuf, String> {
+        if let Some(ref game_home) = self.game_home {
+            Ok(game_home.player_config_file())
+        } else {
+            Err("Game home not set".to_string())
+        }
+    }
+
+    pub fn save_mod_list(&self, mod_list: &ModList) -> Result<(), String> {
+        let dir = self.mod_list_dir()?;
+        std::fs::create_dir_all(dir).map_err(|e| format!("{e}, failed to create ModLists directory."))?;
+        let path = dir.join(format!("{}.xml", mod_list.profile_name));
+        mod_list.save_to_file(&path).map_err(|e| format!("{e}, failed to save mod list."))
+    }
+
+    pub fn delete_mod_list(&self, profile_name: &str) -> Result<(), String> {
+        let dir = self.mod_list_dir()?;
+        let path = dir.join(format!("{}.xml", profile_name));
+        if !path.exists() {
+            return Err(format!("Profile '{}' not found.", profile_name));
+        }
+        std::fs::remove_file(&path).map_err(|e| format!("{e}, failed to delete mod list."))
+    }
+
     pub fn get_mods(&self) -> &Vec<BarotraumaMod> {
         &self.mods
     }
@@ -85,8 +117,7 @@ impl BarotraumaModManager {
         if let Some(target_mod) = self
             .mods
             .iter()
-            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
-            .next_back()
+            .rfind(|mod_obj| mod_obj.steam_workshop_id == mod_id)
         {
             target_mod.mod_occupation()
         } else {
@@ -98,8 +129,7 @@ impl BarotraumaModManager {
         if let Some(target_mod) = self
             .mods
             .iter()
-            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
-            .next_back()
+            .rfind(|mod_obj| mod_obj.steam_workshop_id == mod_id)
         {
             target_mod.mod_hash()
         } else {

@@ -9,11 +9,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .add_field_attr(
             "WorkshopItem.published_file_id",
-            "#[serde(alias = \"publishedfileid\",deserialize_with = \"crate::de::flexible_u64_deserializer\")]",
+            "#[serde(alias = \"publishedfileid\",deserialize_with = \"crate::de::deserialize_u64\")]"
         )
         .add_field_attr(
             "WorkshopItem.creator",
-            "#[serde(deserialize_with = \"crate::de::flexible_u64_deserializer\")]",
+            "#[serde(deserialize_with = \"crate::de::deserialize_u64\")]"
         )
         .add_field_attr(
             "WorkshopItem.creator_app_id",
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .add_field_attr(
             "WorkshopItem.file_size",
-            "#[serde(alias = \"file_size\", deserialize_with = \"crate::de::flexible_u64_deserializer\")]",
+            "#[serde(alias = \"file_size\", deserialize_with = \"crate::de::deserialize_u64\")]"
         )
         .add_field_attr(
             "WorkshopItem.file_url",
@@ -73,108 +73,3 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     transmission::compile_proto_fine_grained("workshop", &class_attrs, &field_attrs)?;
     Ok(())
 }
-
-//*
-//
-// #[derive(Deserialize)]
-// struct ApiResponse {
-//     response: Response,
-// }
-//
-// #[derive(Deserialize)]
-// struct Response {
-//     result: isize,
-//     #[serde(rename = "resultcount")]
-//     result_count: usize,
-//     #[serde(rename = "publishedfiledetails")]
-//     published_file_details: Vec<WorkshopItem>,
-// }
-//
-// /// Represents a single Steam Workshop item.
-// #[derive(Deserialize, Serialize, Debug, Clone)]
-// pub struct WorkshopItem {
-//     /// The unique 64-bit ID of the published file (now u64)
-//     #[serde(
-//         rename = "publishedfileid",
-//         deserialize_with = "crate::de::flexible_u64_deserializer"
-//     )]
-//     pub published_file_id: u64,
-//
-//     /// Result code for this item (1 = success)
-//     #[serde(rename = "result")]
-//     pub result: i32,
-//
-//     /// Creator's Steam 64 ID
-//     #[serde(rename = "creator", deserialize_with = "crate::de::flexible_u64_deserializer")]
-//     pub creator: u64,
-//
-//     #[serde(rename = "creator_app_id")]
-//     pub creator_app_id: u64,
-//
-//     #[serde(rename = "consumer_app_id")]
-//     pub consumer_app_id: u64,
-//
-//     #[serde(rename = "filename")]
-//     pub filename: String,
-//
-//     /// File size in bytes (as string — some values may exceed u64 in future?)
-//     #[serde(rename = "file_size", deserialize_with = "crate::de::flexible_u64_deserializer")]
-//     pub file_size: u64,
-//
-//     #[serde(rename = "file_url")]
-//     pub file_url: String,
-//
-//     #[serde(rename = "hcontent_file")]
-//     pub hcontent_file: String,
-//
-//     #[serde(rename = "preview_url")]
-//     pub preview_url: String,
-//
-//     #[serde(rename = "hcontent_preview")]
-//     pub hcontent_preview: String,
-//
-//     #[serde(rename = "title")]
-//     pub title: String,
-//
-//     #[serde(rename = "description")]
-//     pub description: String,
-//
-//     #[serde(rename = "time_created")]
-//     pub time_created: u64,
-//
-//     #[serde(rename = "time_updated")]
-//     pub time_updated: u64,
-//
-//     #[serde(rename = "visibility")]
-//     pub visibility: i32,
-//
-//     #[serde(rename = "banned")]
-//     pub banned: isize,
-//
-//     #[serde(rename = "ban_reason")]
-//     pub ban_reason: String,
-//
-//     #[serde(rename = "subscriptions")]
-//     pub subscriptions: u64,
-//
-//     #[serde(rename = "favorited")]
-//     pub favorited: u64,
-//
-//     #[serde(rename = "lifetime_subscriptions")]
-//     pub lifetime_subscriptions: u64,
-//
-//     #[serde(rename = "lifetime_favorited")]
-//     pub lifetime_favorited: u64,
-//
-//     #[serde(rename = "views")]
-//     pub views: u64,
-//
-//     #[serde(rename = "tags")]
-//     pub tags: Vec<Tag>,
-// }
-//
-// #[derive(Deserialize, Serialize, Debug, Clone)]
-// pub struct Tag {
-//     #[serde(rename = "tag")]
-//     pub tag: String,
-// }*//

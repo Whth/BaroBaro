@@ -67,7 +67,6 @@ impl ModEntry {
         &self.path
     }
 
-
     /// Returns the mod ID (folder name, typically the Steam Workshop ID).
     pub fn id(&self) -> usize {
         self.id
@@ -88,7 +87,6 @@ impl BaroConfig {
         let data = std::fs::read_to_string(path)?;
         Self::from_str(&data)
     }
-
 
     /// Parses XML from a string.
     fn from_str(xml: &str) -> Result<Self, Box<dyn std::error::Error>> {
@@ -116,12 +114,10 @@ impl BaroConfig {
             .map(|p| p.path.clone())
             .filter(|p| p.starts_with(format!("{}/", BarotraumaHome::MOD_DIR).as_str()))
             .filter_map(|path| {
-                if let Some(id) = path.split('/').nth(1) &&
-                    let Ok(id) = id.parse() {
-                    Some(ModEntry {
-                        path,
-                        id,
-                    })
+                if let Some(id) = path.split('/').nth(1)
+                    && let Ok(id) = id.parse()
+                {
+                    Some(ModEntry { path, id })
                 } else {
                     None
                 }

@@ -7,8 +7,8 @@ authors.workspace = true
 
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
-prost = "0.14.1"
-toml = "0.9.8"
+prost = "0.14.4"
+toml = "1.1.2"
 figment = { version = "0.10.19", features = ["toml"] }
 logger = { path = "../logger" }
 

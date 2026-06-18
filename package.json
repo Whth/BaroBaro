@@ -1,23 +1,7 @@
 {
-  "name": "barobaro",
-  "description": "A dedicated Mod Manager for Barotrauma, base on steamcmd.",
-  "license": "LGPL-3.0",
   "author": {
-    "name": "Whth",
-    "email": "zettainspector@foxmail.com"
-  },
-  "private": true,
-  "version": "0.1.8",
-  "type": "module",
-  "scripts": {
-    "gen": "node scripts/gen_proto.cjs",
-    "sync": "node scripts/sync_version.cjs",
-    "dev": "pnpm gen && pnpm sync && vite",
-    "fmt": "biome format src --write --vcs-use-ignore-file=true && cargo fmt --manifest-path src-tauri/Cargo.toml",
-    "lint": "biome lint src --write --vcs-use-ignore-file=true",
-    "build": "pnpm gen && pnpm sync && vue-tsc --noEmit && vite build",
-    "preview": "pnpm gen && pnpm sync && vite preview",
-    "tauri": "tauri"
+    "email": "zettainspector@foxmail.com",
+    "name": "Whth"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.10.1",
@@ -31,8 +15,10 @@
     "vue": "^3.5.24",
     "vue-clipboard3": "^2.0.0",
     "vue-i18n": "^11.1.12",
-    "vue-router": "^4.6.3"
+    "vue-router": "^4.6.3",
+    "vuedraggable": "^4.1.0"
   },
+  "description": "A dedicated Mod Manager for Barotrauma, base on steamcmd.",
   "devDependencies": {
     "@biomejs/biome": "^2.3.6",
     "@tauri-apps/cli": "^2.9.4",
@@ -43,5 +29,20 @@
     "typescript": "~5.9.3",
     "vite": "^7.2.2",
     "vue-tsc": "^3.1.4"
-  }
+  },
+  "license": "LGPL-3.0",
+  "name": "barobaro",
+  "private": true,
+  "scripts": {
+    "build": "pnpm gen && pnpm sync && vue-tsc --noEmit && vite build",
+    "dev": "pnpm gen && pnpm sync && vite",
+    "fmt": "biome format src --write --vcs-use-ignore-file=true && cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "gen": "node scripts/gen_proto.cjs",
+    "lint": "biome lint src --write --vcs-use-ignore-file=true",
+    "preview": "pnpm gen && pnpm sync && vite preview",
+    "sync": "node scripts/sync_version.cjs",
+    "tauri": "tauri"
+  },
+  "type": "module",
+  "version": "0.2.0"
 }

@@ -28,6 +28,7 @@ impl Config {
                 background_blur: 5,
                 foreground_opacity: 0.9,
             }),
+            active_profile: None,
         }
     }
 

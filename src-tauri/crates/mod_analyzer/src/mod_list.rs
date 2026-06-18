@@ -1,7 +1,7 @@
 use crate::mods::ModList;
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
-use quick_xml::{Reader, Writer};
+use quick_xml::{Reader, Writer, XmlVersion};
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
@@ -30,7 +30,6 @@ use std::path::Path;
 ///     ],
 /// };
 /// ```
-
 impl ModList {
     /// Parses a ModList from an XML reader.
     ///
@@ -97,8 +96,8 @@ impl ModList {
         }
 
         Ok(ModList {
-            profile_name: profile_name.ok_or_else(|| "missing profile name")?,
-            base_package: base_package.ok_or_else(|| "missing base package (e.g. <Vanilla />)")?,
+            profile_name: profile_name.ok_or("missing profile name")?,
+            base_package: base_package.ok_or("missing base package (e.g. <Vanilla />)")?,
             mods,
         })
     }
@@ -113,7 +112,7 @@ impl ModList {
         attrs
             .filter_map(|a| a.ok())
             .filter(|a| a.key.as_ref() == b"name")
-            .filter_map(|a| a.decode_and_unescape_value(reader.decoder()).ok())
+            .filter_map(|a| a.decoded_and_normalized_value(XmlVersion::Implicit1_0, reader.decoder()).ok())
             .last()
             .map(|s| s.to_string())
     }

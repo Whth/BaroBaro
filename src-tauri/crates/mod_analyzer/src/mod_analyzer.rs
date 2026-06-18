@@ -2,9 +2,75 @@ use crate::mods::BarotraumaMod;
 use constants::MOD_FILELIST_FILE;
 use fs_utils::hash_directory;
 use quick_xml::de::from_str;
+use quick_xml::events::Event;
+use quick_xml::{Reader, XmlVersion};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 use walkdir::WalkDir;
+
+/// A mod dependency declared via a `<package>` element in content.xml.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModDependency {
+    /// The name of the dependency mod.
+    pub name: String,
+    /// The Steam Workshop ID of the dependency, if specified.
+    pub steam_workshop_id: Option<u64>,
+}
+
+/// Parses `<package>` dependency declarations from a Barotrauma content.xml string.
+///
+/// Barotrauma mods declare dependencies like:
+/// ```xml
+/// <package name="DependencyMod" id="1234567890"/>
+/// ```
+/// where `id` is optional and may be empty.
+pub fn parse_dependencies(xml: &str) -> Result<Vec<ModDependency>, Box<dyn std::error::Error>> {
+    let mut reader = Reader::from_str(xml);
+    reader.config_mut().trim_text(true);
+    let mut deps = Vec::new();
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Empty(ref e)) | Ok(Event::Start(ref e)) => {
+                if e.name().as_ref() == b"package" {
+                    let mut name = String::new();
+                    let mut id: Option<u64> = None;
+                    for attr in e.attributes().flatten() {
+                        match attr.key.as_ref() {
+                            b"name" => {
+                                name = attr.decoded_and_normalized_value(XmlVersion::Implicit1_0, reader.decoder())
+                                    .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?
+                                    .into_owned();
+                            }
+                            b"id" => {
+                                let val = attr.decoded_and_normalized_value(XmlVersion::Implicit1_0, reader.decoder())
+                                    .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+                                if !val.is_empty() {
+                                    id = Some(val.parse::<u64>()?);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                    if !name.is_empty() {
+                        deps.push(ModDependency {
+                            name,
+                            steam_workshop_id: id,
+                        });
+                    }
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Box::new(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Ok(deps)
+}
 
 impl BarotraumaMod {
     pub fn set_home_dir(&mut self, home_dir: String) -> &mut Self {
@@ -18,7 +84,7 @@ impl BarotraumaMod {
     ///
     /// # Returns
     /// A Result containing the parsed BarotraumaMod or an error.
-    pub fn from_str(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_xml_string(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let mod_obj: BarotraumaMod = from_str(s)?;
         Ok(mod_obj)
     }
@@ -33,9 +99,9 @@ impl BarotraumaMod {
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
         let xml_content = fs::read_to_string(path.as_ref())?;
 
-        let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
+        let parent_dir: &Path = path.as_ref().parent().ok_or("Invalid path")?;
 
-        Self::from_str(&xml_content)
+        Self::from_xml_string(&xml_content)
             .map(|mut mod_obj| {
                 mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
                 mod_obj
@@ -140,22 +206,22 @@ mod tests {
     #[test]
     fn test_bool_deserialization() {
         let xml_true = r#"<contentpackage name="test" modversion="1" corepackage="True" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_true).expect("Should parse 'True'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_true).expect("Should parse 'True'");
         assert_eq!(mod_obj.core_package, true);
 
         let xml_false = r#"<contentpackage name="test" modversion="1" corepackage="False" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_false).expect("Should parse 'False'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_false).expect("Should parse 'False'");
         assert_eq!(mod_obj.core_package, false);
 
         let xml_mixed = r#"<contentpackage name="test" modversion="1" corepackage="false" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_mixed).expect("Should parse 'false'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_mixed).expect("Should parse 'false'");
         assert_eq!(mod_obj.core_package, false);
     }
 
     #[test]
     fn test_parse_content_package() {
         let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
+        let mod_obj = BarotraumaMod::from_xml_string(&xml).expect("Failed to parse XML");
 
         // Basic metadata
         assert_eq!(mod_obj.name, "BaroTraumatic");

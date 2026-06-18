@@ -6,6 +6,5 @@ license-file.workspace = true
 authors.workspace = true
 
 [dependencies]
-directories-next = "2.0.0"
+directories = "6"
 figment = { version = "0.10.19", features = ["toml"] }
-once_cell = "1.21.3"

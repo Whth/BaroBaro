@@ -34,9 +34,24 @@ pub fn run() -> Result<(), String> {
             uninstall_mods,
             get_mod_occupation,
             get_mod_hash,
-            get_workshop_items
+            get_workshop_items,
+            check_mod_updates,
+            create_mod_list,
+            delete_mod_list,
+            apply_mod_list,
+            set_active_profile,
+            clear_active_profile,
+            reorder_enabled_mods,
+            rename_profile,
+            compare_profiles,
+            export_profile,
+            import_profile,
+            detect_mod_conflicts,
+            check_workshop_updates,
+            check_network_status,
+            get_popular_mods
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
