@@ -110,8 +110,8 @@ impl SteamCMD {
                 script += &SteamCMD::login(None, None);
                 script += "\n";
                 script += &mod_ids
-                    .into_iter()
-                    .map(|mod_id| SteamCMD::download_item(game_id, mod_id.clone()))
+                    .iter()
+                    .map(|mod_id| SteamCMD::download_item(game_id, *mod_id))
                     .collect::<Vec<String>>()
                     .join("\n");
                 script += "\n";

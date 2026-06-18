@@ -4,18 +4,18 @@ use std::path::PathBuf;
 const PROTO_DIR: &str = "../../../proto";
 const OUT_DIR: &str = "src";
 
+/// A (target, attribute) pair for protobuf codegen.
+type AttrPair<'a> = (&'a str, &'a str);
+
 /// Compiles a protobuf file into Rust code with fine grained serde attributes.
 pub fn compile_proto_fine_grained(
     name: &str,
-    attrs: &Vec<(&str, &str)>,
-    field_attrs: &Vec<(&str, &str)>,
+    attrs: &[(&str, &str)],
+    field_attrs: &[(&str, &str)],
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rerun-if-changed={}", PROTO_DIR);
     println!("cargo:rerun-if-changed=build.rs");
-    println!(
-        "cargo:rerun-if-changed={}",
-        format!("{PROTO_DIR}/{name}.proto")
-    );
+    println!("cargo:rerun-if-changed={PROTO_DIR}/{name}.proto");
     fs::create_dir_all(OUT_DIR)?;
     let mut conf = prost_build::Config::new();
     attrs.iter().for_each(|(target, attr)| {
@@ -119,7 +119,7 @@ impl AttrRegistry {
         self.add_global_se().add_global_de()
     }
 
-    pub fn export(&self) -> (Vec<(&str, &str)>, Vec<(&str, &str)>) {
+    pub fn export(&self) -> (Vec<AttrPair<'_>>, Vec<AttrPair<'_>>) {
         let type_attrs = self
             .global_type_attrs
             .iter()

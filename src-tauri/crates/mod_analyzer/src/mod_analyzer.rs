@@ -18,7 +18,7 @@ impl BarotraumaMod {
     ///
     /// # Returns
     /// A Result containing the parsed BarotraumaMod or an error.
-    pub fn from_str(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_xml_string(s: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let mod_obj: BarotraumaMod = from_str(s)?;
         Ok(mod_obj)
     }
@@ -33,9 +33,9 @@ impl BarotraumaMod {
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Box<dyn std::error::Error>> {
         let xml_content = fs::read_to_string(path.as_ref())?;
 
-        let parent_dir: &Path = path.as_ref().parent().ok_or_else(|| "Invalid path")?;
+        let parent_dir: &Path = path.as_ref().parent().ok_or("Invalid path")?;
 
-        Self::from_str(&xml_content)
+        Self::from_xml_string(&xml_content)
             .map(|mut mod_obj| {
                 mod_obj.set_home_dir(parent_dir.to_string_lossy().to_string());
                 mod_obj
@@ -140,22 +140,22 @@ mod tests {
     #[test]
     fn test_bool_deserialization() {
         let xml_true = r#"<contentpackage name="test" modversion="1" corepackage="True" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_true).expect("Should parse 'True'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_true).expect("Should parse 'True'");
         assert_eq!(mod_obj.core_package, true);
 
         let xml_false = r#"<contentpackage name="test" modversion="1" corepackage="False" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_false).expect("Should parse 'False'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_false).expect("Should parse 'False'");
         assert_eq!(mod_obj.core_package, false);
 
         let xml_mixed = r#"<contentpackage name="test" modversion="1" corepackage="false" steamworkshopid="" gameversion="" expectedhash="" />"#;
-        let mod_obj = BarotraumaMod::from_str(xml_mixed).expect("Should parse 'false'");
+        let mod_obj = BarotraumaMod::from_xml_string(xml_mixed).expect("Should parse 'false'");
         assert_eq!(mod_obj.core_package, false);
     }
 
     #[test]
     fn test_parse_content_package() {
         let xml = get_test_xml();
-        let mod_obj = BarotraumaMod::from_str(&xml).expect("Failed to parse XML");
+        let mod_obj = BarotraumaMod::from_xml_string(&xml).expect("Failed to parse XML");
 
         // Basic metadata
         assert_eq!(mod_obj.name, "BaroTraumatic");

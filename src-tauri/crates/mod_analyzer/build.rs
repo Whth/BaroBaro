@@ -1,7 +1,7 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     transmission::compile_proto_fine_grained(
         "mods",
-        &vec![
+        &[
             (
                 "mods.ModList",
                 "#[derive(serde::Serialize, serde::Deserialize)]",
@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "#[derive(serde::Serialize, serde::Deserialize)]\n#[serde(rename_all = \"camelCase\", default)]",
             ),
         ],
-        &vec![
+        &[
             ("mods.BarotraumaMod.name", "#[serde(alias = \"@name\")]"),
             (
                 "mods.BarotraumaMod.modVersion",

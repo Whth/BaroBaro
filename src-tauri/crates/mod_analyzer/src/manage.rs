@@ -117,8 +117,7 @@ impl BarotraumaModManager {
         if let Some(target_mod) = self
             .mods
             .iter()
-            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
-            .next_back()
+            .rfind(|mod_obj| mod_obj.steam_workshop_id == mod_id)
         {
             target_mod.mod_occupation()
         } else {
@@ -130,8 +129,7 @@ impl BarotraumaModManager {
         if let Some(target_mod) = self
             .mods
             .iter()
-            .filter(|mod_obj| mod_obj.steam_workshop_id == mod_id)
-            .next_back()
+            .rfind(|mod_obj| mod_obj.steam_workshop_id == mod_id)
         {
             target_mod.mod_hash()
         } else {

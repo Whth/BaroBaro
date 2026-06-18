@@ -30,7 +30,6 @@ use std::path::Path;
 ///     ],
 /// };
 /// ```
-
 impl ModList {
     /// Parses a ModList from an XML reader.
     ///
@@ -97,8 +96,8 @@ impl ModList {
         }
 
         Ok(ModList {
-            profile_name: profile_name.ok_or_else(|| "missing profile name")?,
-            base_package: base_package.ok_or_else(|| "missing base package (e.g. <Vanilla />)")?,
+            profile_name: profile_name.ok_or("missing profile name")?,
+            base_package: base_package.ok_or("missing base package (e.g. <Vanilla />)")?,
             mods,
         })
     }
