@@ -366,6 +366,7 @@ dependencies = [
  "mod_analyzer",
  "prost",
  "serde",
+ "serde_json",
  "steam-api",
  "steamcmd-rs",
  "tauri",

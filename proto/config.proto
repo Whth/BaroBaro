@@ -47,6 +47,8 @@ message Config {
   SteamCmdConfig steamcmdConfig = 6;
   // The configuration for the user interface.
   UIConfig uiConfig = 7;
+  // The currently active mod profile name, if any.
+  optional string activeProfile = 8;
 }
 
 
