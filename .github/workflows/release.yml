@@ -20,6 +20,10 @@ on:
       - "package.json"
       - "scripts/**"
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   determine_changes:
     name: Determine Version Change & Release Need
