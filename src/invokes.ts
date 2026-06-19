@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Config } from "./proto/config";
-import { type Ref, computed, ref } from "vue";
+import { computed, type Ref, ref } from "vue";
 import type { BarotraumaMod, ModList } from "./proto/mods";
 import { BuildInfo } from "./proto/build_info.ts";
 import { WorkshopItem } from "./proto/workshop.ts";
@@ -61,7 +61,6 @@ export async function retrieve_mod_metadata() {
 		mods: installed_mod.value,
 		batchSize: config.value.metadataRetrieveBatchsize,
 	});
-
 
 	const enabled_mapping = new Map(
 		enabled_mods.value.map((mod) => [mod.steamWorkshopId, mod]),
@@ -161,7 +160,9 @@ export async function clear_active_profile(): Promise<void> {
 	await refresh_config();
 }
 
-export async function reorder_enabled_mods(orderedIds: number[]): Promise<void> {
+export async function reorder_enabled_mods(
+	orderedIds: number[],
+): Promise<void> {
 	await invoke("reorder_enabled_mods", { orderedIds });
 }
 
@@ -176,7 +177,10 @@ export async function rename_profile(
 	oldName: string,
 	newName: string,
 ): Promise<ModList> {
-	const result = (await invoke("rename_profile", { oldName, newName })) as ModList;
+	const result = (await invoke("rename_profile", {
+		oldName,
+		newName,
+	})) as ModList;
 	await list_mod_lists();
 	await refresh_config();
 	return result;
@@ -236,7 +240,9 @@ export interface NetworkStatus {
 }
 
 /** Checks installed mods against Steam Workshop for available updates. */
-export async function check_workshop_updates(): Promise<WorkshopUpdateStatus[]> {
+export async function check_workshop_updates(): Promise<
+	WorkshopUpdateStatus[]
+> {
 	return await invoke("check_workshop_updates");
 }
 

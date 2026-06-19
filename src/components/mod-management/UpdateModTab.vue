@@ -86,11 +86,11 @@
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
+	check_mod_updates,
 	download_mods,
-	uninstall_mods,
 	installed_mod,
 	list_installed_mods,
-	check_mod_updates,
+	uninstall_mods,
 } from "../../invokes";
 import { BarotraumaMod } from "../../proto/mods.ts";
 import { useMessage } from "naive-ui";
@@ -115,7 +115,10 @@ const isRefreshing = ref(false);
 // Progress tracking
 const updateProgress = ref(0);
 const updateStatuses = ref<
-	Map<number, "pending" | "updating" | "success" | "error" | "checking" | "uptodate">
+	Map<
+		number,
+		"pending" | "updating" | "success" | "error" | "checking" | "uptodate"
+	>
 >(new Map());
 
 function toggleModSelection(modId: number) {

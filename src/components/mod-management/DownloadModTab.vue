@@ -155,7 +155,6 @@ const verifyMod = async (mod: ModItem): Promise<boolean> => {
 		let retrieved_items: WorkshopItem[] = await get_workshop_items([mod.id]);
 
 		if (retrieved_items.length > 0) {
-
 			target = retrieved_items[0];
 
 			isValid = await is_barotrauma_mod(target);

@@ -1,18 +1,20 @@
 <template>
   <n-scrollbar style="height: 69vh">
     <draggable
-      v-model="enabled_mods"
-      item-key="steamWorkshopId"
-      handle=".drag-handle"
-      @change="onOrderChanged"
+        v-model="enabled_mods"
+        handle=".drag-handle"
+        item-key="steamWorkshopId"
+        @change="onOrderChanged"
     >
       <template #item="{ element, index }">
         <div style="display: flex; align-items: center; margin-bottom: 12px;">
           <div class="drag-handle" style="cursor: grab; padding: 0 8px 0 0;">
-            <n-icon size="20"><menu-outline /></n-icon>
+            <n-icon size="20">
+              <menu-outline/>
+            </n-icon>
           </div>
           <div style="flex: 1;">
-            <ModCard :index="index + 1" :mod="element" @mod-selected="viewMod" />
+            <ModCard :index="index + 1" :mod="element" @mod-selected="viewMod"/>
           </div>
         </div>
       </template>
@@ -26,7 +28,7 @@
     </n-empty>
   </n-scrollbar>
   <div v-if="orderChanged" style="margin-top: 12px; display: flex; justify-content: flex-end;">
-    <n-button type="primary" @click="saveOrder" :loading="saving">
+    <n-button :loading="saving" type="primary" @click="saveOrder">
       {{ $t('modList.saveOrder') }}
     </n-button>
   </div>
@@ -34,7 +36,12 @@
 
 
 <script lang="ts" setup>
-import { enabled_mods, reorder_enabled_mods, list_enabled_mods, clear_active_profile } from "../../invokes.ts";
+import {
+	clear_active_profile,
+	enabled_mods,
+	list_enabled_mods,
+	reorder_enabled_mods,
+} from "../../invokes.ts";
 import ModCard from "./ModCard.vue";
 import type { BarotraumaMod } from "../../proto/mods.ts";
 import { ArchiveOutline, MenuOutline } from "@vicons/ionicons5";
@@ -51,26 +58,26 @@ const orderChanged = ref(false);
 const saving = ref(false);
 
 function viewMod(mod: BarotraumaMod) {
-  emit("viewingMod", mod);
+	emit("viewingMod", mod);
 }
 
 function onOrderChanged() {
-  orderChanged.value = true;
+	orderChanged.value = true;
 }
 
 async function saveOrder() {
-  saving.value = true;
-  try {
-    const orderedIds = enabled_mods.value.map((m) => m.steamWorkshopId);
-    await reorder_enabled_mods(orderedIds);
-    await list_enabled_mods();
-    await clear_active_profile();
-    orderChanged.value = false;
-    message.success(t("modList.orderSaved"));
-  } catch (error) {
-    message.error(String(error));
-  } finally {
-    saving.value = false;
-  }
+	saving.value = true;
+	try {
+		const orderedIds = enabled_mods.value.map((m) => m.steamWorkshopId);
+		await reorder_enabled_mods(orderedIds);
+		await list_enabled_mods();
+		await clear_active_profile();
+		orderChanged.value = false;
+		message.success(t("modList.orderSaved"));
+	} catch (error) {
+		message.error(String(error));
+	} finally {
+		saving.value = false;
+	}
 }
 </script>

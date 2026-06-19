@@ -8,7 +8,8 @@ pub static BARO_MANAGER: LazyLock<RwLock<BarotraumaModManager>> =
     LazyLock::new(|| BarotraumaModManager::default().into());
 
 /// A static instance of SteamCMD
-pub static STEAMCMD_MANAGER: LazyLock<RwLock<SteamCMD>> = LazyLock::new(|| SteamCMD::default().into());
+pub static STEAMCMD_MANAGER: LazyLock<RwLock<SteamCMD>> =
+    LazyLock::new(|| SteamCMD::default().into());
 
 pub static STEAM_WORKSHOP_CLIENT: LazyLock<RwLock<SteamWorkShopClient>> =
     LazyLock::new(|| SteamWorkShopClient::new().into());

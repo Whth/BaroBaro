@@ -2,33 +2,35 @@
   <n-scrollbar style="max-height: 70vh">
     <div style="padding: 8px">
       <n-input
-        v-model:value="searchQuery"
-        :placeholder="$t('browse.searchPlaceholder')"
-        clearable
-        style="margin-bottom: 16px"
+          v-model:value="searchQuery"
+          :placeholder="$t('browse.searchPlaceholder')"
+          clearable
+          style="margin-bottom: 16px"
       >
         <template #prefix>
-          <n-icon><search-outline /></n-icon>
+          <n-icon>
+            <search-outline/>
+          </n-icon>
         </template>
       </n-input>
 
       <n-spin :show="loading" style="width: 100%">
-        <n-empty v-if="!loading && filteredMods.length === 0" :description="$t('browse.noResults')" />
+        <n-empty v-if="!loading && filteredMods.length === 0" :description="$t('browse.noResults')"/>
 
         <div v-else class="browse-grid">
           <n-card
-            v-for="mod in filteredMods"
-            :key="mod.publishedFileId"
-            :title="mod.title"
-            hoverable
-            size="small"
+              v-for="mod in filteredMods"
+              :key="mod.publishedFileId"
+              :title="mod.title"
+              hoverable
+              size="small"
           >
             <template #cover>
               <img
-                v-if="mod.previewUrl"
-                :src="mod.previewUrl"
-                :alt="mod.title"
-                style="height: 120px; object-fit: cover; width: 100%"
+                  v-if="mod.previewUrl"
+                  :alt="mod.title"
+                  :src="mod.previewUrl"
+                  style="height: 120px; object-fit: cover; width: 100%"
               />
             </template>
             <div class="mod-meta">
@@ -52,8 +54,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
-import { get_popular_mods, download_mods } from "../../invokes.ts";
+import { computed, onMounted, ref } from "vue";
+import { download_mods, get_popular_mods } from "../../invokes.ts";
 import type { WorkshopItem } from "../../proto/workshop.ts";
 import { SearchOutline } from "@vicons/ionicons5";
 import { useMessage } from "naive-ui";
@@ -69,7 +71,9 @@ const filteredMods = computed(() => {
 	const query = searchQuery.value.toLowerCase().trim();
 	if (!query) return popularMods.value;
 	return popularMods.value.filter(
-		(m) => m.title.toLowerCase().includes(query) || m.description?.toLowerCase().includes(query),
+		(m) =>
+			m.title.toLowerCase().includes(query) ||
+			m.description?.toLowerCase().includes(query),
 	);
 });
 
@@ -96,14 +100,14 @@ async function handleDownload(id: number) {
 
 <style scoped>
 .browse-grid {
-	display: grid;
-	gap: 12px;
-	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }
 
 .mod-meta {
-	display: flex;
-	gap: 8px;
-	margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
 }
 </style>

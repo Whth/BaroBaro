@@ -48,7 +48,7 @@
                 <span class="mg-detail-item">Game: {{ mod.gameVersion }}</span>
               </div>
             </div>
-            <slot name="mod-actions" :mod="mod"/>
+            <slot :mod="mod" name="mod-actions"/>
           </div>
         </div>
       </div>
@@ -61,23 +61,23 @@ import type { BarotraumaMod } from "../../proto/mods.ts";
 import getTagColorConfig from "../../composables/coloredTag.ts";
 
 defineProps<{
-  mods: BarotraumaMod[];
-  selectedMods: Set<number>;
+	mods: BarotraumaMod[];
+	selectedMods: Set<number>;
 }>();
 
 defineEmits<{
-  "toggle-select": [modId: number];
-  "clear-selection": [];
+	"toggle-select": [modId: number];
+	"clear-selection": [];
 }>();
 
 function getTagStyle(tag: string) {
-  const config = getTagColorConfig(tag);
-  return {
-    cursor: "pointer",
-    transition: "all 0.2s ease",
-    opacity: "0.85",
-    ...config,
-  };
+	const config = getTagColorConfig(tag);
+	return {
+		cursor: "pointer",
+		transition: "all 0.2s ease",
+		opacity: "0.85",
+		...config,
+	};
 }
 </script>
 

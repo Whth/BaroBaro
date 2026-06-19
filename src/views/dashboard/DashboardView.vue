@@ -4,30 +4,30 @@
     <template #title>
       <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
       <n-tag
-        v-if="active_profile"
-        type="success"
-        style="margin-left: 12px; vertical-align: middle;"
+          v-if="active_profile"
+          style="margin-left: 12px; vertical-align: middle;"
+          type="success"
       >
         {{ $t('dashboard.activeProfile') }}: {{ active_profile }}
       </n-tag>
     </template>
 
     <n-alert
-      v-if="updatesAvailable.length > 0"
-      type="info"
-      :title="$t('dashboard.updatesAvailable')"
-      style="margin-bottom: 16px"
-      closable
-      @close="updatesAvailable = []"
+        v-if="updatesAvailable.length > 0"
+        :title="$t('dashboard.updatesAvailable')"
+        closable
+        style="margin-bottom: 16px"
+        type="info"
+        @close="updatesAvailable = []"
     >
-      {{ $t('dashboard.updatesCount', { count: updatesAvailable.length }) }}
+      {{ $t('dashboard.updatesCount', {count: updatesAvailable.length}) }}
     </n-alert>
 
     <n-alert
-      v-if="conflicts && conflicts.missingDependencies.length > 0"
-      type="warning"
-      :title="$t('dashboard.conflictsDetected')"
-      style="margin-bottom: 16px"
+        v-if="conflicts && conflicts.missingDependencies.length > 0"
+        :title="$t('dashboard.conflictsDetected')"
+        style="margin-bottom: 16px"
+        type="warning"
     >
       <ul style="margin: 4px 0; padding-left: 20px">
         <li v-for="dep in conflicts.missingDependencies" :key="dep.modName + dep.dependencyName">
@@ -70,10 +70,14 @@
 </template>
 
 <script lang="ts" setup>
-
-import { active_profile, enabled_mods, installed_mod, check_workshop_updates } from "../../invokes.ts";
-import { detect_mod_conflicts } from "../../invokes.ts";
 import type { ConflictReport, WorkshopUpdateStatus } from "../../invokes.ts";
+import {
+	active_profile,
+	check_workshop_updates,
+	detect_mod_conflicts,
+	enabled_mods,
+	installed_mod,
+} from "../../invokes.ts";
 import TitledPage from "../../components/core/TitledPage.vue";
 import { onMounted, ref } from "vue";
 import ModDetails from "../../components/dashboard/ModDetails.vue";

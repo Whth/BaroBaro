@@ -3,12 +3,12 @@
     <Navigation/>
     <n-layout>
       <n-alert
-        v-if="networkStatus && !networkStatus.steamApi"
-        type="warning"
-        :title="$t('dashboard.offline')"
-        :bordered="false"
-        closable
-        style="margin: 0"
+          v-if="networkStatus && !networkStatus.steamApi"
+          :bordered="false"
+          :title="$t('dashboard.offline')"
+          closable
+          style="margin: 0"
+          type="warning"
       >
         {{ $t('dashboard.offlineDescription') }}
       </n-alert>
@@ -23,8 +23,8 @@
 
 <script lang="ts" setup>
 import Navigation from "./Navigation.vue";
-import { check_network_status } from "../../invokes.ts";
 import type { NetworkStatus } from "../../invokes.ts";
+import { check_network_status } from "../../invokes.ts";
 import { onMounted, ref } from "vue";
 
 const networkStatus = ref<NetworkStatus | null>(null);

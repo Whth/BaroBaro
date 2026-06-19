@@ -8,13 +8,13 @@
 //! typically in the OS-specific roaming/app data directory.
 
 use configuration::{Config, InstallStrategy};
-use std::collections::HashSet;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
-use std::time::SystemTime;
 use std::str::FromStr;
+use std::time::SystemTime;
 
 use crate::build_info::BuildInfo;
 use crate::once::{BARO_MANAGER, STEAM_WORKSHOP_CLIENT, STEAMCMD_MANAGER};
@@ -99,8 +99,7 @@ fn save_hash_cache(cache: &HashMap<u64, String>) -> Result<(), String> {
     }
     let json = serde_json::to_string_pretty(cache)
         .map_err(|e| format!("Failed to serialize hash cache: {e}"))?;
-    fs::write(&path, json)
-        .map_err(|e| format!("Failed to write hash cache: {e}"))
+    fs::write(&path, json).map_err(|e| format!("Failed to write hash cache: {e}"))
 }
 
 /// Writes a new mod order to the player config's `<regularpackages>` block.
@@ -143,8 +142,7 @@ fn write_regularpackages(ordered_ids: &[u64]) -> Result<(), String> {
         return Err("Malformed config: <regularpackages> section not found.".to_string());
     };
 
-    fs::write(&config_path, new_config)
-        .map_err(|e| format!("{e}, failed to write player config."))
+    fs::write(&config_path, new_config).map_err(|e| format!("{e}, failed to write player config."))
 }
 
 use mod_analyzer::retrieve_mod_metadata as get_mod_metadata;
@@ -553,7 +551,11 @@ pub async fn check_mod_updates(mod_ids: Vec<u64>) -> Result<Vec<ModUpdateStatus>
         mod_ids
             .iter()
             .filter_map(|&id| {
-                manager.get_mods().iter().find(|m| m.steam_workshop_id == id).cloned()
+                manager
+                    .get_mods()
+                    .iter()
+                    .find(|m| m.steam_workshop_id == id)
+                    .cloned()
             })
             .collect()
     };
@@ -668,8 +670,8 @@ pub async fn rename_profile(old_name: String, new_name: String) -> Result<ModLis
         return Err(format!("Profile '{}' not found.", old_name));
     }
 
-    let mut mod_list = ModList::from_xml_path(&old_path)
-        .map_err(|e| format!("{e}, failed to read profile."))?;
+    let mut mod_list =
+        ModList::from_xml_path(&old_path).map_err(|e| format!("{e}, failed to read profile."))?;
     mod_list.profile_name = new_name.clone();
 
     let manager = BARO_MANAGER.read().await;
@@ -690,10 +692,7 @@ pub async fn rename_profile(old_name: String, new_name: String) -> Result<ModLis
 
 /// Compares two mod profiles, returning the diff of their mod lists.
 #[tauri::command]
-pub async fn compare_profiles(
-    name_a: String,
-    name_b: String,
-) -> Result<ProfileDiff, String> {
+pub async fn compare_profiles(name_a: String, name_b: String) -> Result<ProfileDiff, String> {
     let manager = BARO_MANAGER.read().await;
     let mod_list_dir = manager.mod_list_dir()?.clone();
     drop(manager);
@@ -739,8 +738,7 @@ pub async fn export_profile(profile_name: String, export_path: String) -> Result
         return Err(format!("Profile '{}' not found.", profile_name));
     }
 
-    fs::copy(&profile_path, &export_path)
-        .map_err(|e| format!("{e}, failed to export profile."))?;
+    fs::copy(&profile_path, &export_path).map_err(|e| format!("{e}, failed to export profile."))?;
 
     info!("Exported profile '{}' to '{}'", profile_name, export_path);
     Ok(())
@@ -749,13 +747,16 @@ pub async fn export_profile(profile_name: String, export_path: String) -> Result
 /// Imports a profile from an XML file at the given path.
 #[tauri::command]
 pub async fn import_profile(path: String) -> Result<ModList, String> {
-    let mod_list = ModList::from_xml_path(&path)
-        .map_err(|e| format!("{e}, failed to read profile file."))?;
+    let mod_list =
+        ModList::from_xml_path(&path).map_err(|e| format!("{e}, failed to read profile file."))?;
 
     let manager = BARO_MANAGER.read().await;
     manager.save_mod_list(&mod_list)?;
 
-    info!("Imported profile '{}' from '{}'", mod_list.profile_name, path);
+    info!(
+        "Imported profile '{}' from '{}'",
+        mod_list.profile_name, path
+    );
     Ok(mod_list)
 }
 
@@ -780,15 +781,18 @@ fn backup_player_config() -> Result<(), String> {
         .as_secs();
 
     let backup_path = backup_dir.join(format!("config_player_{}.xml", timestamp));
-    fs::copy(&config_path, &backup_path)
-        .map_err(|e| format!("{e}, failed to create backup."))?;
+    fs::copy(&config_path, &backup_path).map_err(|e| format!("{e}, failed to create backup."))?;
 
     // Prune old backups, keep last 5
     let mut backups: Vec<_> = fs::read_dir(&backup_dir)
         .map_err(|e| format!("{e}"))?
         .filter_map(Result::ok)
         .filter(|e| e.file_type().map(|t| t.is_file()).unwrap_or(false))
-        .filter(|e| e.file_name().to_string_lossy().starts_with("config_player_"))
+        .filter(|e| {
+            e.file_name()
+                .to_string_lossy()
+                .starts_with("config_player_")
+        })
         .collect();
 
     backups.sort_by_key(|e| e.file_name());
@@ -872,9 +876,17 @@ pub async fn reorder_enabled_mods(ordered_ids: Vec<u64>) -> Result<(), String> {
     // Validate that all IDs correspond to installed mods
     let installed_ids: HashSet<u64> = {
         let manager = BARO_MANAGER.read().await;
-        manager.get_mods().iter().map(|m| m.steam_workshop_id).collect()
+        manager
+            .get_mods()
+            .iter()
+            .map(|m| m.steam_workshop_id)
+            .collect()
     };
-    let invalid: Vec<u64> = ordered_ids.iter().copied().filter(|id| !installed_ids.contains(id)).collect();
+    let invalid: Vec<u64> = ordered_ids
+        .iter()
+        .copied()
+        .filter(|id| !installed_ids.contains(id))
+        .collect();
     if !invalid.is_empty() {
         return Err(format!("Invalid mod IDs: {:?}", invalid));
     }
@@ -892,11 +904,17 @@ pub async fn reorder_enabled_mods(ordered_ids: Vec<u64>) -> Result<(), String> {
 #[tauri::command]
 pub async fn detect_mod_conflicts() -> Result<ConflictReport, String> {
     let manager = BARO_MANAGER.read().await;
-    let enabled = manager.enabled_mods().map_err(|e| format!("{e}, failed to get enabled mods."))?;
+    let enabled = manager
+        .enabled_mods()
+        .map_err(|e| format!("{e}, failed to get enabled mods."))?;
     drop(manager);
 
     // Build lookup sets from enabled mods
-    let enabled_ids: HashSet<u64> = enabled.iter().map(|m| m.steam_workshop_id).filter(|id| *id != 0).collect();
+    let enabled_ids: HashSet<u64> = enabled
+        .iter()
+        .map(|m| m.steam_workshop_id)
+        .filter(|id| *id != 0)
+        .collect();
     let enabled_names: HashSet<&str> = enabled.iter().map(|m| m.name.as_str()).collect();
 
     let mut missing = Vec::new();
@@ -956,7 +974,11 @@ pub async fn check_workshop_updates() -> Result<Vec<WorkshopUpdateStatus>, Strin
         return Ok(Vec::new());
     }
 
-    let ids: Vec<u64> = enabled.iter().map(|m| m.steam_workshop_id).filter(|&id| id > 0).collect();
+    let ids: Vec<u64> = enabled
+        .iter()
+        .map(|m| m.steam_workshop_id)
+        .filter(|&id| id > 0)
+        .collect();
     if ids.is_empty() {
         return Ok(Vec::new());
     }
@@ -1013,16 +1035,22 @@ pub async fn check_network_status() -> NetworkStatus {
     let steam_api_ok = STEAM_WORKSHOP_CLIENT
         .read()
         .await
-        .get_items_batched(vec![602960], 1)  // Barotrauma itself as a test
+        .get_items_batched(vec![602960], 1) // Barotrauma itself as a test
         .await
         .is_ok();
 
     let conf = read_config().ok();
-    let steamcmd_path = conf
-        .as_ref()
-        .and_then(|c| if c.steamcmd_home.is_empty() { None } else { Some(&c.steamcmd_home) });
+    let steamcmd_path = conf.as_ref().and_then(|c| {
+        if c.steamcmd_home.is_empty() {
+            None
+        } else {
+            Some(&c.steamcmd_home)
+        }
+    });
     let steamcmd_available = steamcmd_path
-        .map(|p| Path::new(p).join("steamcmd.exe").exists() || Path::new(p).join("steamcmd").exists())
+        .map(|p| {
+            Path::new(p).join("steamcmd.exe").exists() || Path::new(p).join("steamcmd").exists()
+        })
         .unwrap_or(false);
 
     NetworkStatus {
