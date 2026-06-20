@@ -270,7 +270,9 @@
 		"empty": "No mods found",
 		"browseWorkshop": "Browse Workshop",
 		"saveOrder": "Save Order",
-		"orderSaved": "Order Saved"
+		"orderSaved": "Order Saved",
+		"undo": "Undo",
+		"orderUndone": "Reorder undone"
 	},
 	"downloadMods": {
 		"modInput": "Mod ID or Link",

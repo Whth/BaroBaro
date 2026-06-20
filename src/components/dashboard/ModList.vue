@@ -1,5 +1,5 @@
 <template>
-  <div ref="listContainer" style="height: 69vh; overflow-y: auto;">
+  <div ref="listContainer">
     <div v-for="(element, index) in enabled_mods" :key="modKey(element)" data-draggable
          style="display: flex; align-items: center; margin-bottom: 12px; touch-action: none; user-select: none;">
       <div class="drag-handle" style="cursor: grab; padding: 8px; display: flex; align-items: center;">
@@ -17,9 +17,17 @@
           <archive-outline/>
         </n-icon>
       </template>
+      <template #extra>
+        <n-button type="primary" @click="$router.push('/mods')">
+          {{ $t('modList.browseWorkshop') }}
+        </n-button>
+      </template>
     </n-empty>
   </div>
-  <div v-if="orderChanged" style="margin-top: 12px; display: flex; justify-content: flex-end;">
+  <div v-if="orderChanged" style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
+    <n-button v-if="undoStack.length > 0" @click="undoOrder">
+      {{ $t('modList.undo') }}
+    </n-button>
     <n-button :loading="saving" type="primary" @click="saveOrder">
       {{ $t('modList.saveOrder') }}
     </n-button>
@@ -27,19 +35,19 @@
 </template>
 
 <script lang="ts" setup>
+import { ArchiveOutline, MenuOutline } from "@vicons/ionicons5";
+import { useMessage } from "naive-ui";
+import Sortable from "sortablejs";
+import { nextTick, onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import {
 	clear_active_profile,
 	enabled_mods,
 	list_enabled_mods,
 	reorder_enabled_mods,
 } from "../../invokes.ts";
-import ModCard from "./ModCard.vue";
 import type { BarotraumaMod } from "../../proto/mods.ts";
-import { ArchiveOutline, MenuOutline } from "@vicons/ionicons5";
-import Sortable from "sortablejs";
-import { nextTick, onMounted, onUnmounted, ref } from "vue";
-import { useMessage } from "naive-ui";
-import { useI18n } from "vue-i18n";
+import ModCard from "./ModCard.vue";
 
 const emit = defineEmits(["viewingMod"]);
 const message = useMessage();
@@ -48,6 +56,7 @@ const { t } = useI18n();
 const orderChanged = ref(false);
 const saving = ref(false);
 const listContainer = ref<HTMLElement | null>(null);
+const undoStack = ref<BarotraumaMod[][]>([]);
 
 let sortable: Sortable | null = null;
 function modKey(mod: BarotraumaMod): string {
@@ -65,16 +74,22 @@ onMounted(async () => {
 		console.error("[ModList] listContainer ref is null");
 		return;
 	}
-	console.log("[ModList] Initializing SortableJS on", el, "children:", el.children.length);
+	console.log(
+		"[ModList] Initializing SortableJS on",
+		el,
+		"children:",
+		el.children.length,
+	);
 	sortable = Sortable.create(el, {
 		animation: 150,
 		handle: ".drag-handle",
 		draggable: "[data-draggable]",
 		forceFallback: true,
 		onEnd(evt) {
-			console.log("[ModList] Sortable onEnd:", evt.oldIndex, "->", evt.newIndex);
 			const { oldIndex, newIndex } = evt;
 			if (oldIndex == null || newIndex == null || oldIndex === newIndex) return;
+			// Snapshot current order before modifying
+			undoStack.value.push([...enabled_mods.value]);
 			const items = [...enabled_mods.value];
 			const [moved] = items.splice(oldIndex, 1);
 			items.splice(newIndex, 0, moved);
@@ -87,6 +102,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
 	sortable?.destroy();
+	undoStack.value = [];
 });
 
 async function saveOrder() {
@@ -97,12 +113,19 @@ async function saveOrder() {
 		await list_enabled_mods();
 		await clear_active_profile();
 		orderChanged.value = false;
+		undoStack.value = [];
 		message.success(t("modList.orderSaved"));
 	} catch (error) {
 		message.error(String(error));
 	} finally {
 		saving.value = false;
 	}
+}
+
+function undoOrder() {
+	if (undoStack.value.length === 0) return;
+	enabled_mods.value = undoStack.value.pop()!;
+	message.info(t("modList.orderUndone"));
 }
 </script>
 

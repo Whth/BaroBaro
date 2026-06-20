@@ -270,7 +270,9 @@
 		"empty": "未发现模组",
 		"browseWorkshop": "浏览创意工坊",
 		"saveOrder": "保存顺序",
-		"orderSaved": "顺序已保存"
+		"orderSaved": "顺序已保存",
+		"undo": "撤销",
+		"orderUndone": "已撤销排序"
 	},
 	"downloadMods": {
 		"modInput": "模组ID或链接",
