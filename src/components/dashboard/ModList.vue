@@ -125,6 +125,9 @@ async function saveOrder() {
 function undoOrder() {
 	if (undoStack.value.length === 0) return;
 	enabled_mods.value = undoStack.value.pop()!;
+	if (undoStack.value.length === 0) {
+		orderChanged.value = false;
+	}
 	message.info(t("modList.orderUndone"));
 }
 </script>
