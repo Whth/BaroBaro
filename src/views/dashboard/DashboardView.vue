@@ -3,13 +3,15 @@
 
     <template #title>
       <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
-      <n-tag
-          v-if="active_profile"
-          style="margin-left: 12px; vertical-align: middle;"
-          type="success"
-      >
-        {{ $t('dashboard.activeProfile') }}: {{ active_profile }}
-      </n-tag>
+      <n-select
+          :value="active_profile ?? null"
+          :options="profileOptions"
+          :placeholder="$t('dashboard.selectProfile')"
+          clearable
+          size="small"
+          style="margin-left: 12px; vertical-align: middle; min-width: 180px;"
+          @update:value="handleProfileChange"
+      />
     </template>
 
     <n-alert
@@ -34,6 +36,20 @@
           <strong>{{ dep.modName }}</strong>
           {{ $t('dashboard.missingDependency') }}
           <strong>{{ dep.dependencyName }}</strong>
+        </li>
+      </ul>
+    </n-alert>
+    <n-alert
+        v-if="duplicateMods.length > 0"
+        :title="$t('dashboard.duplicatesFound')"
+        closable
+        style="margin-bottom: 16px"
+        type="warning"
+    >
+      <p>{{ $t('dashboard.duplicatesDescription', { count: duplicateMods.length }) }}</p>
+      <ul style="margin: 4px 0; padding-left: 20px">
+        <li v-for="dup in duplicateMods" :key="dup.name">
+          <strong>{{ dup.name }}</strong> (×{{ dup.count }})
         </li>
       </ul>
     </n-alert>
@@ -70,26 +86,59 @@
 </template>
 
 <script lang="ts" setup>
+import { useThemeVars } from "naive-ui";
+import { computed, onMounted, ref } from "vue";
+import TitledPage from "../../components/core/TitledPage.vue";
+import ModDetails from "../../components/dashboard/ModDetails.vue";
+import ModList from "../../components/dashboard/ModList.vue";
+import RefreshMods from "../../components/utils/refreshMods.vue";
 import type { ConflictReport, WorkshopUpdateStatus } from "../../invokes.ts";
 import {
 	active_profile,
 	check_workshop_updates,
+	clear_active_profile,
 	detect_mod_conflicts,
 	enabled_mods,
 	installed_mod,
+	mod_lists,
+	set_active_profile,
 } from "../../invokes.ts";
-import TitledPage from "../../components/core/TitledPage.vue";
-import { onMounted, ref } from "vue";
-import ModDetails from "../../components/dashboard/ModDetails.vue";
-import ModList from "../../components/dashboard/ModList.vue";
 import type { BarotraumaMod } from "../../proto/mods.ts";
-import RefreshMods from "../../components/utils/refreshMods.vue";
-import { useThemeVars } from "naive-ui";
 
 const curMod = ref<BarotraumaMod | null>(null);
 const themeVars = useThemeVars();
 const conflicts = ref<ConflictReport | null>(null);
 const updatesAvailable = ref<WorkshopUpdateStatus[]>([]);
+
+const profileOptions = computed(() =>
+	mod_lists.value.map((list) => ({
+		label: list.profileName,
+		value: list.profileName,
+	}))
+);
+
+async function handleProfileChange(value: string | null) {
+	if (value) {
+		await set_active_profile(value);
+	} else {
+		await clear_active_profile();
+	}
+}
+const duplicateMods = computed(() => {
+	const seen = new Map<string, { name: string; count: number }>();
+	for (const mod of enabled_mods.value) {
+		const key = mod.steamWorkshopId > 0
+			? `ws:${mod.steamWorkshopId}`
+			: `name:${mod.name}`;
+		const existing = seen.get(key);
+		if (existing) {
+			existing.count++;
+		} else {
+			seen.set(key, { name: mod.name, count: 1 });
+		}
+	}
+	return [...seen.values()].filter((entry) => entry.count > 1);
+});
 
 onMounted(async () => {
 	try {

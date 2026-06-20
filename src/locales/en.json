@@ -27,6 +27,7 @@
 	"dashboard": {
 		"title": "Dashboard",
 		"activeProfile": "Active Profile",
+		"selectProfile": "Switch profile...",
 		"installedMods": "Installed Mods",
 		"searchMods": "Search mods...",
 		"allStatus": "All Status",
@@ -41,7 +42,9 @@
 		"updatesAvailable": "Updates Available",
 		"updatesCount": "{count} mod(s) have newer versions on Steam Workshop",
 		"offline": "Offline",
-		"offlineDescription": "Steam API is unreachable. Download and update features are unavailable."
+		"offlineDescription": "Steam API is unreachable. Download and update features are unavailable.",
+		"duplicatesFound": "Duplicate Mods Detected",
+		"duplicatesDescription": "{count} mod(s) appear more than once in your enabled list:"
 	},
 	"mod": {
 		"name": "Name",
@@ -265,6 +268,7 @@
 	"modList": {
 		"title": "Mod List",
 		"empty": "No mods found",
+		"browseWorkshop": "Browse Workshop",
 		"saveOrder": "Save Order",
 		"orderSaved": "Order Saved"
 	},

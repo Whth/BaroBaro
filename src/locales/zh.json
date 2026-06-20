@@ -27,6 +27,7 @@
 	"dashboard": {
 		"title": "仪表盘",
 		"activeProfile": "当前配置",
+		"selectProfile": "切换配置...",
 		"installedMods": "已安装模组",
 		"searchMods": "搜索模组...",
 		"allStatus": "所有状态",
@@ -41,7 +42,9 @@
 		"updatesAvailable": "有可用更新",
 		"updatesCount": "{count} 个模组在 Steam 创意工坊有更新版本",
 		"offline": "离线",
-		"offlineDescription": "无法连接 Steam API，下载和更新功能不可用。"
+		"offlineDescription": "无法连接 Steam API，下载和更新功能不可用。",
+		"duplicatesFound": "检测到重复模组",
+		"duplicatesDescription": "{count} 个模组在启用列表中出现了多次："
 	},
 	"mod": {
 		"name": "名称",
@@ -265,6 +268,7 @@
 	"modList": {
 		"title": "模组列表",
 		"empty": "未发现模组",
+		"browseWorkshop": "浏览创意工坊",
 		"saveOrder": "保存顺序",
 		"orderSaved": "顺序已保存"
 	},
