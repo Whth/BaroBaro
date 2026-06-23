@@ -3,8 +3,8 @@
 </template>
 
 <script lang="ts" setup>
-import useClipboard from "vue-clipboard3";
 import { useMessage } from "naive-ui";
+import useClipboard from "vue-clipboard3";
 import { useI18n } from "vue-i18n";
 
 interface Props {

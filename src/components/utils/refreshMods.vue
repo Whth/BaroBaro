@@ -9,13 +9,13 @@
 </template>
 
 <script lang="ts" setup>
+import { RefreshOutline as RefreshIcon } from "@vicons/ionicons5";
 import {
 	list_enabled_mods,
 	list_installed_mods,
 	list_mod_lists,
 	retrieve_mod_metadata,
 } from "../../invokes.ts";
-import { RefreshOutline as RefreshIcon } from "@vicons/ionicons5";
 
 async function refreshMods() {
 	await Promise.all([

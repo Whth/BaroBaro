@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts" setup>
-import { OpenOutline } from "@vicons/ionicons5";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { OpenOutline } from "@vicons/ionicons5";
 
 interface Props {
 	url: string;

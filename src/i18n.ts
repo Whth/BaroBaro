@@ -1,9 +1,10 @@
 // Import locale messages
+
+import { createI18n } from "vue-i18n";
+import { config } from "./invokes.ts";
 import en from "./locales/en.json";
 import zh from "./locales/zh.json";
 import { Language, languageToJSON } from "./proto/config.ts";
-import { createI18n } from "vue-i18n";
-import { config } from "./invokes.ts";
 
 const messages = {
 	[languageToJSON(Language.EN)]: en,

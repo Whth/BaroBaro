@@ -8,8 +8,8 @@
 </template>
 
 <script lang="ts" setup>
-import { FolderOpenOutline } from "@vicons/ionicons5";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { FolderOpenOutline } from "@vicons/ionicons5";
 
 interface Props {
 	path: string;

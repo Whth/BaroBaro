@@ -1,7 +1,7 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { languageToJSON } from "../proto/config.ts";
 import { Language } from "@vicons/ionicons5";
 import { config } from "../invokes.ts";
+import { languageToJSON } from "../proto/config.ts";
 
 export async function openInWorkshop(item_id: number) {
 	await openUrl(

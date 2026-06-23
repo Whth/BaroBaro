@@ -1,5 +1,5 @@
 // Interface defining the structure of a mod item in the queue
-import { WorkshopItem } from "../proto/workshop.ts";
+import type { WorkshopItem } from "../proto/workshop.ts";
 
 export function getStatusType(
 	status: ModStatus,
