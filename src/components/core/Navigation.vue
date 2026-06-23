@@ -4,9 +4,14 @@
       bordered
       collapse-mode="width"
       show-trigger="bar"
-      width="180"
-
+      width="200"
+      class="nav-sidebar"
+      :native-scrollbar="false"
   >
+    <div class="nav-brand">
+      <n-text v-if="!isCollapsed" strong class="nav-brand-text">BaroBaro</n-text>
+      <n-icon v-else size="24" class="nav-brand-icon"><HomeOutline /></n-icon>
+    </div>
     <n-menu
         v-model:value="activeKey"
         :collapsed="isCollapsed"
@@ -17,15 +22,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { NIcon } from "naive-ui";
 import {
 	ExtensionPuzzleOutline,
 	HomeOutline,
 	SettingsOutline,
 } from "@vicons/ionicons5";
+import { NIcon } from "naive-ui";
+import { computed, h, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 
 const { t } = useI18n();
 
@@ -84,3 +89,26 @@ const goTo = (key: string) => {
 	if (item?.path) router.push(item.path);
 };
 </script>
+
+<style scoped>
+
+.nav-brand {
+  padding: 20px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 8px;
+}
+
+.nav-brand-text {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-brand-icon {
+  color: var(--color-primary);
+  transition: color var(--transition-base);
+}
+</style>
