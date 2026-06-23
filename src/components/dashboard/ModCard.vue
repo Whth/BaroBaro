@@ -1,21 +1,21 @@
 <template>
-  <n-card 
-    class="mod-card" 
-    :class="[`stagger-${Math.min(index, 6)}`]"
-    hoverable 
-    @click="onClick()"
+  <n-card
+      :class="[`stagger-${Math.min(index, 6)}`]"
+      class="mod-card"
+      hoverable
+      @click="onClick()"
   >
     <n-thing>
       <template #header>
         <div class="mod-card-header">
-          <div class="mod-status-indicator" :class="is_enabled(mod) ? 'enabled' : 'disabled'" />
-          <n-text strong class="mod-card-title">{{ mod.name }}</n-text>
-          <n-tag 
-            v-if="mod.corePackage" 
-            size="small" 
-            type="info" 
-            round
-            class="mod-badge"
+          <div :class="is_enabled(mod) ? 'enabled' : 'disabled'" class="mod-status-indicator"/>
+          <n-text class="mod-card-title" strong>{{ mod.name }}</n-text>
+          <n-tag
+              v-if="mod.corePackage"
+              class="mod-badge"
+              round
+              size="small"
+              type="info"
           >
             {{ $t('modCard.corePackage') }}
           </n-tag>
@@ -23,39 +23,45 @@
       </template>
       <template #description>
         <n-flex :size="8" align="center">
-          <n-tag 
-            v-if="is_enabled(mod)" 
-            size="small" 
-            type="success" 
-            round
-            :bordered="false"
+          <n-tag
+              v-if="is_enabled(mod)"
+              :bordered="false"
+              round
+              size="small"
+              type="success"
           >
-            <n-icon size="14" style="margin-right: 4px;"><CheckmarkCircleOutline /></n-icon>
+            <n-icon size="14" style="margin-right: 4px;">
+              <CheckmarkCircleOutline/>
+            </n-icon>
             {{ $t('modCard.enabled') }}
           </n-tag>
-          <n-tag 
-            v-else 
-            size="small" 
-            type="warning" 
-            round
+          <n-tag
+              v-else
+              round
+              size="small"
+              type="warning"
           >
-            <n-icon size="14" style="margin-right: 4px;"><EllipseOutline /></n-icon>
+            <n-icon size="14" style="margin-right: 4px;">
+              <EllipseOutline/>
+            </n-icon>
             {{ $t('modCard.disabled') }}
           </n-tag>
-          <n-tag 
-            v-if="mod.homeDir" 
-            size="small" 
-            type="default" 
-            round
+          <n-tag
+              v-if="mod.homeDir"
+              round
+              size="small"
+              type="default"
           >
-            <n-icon size="14" style="margin-right: 4px;"><FolderOutline /></n-icon>
+            <n-icon size="14" style="margin-right: 4px;">
+              <FolderOutline/>
+            </n-icon>
             {{ $t('modCard.localMod') }}
           </n-tag>
         </n-flex>
       </template>
       <template #default>
         <n-flex :size="8" style="margin-top: 12px;" vertical>
-          <n-descriptions :column="4" size="small" label-placement="left">
+          <n-descriptions :column="4" label-placement="left" size="small">
             <!-- Mod Version -->
             <n-descriptions-item :label="$t('modCard.version')">
               <inlineCode :displayText="mod.modVersion"></inlineCode>
@@ -92,7 +98,11 @@
 </template>
 
 <script lang="ts" setup>
-import { CheckmarkCircleOutline, EllipseOutline, FolderOutline } from "@vicons/ionicons5";
+import {
+	CheckmarkCircleOutline,
+	EllipseOutline,
+	FolderOutline,
+} from "@vicons/ionicons5";
 import { enabled_mods } from "../../invokes.ts";
 import type { BarotraumaMod } from "../../proto/mods.ts";
 import InlineCode from "../utils/inlineCode.vue";
@@ -156,6 +166,7 @@ const onClick = () => {
   font-weight: 600;
   transition: color 0.2s ease;
 }
+
 .mod-card:hover .mod-card-title {
   color: var(--color-warning);
 }

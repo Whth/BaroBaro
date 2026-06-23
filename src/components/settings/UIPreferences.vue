@@ -4,17 +4,17 @@
       <!-- Language and Theme Settings -->
       <n-card class="form-section animate-fade-in">
         <template #header>
-          <n-flex align="center" :size="12">
+          <n-flex :size="12" align="center">
             <n-icon :size="20">
-              <settings-outline />
+              <settings-outline/>
             </n-icon>
             <n-text strong style="font-size: var(--text-lg);">
               {{ $t('settings.appearanceLanguage') }}
             </n-text>
           </n-flex>
         </template>
-        
-        <n-flex vertical :size="16">
+
+        <n-flex :size="16" vertical>
           <n-form-item :label="$t('settings.languageLabel')" label-placement="left">
             <n-select
                 v-model:value="languageModel"
@@ -43,9 +43,9 @@
       <!-- Background Customization -->
       <n-card class="form-section animate-fade-in">
         <template #header>
-          <n-flex align="center" :size="12">
+          <n-flex :size="12" align="center">
             <n-icon :size="20">
-              <image-outline />
+              <image-outline/>
             </n-icon>
             <n-text strong style="font-size: var(--text-lg);">
               {{ $t('settings.backgroundCustomization') }}
@@ -53,7 +53,7 @@
           </n-flex>
         </template>
 
-        <n-flex vertical :size="16">
+        <n-flex :size="16" vertical>
           <n-form-item :label="$t('settings.backgroundImage')" label-placement="left">
             <n-input
                 v-model:value="backgroundImageModel"
@@ -111,17 +111,9 @@
 import { ImageOutline, SettingsOutline } from "@vicons/ionicons5";
 import { open } from "@tauri-apps/plugin-dialog";
 import { computed, onMounted } from "vue";
-import {
-	setTheme,
-	setTransparent,
-} from "../../composables/useTheme.ts";
+import { setTheme, setTransparent } from "../../composables/useTheme.ts";
 import { config, refresh_config } from "../../invokes.ts";
-import {
-	Language,
-	Theme,
-	UIConfig,
-} from "../../proto/config.ts";
-
+import { Language, Theme, UIConfig } from "../../proto/config.ts";
 
 // Language mappings
 const lang_show_mapping: Record<Language, string> = {
@@ -173,7 +165,9 @@ const backgroundOpacityModel = computed({
 	get: () => config.value.uiConfig?.backgroundOpacity ?? 0.5,
 	set: (value) => {
 		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ backgroundOpacity: value });
+			config.value.uiConfig = UIConfig.fromPartial({
+				backgroundOpacity: value,
+			});
 		} else {
 			config.value.uiConfig.backgroundOpacity = value;
 		}
@@ -197,7 +191,9 @@ const foregroundOpacityModel = computed({
 	get: () => config.value.uiConfig?.foregroundOpacity ?? 0.4,
 	set: (value) => {
 		if (!config.value.uiConfig) {
-			config.value.uiConfig = UIConfig.fromPartial({ foregroundOpacity: value });
+			config.value.uiConfig = UIConfig.fromPartial({
+				foregroundOpacity: value,
+			});
 		} else {
 			config.value.uiConfig.foregroundOpacity = value;
 		}
