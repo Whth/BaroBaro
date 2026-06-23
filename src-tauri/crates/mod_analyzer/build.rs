@@ -4,7 +4,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &[
             (
                 "mods.ModList",
-                "#[derive(serde::Serialize, serde::Deserialize)]",
+            "#[derive(serde::Serialize, serde::Deserialize)]\n#[serde(rename_all = \"camelCase\")]",
             ),
             (
                 "mods.BarotraumaMod",
