@@ -1,5 +1,5 @@
 <template>
-  <n-scrollbar style="max-height: 70vh">
+  <div>
     <div style="padding: 8px">
       <n-input
           v-model:value="searchQuery"
@@ -50,16 +50,16 @@
         </div>
       </n-spin>
     </div>
-  </n-scrollbar>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
-import { download_mods, get_popular_mods } from "../../invokes.ts";
-import type { WorkshopItem } from "../../proto/workshop.ts";
 import { SearchOutline } from "@vicons/ionicons5";
 import { useMessage } from "naive-ui";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { download_mods, get_popular_mods } from "../../invokes.ts";
+import type { WorkshopItem } from "../../proto/workshop.ts";
 
 const message = useMessage();
 const { t } = useI18n();

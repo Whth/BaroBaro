@@ -1,5 +1,5 @@
 <template>
-  <n-scrollbar style="max-height: 60vh">
+  <div>
     <n-empty v-if="mods.length === 0" :description="$t('modManagement.noInstalledMods')"/>
 
     <div v-else>
@@ -53,12 +53,12 @@
         </div>
       </div>
     </div>
-  </n-scrollbar>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import type { BarotraumaMod } from "../../proto/mods.ts";
 import getTagColorConfig from "../../composables/coloredTag.ts";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 
 defineProps<{
 	mods: BarotraumaMod[];

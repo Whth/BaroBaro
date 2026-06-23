@@ -1,73 +1,76 @@
 <template>
-  <n-scrollbar style="max-height: 60vh">
-    <div class="profiles-container">
-      <!-- Save current mods as profile -->
-      <div class="profiles-header">
+  <div class="profiles-container">
+    <!-- Save current mods as profile -->
+    <div class="profiles-header">
+      <n-button type="primary" @click="showCreateDialog = true">
+        {{ $t('profiles.saveCurrent') }}
+      </n-button>
+      <n-button size="small" style="margin-left: 8px;" @click="handleImport">
+        {{ $t('profiles.import') }}
+      </n-button>
+      <n-button size="small" style="margin-left: 4px;" @click="handleExport">
+        {{ $t('profiles.export') }}
+      </n-button>
+      <n-button
+          v-if="active_profile"
+          size="small"
+          style="margin-left: 8px;"
+          type="warning"
+          @click="handleClearActive"
+      >
+        {{ $t('profiles.clearActive') }} ({{ active_profile }})
+      </n-button>
+    </div>
+
+    <!-- Empty state -->
+    <n-empty v-if="mod_lists.length === 0" :description="$t('profiles.noProfiles')" style="margin-top: 40px">
+      <template #extra>
         <n-button type="primary" @click="showCreateDialog = true">
           {{ $t('profiles.saveCurrent') }}
         </n-button>
-        <n-button size="small" style="margin-left: 8px;" @click="handleImport">
-          {{ $t('profiles.import') }}
-        </n-button>
-        <n-button size="small" style="margin-left: 4px;" @click="handleExport">
-          {{ $t('profiles.export') }}
-        </n-button>
-        <n-button
-            v-if="active_profile"
-            size="small"
-            style="margin-left: 8px;"
-            type="warning"
-            @click="handleClearActive"
-        >
-          {{ $t('profiles.clearActive') }} ({{ active_profile }})
-        </n-button>
-      </div>
+      </template>
+    </n-empty>
 
-      <!-- Empty state -->
-      <n-empty v-if="mod_lists.length === 0" :description="$t('profiles.noProfiles')" style="margin-top: 40px"/>
+    <!-- Profile list -->
+    <div v-else class="profiles-grid">
+      <n-card
+          v-for="profile in mod_lists"
+          :key="profile.profileName"
+          :title="profile.profileName"
+          hoverable
+          size="small"
+      >
+        <template #header-extra>
+          <n-tag size="small" type="info">
+            {{ $t('profiles.modCount', {count: profile.mods.length}) }}
+          </n-tag>
+        </template>
 
-      <!-- Profile list -->
-      <div v-else class="profiles-grid">
-        <n-card
-            v-for="profile in mod_lists"
-            :key="profile.profileName"
-            :title="profile.profileName"
-            hoverable
-            size="small"
-        >
-          <template #header-extra>
-            <n-tag size="small" type="info">
-              {{ $t('profiles.modCount', {count: profile.mods.length}) }}
-            </n-tag>
-          </template>
+        <div class="profile-info">
+          <span class="profile-base">
+            {{ $t('profiles.basePackage') }}: {{ profile.basePackage }}
+          </span>
+        </div>
 
-          <div class="profile-info">
-            <span class="profile-base">
-              {{ $t('profiles.basePackage') }}: {{ profile.basePackage }}
-            </span>
-          </div>
-
-          <template #action>
-            <n-space justify="end">
-              <n-button size="small" @click="promptRename(profile.profileName)">
-                {{ $t('profiles.rename') }}
-              </n-button>
-              <n-button size="small" @click="promptCompare(profile.profileName)">
-                {{ $t('profiles.compare') }}
-              </n-button>
-              <n-button size="small" type="primary" @click="handleApply(profile.profileName)">
-                {{ $t('profiles.apply') }}
-              </n-button>
-              <n-button size="small" type="error" @click="promptDelete(profile.profileName)">
-                {{ $t('app.delete') }}
-              </n-button>
-            </n-space>
-          </template>
-        </n-card>
-      </div>
+        <template #action>
+          <n-space justify="end">
+            <n-button size="small" @click="promptRename(profile.profileName)">
+              {{ $t('profiles.rename') }}
+            </n-button>
+            <n-button size="small" @click="promptCompare(profile.profileName)">
+              {{ $t('profiles.compare') }}
+            </n-button>
+            <n-button size="small" type="primary" @click="handleApply(profile.profileName)">
+              {{ $t('profiles.apply') }}
+            </n-button>
+            <n-button size="small" type="error" @click="promptDelete(profile.profileName)">
+              {{ $t('app.delete') }}
+            </n-button>
+          </n-space>
+        </template>
+      </n-card>
     </div>
-  </n-scrollbar>
-
+  </div>
   <!-- Create profile dialog -->
   <n-modal v-model:show="showCreateDialog" :title="$t('profiles.saveCurrent')" preset="dialog">
     <n-input
@@ -179,7 +182,10 @@
 </template>
 
 <script lang="ts" setup>
+import { open, save } from "@tauri-apps/plugin-dialog";
+import { useMessage } from "naive-ui";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import {
 	active_profile,
 	apply_mod_list,
@@ -193,9 +199,6 @@ import {
 	type ProfileDiff,
 	rename_profile,
 } from "../../invokes";
-import { useMessage } from "naive-ui";
-import { useI18n } from "vue-i18n";
-import { open, save } from "@tauri-apps/plugin-dialog";
 
 const message = useMessage();
 const { t } = useI18n();

@@ -14,19 +14,19 @@
         :tab="tab.name"
         style="height: 100%">
 
-      <component :is="tab.component" style="height: 70vh"/>
+      <component :is="tab.component"/>
     </n-tab-pane>
   </n-tabs>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import DownloadModTab from "./DownloadModTab.vue";
-import UpdateModTab from "./UpdateModTab.vue";
-import RemoveModTab from "./RemoveModTab.vue";
-import ProfilesTab from "./ProfilesTab.vue";
-import WorkshopBrowse from "./WorkshopBrowse.vue";
 import { useI18n } from "vue-i18n";
+import DownloadModTab from "./DownloadModTab.vue";
+import ProfilesTab from "./ProfilesTab.vue";
+import RemoveModTab from "./RemoveModTab.vue";
+import UpdateModTab from "./UpdateModTab.vue";
+import WorkshopBrowse from "./WorkshopBrowse.vue";
 
 const { t } = useI18n();
 const tabs = computed(() => [
