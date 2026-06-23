@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -20,53 +19,54 @@ impl SteamCMD {
     }
 
     pub fn workshop_item_dir(&self, app_id: u64, mod_id: u64) -> Result<PathBuf, String> {
-        self.home_dir
-            .clone()
-            .map(|home_dir: PathBuf| {
-                home_dir
-                    .join(SteamCMD::WORKSHOP_DIR_BASE)
-                    .join(app_id.to_string())
-                    .join(mod_id.to_string())
-            })
-            .ok_or_else(|| "SteamCMD home directory not set".to_string())
+        let base = self
+            .home_dir
+            .as_ref()
+            .ok_or("SteamCMD home directory not set")?;
+        Ok(base
+            .join(Self::WORKSHOP_DIR_BASE)
+            .join(app_id.to_string())
+            .join(mod_id.to_string()))
     }
 
     pub fn set_steamcmd_home(&mut self, path: PathBuf) -> &mut Self {
         self.home_dir = Some(path);
         self
     }
+
     fn steamcmd_full_path(&self) -> Result<PathBuf, String> {
-        if let Some(home_dir) = &self.home_dir {
-            Ok(home_dir.join(STEAMCMD_NAME))
-        } else {
-            Err("SteamCMD home directory not set".to_string())
-        }
+        let base = self
+            .home_dir
+            .as_ref()
+            .ok_or("SteamCMD home directory not set")?;
+        Ok(base.join(STEAMCMD_NAME))
     }
 
     pub async fn run_script_from_path(&self, script: &PathBuf) -> Result<(), String> {
-        if let Some(home_dir) = &self.home_dir {
-            let mut cmd = tokio::process::Command::new(self.steamcmd_full_path()?);
-            cmd.current_dir(home_dir)
-                .arg("+runscript")
-                .arg(script)
-                .output()
-                .await
-                .map(|_| ())
-                .map_err(|e| format!("{e}, SteamCMD failed to run."))
+        let steamcmd_path = self.steamcmd_full_path()?;
+        let output = tokio::process::Command::new(steamcmd_path)
+            .arg("+runscript")
+            .arg(script)
+            .output()
+            .await
+            .map_err(|e| format!("Failed to run steamcmd: {}", e))?;
+
+        if output.status.success() {
+            Ok(())
         } else {
-            Err("SteamCMD home directory not set".to_string())
+            Err(format!(
+                "SteamCMD failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
     pub async fn run_script(&self, script: &str) -> Result<(), String> {
-        let mut temp_file: NamedTempFile<File> = tempfile::Builder::default()
-            .suffix(".txt")
-            .tempfile()
-            .map_err(|e| format!("{e}, failed to create temp file."))?;
-        writeln!(temp_file, "{}", script)
-            .map_err(|e| format!("{e}, failed to write script to temp file."))?;
-        self.run_script_from_path(&temp_file.path().to_path_buf())
-            .await
+        let mut file =
+            NamedTempFile::new().map_err(|e| format!("Failed to create temp file: {}", e))?;
+        file.write_all(script.as_bytes())
+            .map_err(|e| format!("Failed to write script: {}", e))?;
+        self.run_script_from_path(&file.path().to_path_buf()).await
     }
 
     fn download_item(game_id: u64, mod_id: u64) -> String {
@@ -74,23 +74,25 @@ impl SteamCMD {
     }
 
     fn login(username: Option<&str>, password: Option<&str>) -> String {
-        match (username, password) {
-            (Some(username), Some(password)) => format!("login {} {}", username, password),
-            (Some(username), None) => format!("login {}", username),
-            (None, Some(password)) => format!("login anonymous {}", password),
-            (None, None) => "login anonymous".to_string(),
+        let mut s = String::from("+login anonymous");
+        if let Some(u) = username {
+            s = format!("+login {} {}", u, password.unwrap_or(""));
         }
+        s
     }
+
     pub async fn download_mod(&self, game_id: u64, mod_ids: Vec<u64>) -> Result<(), String> {
-        // gen all mod down scripts
         let script = {
             let mut script = String::new();
             script += &SteamCMD::login(None, None);
             script += "\n";
             script += &mod_ids
-                .into_iter()
-                .map(|mod_id| SteamCMD::download_item(game_id, mod_id))
-                .collect::<String>();
+                .iter()
+                .map(|mod_id| SteamCMD::download_item(game_id, *mod_id))
+                .collect::<Vec<String>>()
+                .join("\n");
+            script += "\n";
+            script += "quit";
             script
         };
         self.run_script(&script).await
@@ -102,7 +104,8 @@ impl SteamCMD {
         mod_ids: Vec<u64>,
         n: usize,
     ) -> Result<(), String> {
-        let chunk_size = (mod_ids.len() + 1) / n;
+        let n = n.min(mod_ids.len()).max(1);
+        let chunk_size = (mod_ids.len() + n - 1) / n;
         let scripts = mod_ids
             .chunks(chunk_size)
             .map(|mod_ids| {

@@ -4,9 +4,9 @@
     <template #title>
       <n-h1 v-text="$t('navigation.dashboard')"></n-h1>
       <n-select
-          :value="active_profile ?? null"
           :options="profileOptions"
           :placeholder="$t('dashboard.selectProfile')"
+          :value="active_profile ?? null"
           clearable
           size="small"
           style="margin-left: 12px; vertical-align: middle; min-width: 180px;"
@@ -46,7 +46,7 @@
         style="margin-bottom: 16px"
         type="warning"
     >
-      <p>{{ $t('dashboard.duplicatesDescription', { count: duplicateMods.length }) }}</p>
+      <p>{{ $t('dashboard.duplicatesDescription', {count: duplicateMods.length}) }}</p>
       <ul style="margin: 4px 0; padding-left: 20px">
         <li v-for="dup in duplicateMods" :key="dup.name">
           <strong>{{ dup.name }}</strong> (×{{ dup.count }})
@@ -61,7 +61,6 @@
             <RefreshMods/>
           </template>
           <n-flex>
-
             <n-progress
                 :color="themeVars.warningColor"
                 :percentage="enabled_mods.length / installed_mod.length * 100"
@@ -71,14 +70,18 @@
             >
               {{ enabled_mods.length }}/{{ installed_mod.length }}
             </n-progress>
-            <ModList @viewing-mod="handleModClick"/>
+            <n-scrollbar style="max-height: 60vh">
+              <ModList @viewing-mod="handleModClick"/>
+            </n-scrollbar>
           </n-flex>
         </n-card>
       </n-grid-item>
 
-      <n-grid-item span="5" style="height: 100%">
+      <n-grid-item span="5">
         <n-card :title="$t('modDetails.title')">
-          <ModDetails :mod="curMod"></ModDetails>
+          <n-scrollbar style="max-height: 70vh">
+            <ModDetails :mod="curMod"></ModDetails>
+          </n-scrollbar>
         </n-card>
       </n-grid-item>
     </n-grid>
@@ -114,7 +117,7 @@ const profileOptions = computed(() =>
 	mod_lists.value.map((list) => ({
 		label: list.profileName,
 		value: list.profileName,
-	}))
+	})),
 );
 
 async function handleProfileChange(value: string | null) {
@@ -124,12 +127,14 @@ async function handleProfileChange(value: string | null) {
 		await clear_active_profile();
 	}
 }
+
 const duplicateMods = computed(() => {
 	const seen = new Map<string, { name: string; count: number }>();
 	for (const mod of enabled_mods.value) {
-		const key = mod.steamWorkshopId > 0
-			? `ws:${mod.steamWorkshopId}`
-			: `name:${mod.name}`;
+		const key =
+			mod.steamWorkshopId > 0
+				? `ws:${mod.steamWorkshopId}`
+				: `name:${mod.name}`;
 		const existing = seen.get(key);
 		if (existing) {
 			existing.count++;

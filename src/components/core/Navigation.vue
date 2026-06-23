@@ -1,23 +1,27 @@
 <template>
   <n-layout-sider
       v-model:collapsed="isCollapsed"
+      :native-scrollbar="false"
       bordered
+      class="nav-sidebar"
       collapse-mode="width"
       show-trigger="bar"
       width="200"
-      class="nav-sidebar"
-      :native-scrollbar="false"
   >
-    <div class="nav-brand">
-      <n-text v-if="!isCollapsed" strong class="nav-brand-text">BaroBaro</n-text>
-      <n-icon v-else size="24" class="nav-brand-icon"><HomeOutline /></n-icon>
+    <div class="nav-menu-wrap">
+      <n-menu
+          v-model:value="activeKey"
+          :collapsed="isCollapsed"
+          :options="mainMenuOptions"
+          @update:value="goTo"
+      />
+      <n-menu
+          v-model:value="activeKey"
+          :collapsed="isCollapsed"
+          :options="bottomMenuOptions"
+          @update:value="goTo"
+      />
     </div>
-    <n-menu
-        v-model:value="activeKey"
-        :collapsed="isCollapsed"
-        :options="menuOptions"
-        @update:value="goTo"
-    />
   </n-layout-sider>
 </template>
 
@@ -57,13 +61,15 @@ const activeKey = computed({
 		return map[route.path] || "";
 	},
 	set: (key) => {
-		const item = menuOptions.value.find((opt) => opt.key === key);
+		const item = [...mainMenuOptions.value, ...bottomMenuOptions.value].find(
+			(opt) => opt.key === key,
+		);
 		if (item?.path) router.push(item.path);
 	},
 });
 
-// Menu item configuration
-const menuOptions = computed(() => [
+// Top menu items
+const mainMenuOptions = computed(() => [
 	{
 		label: t("navigation.dashboard"),
 		key: "dashboard",
@@ -76,6 +82,10 @@ const menuOptions = computed(() => [
 		path: "/mods",
 		icon: () => h(NIcon, null, { default: () => h(ExtensionPuzzleOutline) }),
 	},
+]);
+
+// Bottom-pinned menu items
+const bottomMenuOptions = computed(() => [
 	{
 		label: t("navigation.settings"),
 		key: "settings",
@@ -85,30 +95,33 @@ const menuOptions = computed(() => [
 ]);
 
 const goTo = (key: string) => {
-	const item = menuOptions.value.find((opt) => opt.key === key);
+	const item = [...mainMenuOptions.value, ...bottomMenuOptions.value].find(
+		(opt) => opt.key === key,
+	);
 	if (item?.path) router.push(item.path);
 };
 </script>
 
 <style scoped>
-
-.nav-brand {
-  padding: 20px 16px;
-  text-align: center;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: 8px;
+.nav-sidebar :deep(.n-layout-sider-scroll-container) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.nav-brand-text {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.nav-menu-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
-.nav-brand-icon {
-  color: var(--color-primary);
-  transition: color var(--transition-base);
+
+.nav-menu-wrap > .n-menu:first-child {
+  flex: 1;
+}
+
+.nav-menu-wrap > .n-menu:last-child {
+  margin-top: auto;
+  border-top: 1px solid var(--n-border-color);
 }
 </style>
