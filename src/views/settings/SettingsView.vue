@@ -39,22 +39,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import { Refresh as RefreshIcon, Save as SaveIcon } from "@vicons/ionicons5";
-import { config, reset_config, save_config } from "../../invokes.ts";
-import { i18n } from "../../i18n.ts";
-import { Language, languageToJSON } from "../../proto/config.ts";
+import { useMessage } from "naive-ui";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+import TitledPage from "../../components/core/TitledPage.vue";
+import GeneralSettings from "../../components/settings/GeneralSettings.vue";
+import UIPreferences from "../../components/settings/UIPreferences.vue";
+import VersionInfo from "../../components/settings/VersionInfo.vue";
 import {
 	setBackgroundImage,
-	setTheme,
 	setTransparent,
 } from "../../composables/useTheme.ts";
-import TitledPage from "../../components/core/TitledPage.vue";
-import VersionInfo from "../../components/settings/VersionInfo.vue";
-import UIPreferences from "../../components/settings/UIPreferences.vue";
-import GeneralSettings from "../../components/settings/GeneralSettings.vue";
-import { useMessage } from "naive-ui";
-import { useI18n } from "vue-i18n";
+import { i18n } from "../../i18n.ts";
+import { config, reset_config, save_config } from "../../invokes.ts";
+import { Language, languageToJSON } from "../../proto/config.ts";
 
 const activeTab = ref("general");
 const { t } = useI18n();
@@ -68,7 +67,6 @@ const apply_and_save_config = async () => {
 		config.value.uiConfig?.language ?? Language.EN,
 	);
 	setTransparent();
-	setTheme();
 	await setBackgroundImage();
 };
 </script>

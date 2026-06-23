@@ -97,9 +97,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from "vue";
-import { config, refresh_config } from "../../invokes.ts";
 import { message, open } from "@tauri-apps/plugin-dialog";
+import { computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { config, refresh_config } from "../../invokes.ts";
 import {
 	InstallStrategy,
 	installStrategyToJSON,
@@ -107,7 +108,6 @@ import {
 	levelToJSON,
 	SteamCmdConfig,
 } from "../../proto/config.ts";
-import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 

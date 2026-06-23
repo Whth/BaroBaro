@@ -93,16 +93,16 @@
 </template>
 
 <script lang="ts" setup>
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
 	DocumentText,
 	GameController,
 	InformationCircle,
 	Link,
 } from "@vicons/ionicons5";
-import { get_build_info } from "../../invokes.ts";
 import { onMounted, type Ref, ref } from "vue";
+import { get_build_info } from "../../invokes.ts";
 import { BuildInfo } from "../../proto/build_info.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
 
 const build_info: Ref<BuildInfo> = ref(BuildInfo.create());
 
