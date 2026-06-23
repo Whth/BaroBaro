@@ -78,16 +78,16 @@
 
 
 <script lang="ts" setup>
-import abbreviate from "number-abbreviate";
-import type { BarotraumaMod } from "../../proto/mods.ts";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { ImageOutline } from "@vicons/ionicons5";
 import bytes from "bytes";
+import abbreviate from "number-abbreviate";
+import { ref, watch } from "vue";
 import getTagColorConfig from "../../composables/coloredTag.ts";
+import { formatTimestampToDate } from "../../composables/utils.ts";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { ref, watch } from "vue";
-import { formatTimestampToDate } from "../../composables/utils.ts";
 
 const imageRendered = ref(false);
 

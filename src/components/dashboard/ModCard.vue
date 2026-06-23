@@ -1,24 +1,61 @@
 <template>
-  <n-card hoverable style="cursor: pointer;" @click="onClick()">
+  <n-card 
+    class="mod-card" 
+    :class="[`stagger-${Math.min(index, 6)}`]"
+    hoverable 
+    @click="onClick()"
+  >
     <n-thing>
       <template #header>
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <n-text strong style="font-size: 16px; ">{{ `${index}. ` }}</n-text>
-          <n-text strong style="font-size: 16px;">{{ mod.name }}</n-text>
-
+        <div class="mod-card-header">
+          <div class="mod-status-indicator" :class="is_enabled(mod) ? 'enabled' : 'disabled'" />
+          <n-text strong class="mod-card-title">{{ mod.name }}</n-text>
+          <n-tag 
+            v-if="mod.corePackage" 
+            size="small" 
+            type="info" 
+            round
+            class="mod-badge"
+          >
+            {{ $t('modCard.corePackage') }}
+          </n-tag>
         </div>
       </template>
       <template #description>
-        <n-flex>
-          <n-tag v-if="is_enabled(mod)" size="small" type="warning">{{ $t('modCard.enabled') }}</n-tag>
-          <n-tag v-else size="small" type="error">{{ $t('modCard.disabled') }}</n-tag>
-          <n-tag v-if="mod.corePackage" size="small" type="info">{{ $t('modCard.corePackage') }}</n-tag>
-          <n-tag v-if="mod.homeDir" size="small" type="success">{{ $t('modCard.localMod') }}</n-tag>
+        <n-flex :size="8" align="center">
+          <n-tag 
+            v-if="is_enabled(mod)" 
+            size="small" 
+            type="success" 
+            round
+            :bordered="false"
+          >
+            <n-icon size="14" style="margin-right: 4px;"><CheckmarkCircleOutline /></n-icon>
+            {{ $t('modCard.enabled') }}
+          </n-tag>
+          <n-tag 
+            v-else 
+            size="small" 
+            type="warning" 
+            round
+          >
+            <n-icon size="14" style="margin-right: 4px;"><EllipseOutline /></n-icon>
+            {{ $t('modCard.disabled') }}
+          </n-tag>
+          <n-tag 
+            v-if="mod.homeDir" 
+            size="small" 
+            type="default" 
+            round
+          >
+            <n-icon size="14" style="margin-right: 4px;"><FolderOutline /></n-icon>
+            {{ $t('modCard.localMod') }}
+          </n-tag>
         </n-flex>
       </template>
       <template #default>
-        <n-flex :size="6" style="margin-top: 8px;" vertical>
-          <n-descriptions :column="4" size="small">
+        <n-flex :size="8" style="margin-top: 12px;" vertical>
+          <n-descriptions :column="4" size="small" label-placement="left">
             <!-- Mod Version -->
             <n-descriptions-item :label="$t('modCard.version')">
               <inlineCode :displayText="mod.modVersion"></inlineCode>
@@ -31,8 +68,10 @@
 
             <!-- Steam Workshop ID -->
             <n-descriptions-item :label="$t('modCard.steamWorkshopId')">
-              <inline-code :displayText="mod.steamWorkshopId.toString()"></inline-code>
-              <JumpTo :url="`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`"></JumpTo>
+              <n-flex :size="4" align="center">
+                <inline-code :displayText="mod.steamWorkshopId.toString()"></inline-code>
+                <JumpTo :url="`https://steamcommunity.com/sharedfiles/filedetails/?id=${mod.steamWorkshopId}`"></JumpTo>
+              </n-flex>
             </n-descriptions-item>
             <!-- Expected Hash -->
             <n-descriptions-item :label="$t('modCard.expectedHash')">
@@ -40,23 +79,25 @@
             </n-descriptions-item>
             <!-- Home Directory -->
             <n-descriptions-item v-if="mod.homeDir" :label="$t('modCard.homeDir')">
-              <inline-code :displayText="mod.homeDir"></inline-code>
-              <reveal :path="mod.homeDir"></reveal>
+              <n-flex :size="4" align="center">
+                <inline-code :displayText="mod.homeDir"></inline-code>
+                <reveal :path="mod.homeDir"></reveal>
+              </n-flex>
             </n-descriptions-item>
           </n-descriptions>
         </n-flex>
       </template>
     </n-thing>
-
   </n-card>
 </template>
 
 <script lang="ts" setup>
+import { CheckmarkCircleOutline, EllipseOutline, FolderOutline } from "@vicons/ionicons5";
+import { enabled_mods } from "../../invokes.ts";
 import type { BarotraumaMod } from "../../proto/mods.ts";
 import InlineCode from "../utils/inlineCode.vue";
 import JumpTo from "../utils/jumpTo.vue";
 import Reveal from "../utils/Reveal.vue";
-import { enabled_mods } from "../../invokes.ts";
 
 interface Props {
 	mod: BarotraumaMod;
@@ -79,3 +120,47 @@ const onClick = () => {
 	emit("modSelected", props.mod);
 };
 </script>
+
+<style scoped>
+.mod-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mod-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mod-status-indicator.enabled {
+  background: var(--color-success);
+  box-shadow: 0 0 8px rgba(7, 202, 107, 0.4);
+}
+
+.mod-status-indicator.disabled {
+  background: var(--color-warning);
+  box-shadow: 0 0 8px rgba(232, 149, 88, 0.3);
+}
+
+.mod-card:hover .mod-status-indicator {
+  transform: scale(1.2);
+}
+
+.mod-card-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.mod-card:hover .mod-card-title {
+  color: var(--color-warning);
+}
+
+.mod-badge {
+  margin-left: auto;
+}
+</style>
