@@ -49,17 +49,17 @@
 
 </template>
 <script lang="ts" setup>
-import { BarotraumaMod } from "../../proto/mods.ts";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import bytes from "bytes";
+import { onMounted, type Ref, ref } from "vue";
+import getTagColorConfig from "../../composables/coloredTag.ts";
 import {
 	get_mod_hash,
 	get_mod_occupation,
 	retrieve_mod_metadata,
 } from "../../invokes.ts";
-import { onMounted, ref, Ref } from "vue";
-import bytes from "bytes";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 import InlineCode from "../utils/inlineCode.vue";
-import getTagColorConfig from "../../composables/coloredTag.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
 
 const props = defineProps<{
 	mod: BarotraumaMod;

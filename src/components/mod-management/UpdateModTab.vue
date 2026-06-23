@@ -83,6 +83,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
@@ -92,8 +93,7 @@ import {
 	list_installed_mods,
 	uninstall_mods,
 } from "../../invokes";
-import { BarotraumaMod } from "../../proto/mods.ts";
-import { useMessage } from "naive-ui";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 import ModGrid from "./ModGrid.vue";
 
 const { t } = useI18n();

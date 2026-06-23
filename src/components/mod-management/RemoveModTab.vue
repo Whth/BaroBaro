@@ -62,14 +62,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 import {
 	installed_mod,
 	list_installed_mods,
 	uninstall_mods,
 } from "../../invokes.ts";
-import { BarotraumaMod } from "../../proto/mods.ts";
-import { useMessage } from "naive-ui";
+import type { BarotraumaMod } from "../../proto/mods.ts";
 import ModGrid from "./ModGrid.vue";
 
 const message = useMessage();

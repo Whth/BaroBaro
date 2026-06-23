@@ -74,14 +74,14 @@
 
 
 <script lang="ts" setup>
+import bytes from "bytes";
+import abbreviate from "number-abbreviate";
 import {
 	formatTimestampToDate,
 	openInWorkshop,
 } from "../../composables/utils.ts";
-import bytes from "bytes";
+import { getStatusType, type ModItem } from "../../composables/workshop.ts";
 import InlineCode from "../utils/inlineCode.vue";
-import abbreviate from "number-abbreviate";
-import { getStatusType, ModItem } from "../../composables/workshop.ts";
 
 defineProps<{
 	item: ModItem;

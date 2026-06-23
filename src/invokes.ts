@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Config } from "./proto/config";
 import { computed, type Ref, ref } from "vue";
-import type { BarotraumaMod, ModList } from "./proto/mods";
 import { BuildInfo } from "./proto/build_info.ts";
-import { WorkshopItem } from "./proto/workshop.ts";
+import { Config } from "./proto/config";
+import type { BarotraumaMod, ModList } from "./proto/mods";
+import type { WorkshopItem } from "./proto/workshop.ts";
 
 export const config: Ref<Config> = ref(Config.create());
 export const installed_mod: Ref<BarotraumaMod[]> = ref([]);
@@ -57,7 +57,7 @@ export async function list_enabled_mods() {
 export async function retrieve_mod_metadata() {
 	await refresh_config();
 
-	let retried = await invoke<BarotraumaMod[]>("retrieve_mod_metadata", {
+	const retried = await invoke<BarotraumaMod[]>("retrieve_mod_metadata", {
 		mods: installed_mod.value,
 		batchSize: config.value.metadataRetrieveBatchsize,
 	});

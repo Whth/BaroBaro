@@ -72,18 +72,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import { CloseOutline } from "@vicons/ionicons5";
+import { useMessage } from "naive-ui";
+import { ref } from "vue";
 import { getSteamWorkshopId } from "../../composables/network.ts";
+import { type ModItem, ModStatus } from "../../composables/workshop.ts";
 import {
 	download_mods,
 	get_workshop_items,
 	install_mods,
 	is_barotrauma_mod,
 } from "../../invokes.ts";
-import { useMessage } from "naive-ui";
-import { WorkshopItem } from "../../proto/workshop.ts";
-import { ModItem, ModStatus } from "../../composables/workshop.ts";
+import type { WorkshopItem } from "../../proto/workshop.ts";
 import WorkshopItemDisplay from "./WorkshopItemDisplay.vue";
 
 // Initialize Naive UI message instance for user feedback
@@ -151,7 +151,7 @@ const verifyMod = async (mod: ModItem): Promise<boolean> => {
 	if (!mod.id) return false;
 	try {
 		let isValid = false;
-		let target = undefined;
+		let target;
 		let retrieved_items: WorkshopItem[] = await get_workshop_items([mod.id]);
 
 		if (retrieved_items.length > 0) {
